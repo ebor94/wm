@@ -49,6 +49,11 @@ const router = createRouter({
         path: '/consultar-material',
         name: 'consultar-material',
         component: () => import('../views/ConsultaMaterialView.vue')
+      },
+      {
+        path: '/ot-pendiente',
+        name: 'ot-pendiente',
+        component: () => import('../views/OTPendienteView.vue')
       }
     // Aquí agregaremos las demás rutas según se necesiten
   ]
