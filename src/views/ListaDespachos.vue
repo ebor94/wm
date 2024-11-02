@@ -106,10 +106,9 @@
   router.push(`/entrega/${id}`)
 }
   
-  const handleVerOrden = (id) => {
-    console.log('Ver orden:', id)
-    // Implementar lógica para ver orden
-  }
+const handleVerOrden = (id) => {
+  router.push(`/orden-transporte/${id}`)
+}
   
   const goToMenu = () => {
     router.push('/menu')

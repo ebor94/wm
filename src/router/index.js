@@ -18,7 +18,7 @@ const router = createRouter({
     {
       path: '/alistamiento',
       name: 'alistamiento',
-      component: () => import('../views/PickingView.vue')
+      component: () => import('../views/ListaDespachos.vue')
     },
     {
       path: '/cargue',
@@ -59,6 +59,11 @@ const router = createRouter({
         path: '/legalizacion',
         name: 'legalizacion',
         component: () => import('../views/LegalizacionView.vue')
+      },
+      {
+        path: '/orden-transporte/:id',
+        name: 'orden-transporte',
+        component: () => import('../views/OrdenTransporteView.vue')
       }
     // Aquí agregaremos las demás rutas según se necesiten
   ]

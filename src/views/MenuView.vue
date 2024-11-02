@@ -66,6 +66,11 @@
   const handleMenuClick = (action) => {
     console.log('Navegando a:', action)
     // Aquí implementaremos la navegación a cada sección
+
+    if(action == 'gestion-entrega') {
+      handleGestionEntrega();
+      return
+    }
     router.push(`/${action}`)
   }
   
@@ -74,6 +79,10 @@
     // Aquí implementaremos la lógica de cierre de sesión
     router.push('/login')
   }
+
+  const handleGestionEntrega = () => {
+  window.location.href = 'http://ci.ceramicaitalia.com/transporte/Gestion/GestionEntrega.asp'
+}
   </script>
   
   <style scoped>
