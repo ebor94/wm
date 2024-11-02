@@ -65,6 +65,7 @@
   
   <script setup>
   import { ref, onMounted } from 'vue'
+import router from '../router';
   
   const usernameInput = ref(null)
   const passwordInput = ref(null)
@@ -76,13 +77,14 @@
   }
   
   const handleSubmit = async () => {
-    try {
-      console.log('Login attempt:', { username: username.value, password: password.value })
-      // Aquí implementaremos la lógica de login
-    } catch (error) {
-      console.error('Login error:', error)
-    }
+  try {
+    console.log('Login attempt:', { username: username.value, password: password.value })
+    // Aquí irá la validación del login
+    router.push('/menu')
+  } catch (error) {
+    console.error('Login error:', error)
   }
+}
   
   onMounted(() => {
     usernameInput.value?.focus()
