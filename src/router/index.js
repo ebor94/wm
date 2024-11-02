@@ -54,6 +54,11 @@ const router = createRouter({
         path: '/ot-pendiente',
         name: 'ot-pendiente',
         component: () => import('../views/OTPendienteView.vue')
+      },
+      {
+        path: '/legalizacion',
+        name: 'legalizacion',
+        component: () => import('../views/LegalizacionView.vue')
       }
     // Aquí agregaremos las demás rutas según se necesiten
   ]
