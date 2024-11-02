@@ -27,13 +27,28 @@ const router = createRouter({
     },
     {
         path: '/entrega/:id',
-        name: 'entrega',
+        name: 'Lista-entrega',
         component: () => import('../views/picking/MaterialListaPickingView.vue')
       },
       {
         path: '/picking/scan/:materialId',
         name: 'scan',
         component: () => import('../views/picking/ScanView.vue')
+      },
+      {
+        path: '/traslado',
+        name: 'traslado',
+        component: () => import('../views/TrasladosView.vue')
+      },
+      {
+        path: '/consultar-ubicacion',
+        name: 'consultar-ubicacion',
+        component: () => import('../views/ConsultaUbicacionView.vue')
+      },
+      {
+        path: '/consultar-material',
+        name: 'consultar-material',
+        component: () => import('../views/ConsultaMaterialView.vue')
       }
     // Aquí agregaremos las demás rutas según se necesiten
   ]
