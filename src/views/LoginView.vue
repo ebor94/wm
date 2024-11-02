@@ -60,17 +60,25 @@
           Derechos reservados T.I.Cerámica Italia S.A
         </div>
       </div>
+      <LoaderComponent 
+      v-if="isLoading"
+      :loading="isLoading"
+      :loading-text="loadingText"
+    />
     </div>
+    
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
 import router from '../router';
-  
+import { useLoader } from '../composables/useLoader' 
   const usernameInput = ref(null)
   const passwordInput = ref(null)
   const username = ref('')
   const password = ref('')
+
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   
   const focusPassword = () => {
     passwordInput.value?.focus()
@@ -78,11 +86,15 @@ import router from '../router';
   
   const handleSubmit = async () => {
   try {
+    showLoader('Iniciando sesión...')
     console.log('Login attempt:', { username: username.value, password: password.value })
+    await new Promise(resolve => setTimeout(resolve, 2000))
     // Aquí irá la validación del login
     router.push('/menu')
   } catch (error) {
     console.error('Login error:', error)
+  }finally {
+    hideLoader()
   }
 }
   

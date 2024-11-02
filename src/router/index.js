@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MenuView from '../views/MenuView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,9 +65,19 @@ const router = createRouter({
         path: '/orden-transporte/:id',
         name: 'orden-transporte',
         component: () => import('../views/OrdenTransporteView.vue')
+      },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: NotFoundView
       }
     // Aquí agregaremos las demás rutas según se necesiten
   ]
 })
+
+router.onError((error) => {
+    console.error('Error de navegación:', error)
+    router.push({ name: 'not-found' })
+  })
 
 export default router
