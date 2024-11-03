@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ngrok": "ngrok http 5173",
+    "dev:public": "concurrently \"npm run dev\" \"npm run ngrok\""
   },
   "dependencies": {
     "vue": "^3.5.12"
@@ -16,6 +18,7 @@
     "@heroicons/vue": "^2.1.5",
     "@vitejs/plugin-vue": "^5.1.4",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
     "pinia": "^2.2.5",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
