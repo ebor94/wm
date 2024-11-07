@@ -50,6 +50,11 @@
    import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
   import { useLoader } from '../composables/useLoader' 
+  import { useAuthStore } from '../store/auth';
+
+
+
+const authStore = useAuthStore()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
   const storeDespachos = UseDespachoStore()
@@ -79,9 +84,10 @@
   }
   
   // Manejo de cierre de sesión
-  const handleLogout = () => {
+  const handleLogout =   () => {
     // Aquí implementaremos la lógica de cierre de sesión
-    router.push('/login')
+    authStore.logout()
+    router.push('/')
   }
 
   const handleGestionEntrega = () => {
@@ -90,7 +96,7 @@
 
 onMounted(async () => {
   await storeDespachos.fetchDespachos()
-  console.log('Datos cargados:', JSON.stringify(storeDespachos.despachos))
+ // console.log('Datos cargados:', JSON.stringify(storeDespachos.despachos))
   hideLoader()
 })
   </script>

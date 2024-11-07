@@ -105,7 +105,7 @@ const handleVerOrden = (id) => {
   }
 
 
-
+//aca debe hacer el onmounted cuando cargue el componente traer los de talles de la entregas  y preguntar si  el store de despachos exite ,sino volver a generarlo cuando se recargue la pagina
   </script>
   
   <style scoped>

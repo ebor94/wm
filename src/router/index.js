@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MenuView from '../views/MenuView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
+import { useAuthStore } from '../store/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,7 +75,17 @@ const router = createRouter({
     // Aquí agregaremos las demás rutas según se necesiten
   ]
 })
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  const publicPages = ['/']
+  const authRequired = !publicPages.includes(to.path)
 
+  if (authRequired && !authStore.isAuthenticated) {
+    return next('/')
+  }
+
+  next()
+})
 router.onError((error) => {
     console.error('Error de navegación:', error)
     router.push({ name: 'not-found' })
