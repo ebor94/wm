@@ -15,8 +15,7 @@ export const UseDespachoStore = defineStore('despacho',{
             this.error = null
             try {
                  this.loading = true
-                const responseDespachos = await infoDespachos.getEntregas('9979')
-                console.log(responseDespachos)
+                const responseDespachos = await infoDespachos.getEntregas('9979')                
                 this.despachos = responseDespachos.data
                 //await this.getEntregas()
             }catch(error){

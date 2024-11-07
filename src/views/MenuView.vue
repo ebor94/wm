@@ -49,7 +49,8 @@
 
    import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
-  
+  import { useLoader } from '../composables/useLoader' 
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
   const storeDespachos = UseDespachoStore()
   
@@ -90,6 +91,7 @@
 onMounted(async () => {
   await storeDespachos.fetchDespachos()
   console.log('Datos cargados:', JSON.stringify(storeDespachos.despachos))
+  hideLoader()
 })
   </script>
   

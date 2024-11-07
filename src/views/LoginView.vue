@@ -94,7 +94,7 @@ import { useLoader } from '../composables/useLoader'
   } catch (error) {
     console.error('Login error:', error)
   }finally {
-    hideLoader()
+   // hideLoader()
   }
 }
   

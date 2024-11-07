@@ -79,27 +79,7 @@
   
   const router = useRouter()
   const expandedDespachos = ref([])
-  const store = UseDespachoStore()
-
-  
-  // Datos de ejemplo - esto normalmente vendría de una API
-  const despachos = ref([
-    {
-      id: 2,
-      numero: '0013803T/2024-11-02T13:59:59.000Z',
-      pedido: '60617873',
-      estado: 'ENTREGA FACTURADA'
-    },
-    {
-      id: 3,
-      numero: '0013817O/2024-11-05T18:00:00.000Z',
-      pedido: '12345678',
-      estado: 'ENTREGA FACTURADA'
-    }
-  ])
-
-  const despachosx = ref(store.despachos)
-  console.log('Datos cargados despues:', JSON.stringify(despachosx))
+  const store = UseDespachoStore() 
 
   
   // Funciones
