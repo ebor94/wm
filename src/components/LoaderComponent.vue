@@ -119,7 +119,6 @@ const props = defineProps({
 }
 
 
-
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);

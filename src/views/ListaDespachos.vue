@@ -14,38 +14,41 @@
   
         <!-- Lista de Despachos -->
         <div class="space-y-4">
-          <div v-for="(despacho, index) in despachos" :key="index" class="space-y-2">
+          <div  v-for="despacho in store.despachos" :key="despacho.Despacho_no || 'null'" class="space-y-2">
+         
             <!-- Botón Collapse -->
             <button 
               class="w-full bg-white rounded-full p-3 text-left flex items-center gap-2"
-              @click="toggleDespacho(despacho.id)"
+              @click="toggleDespacho(despacho.Despacho_no)"
             >
               <span class="material-icons">
-                {{ expandedDespachos.includes(despacho.id) ? 'expand_less' : 'expand_more' }}
+                {{ expandedDespachos.includes(despacho.Despacho_no) ? 'expand_less' : 'expand_more' }}
               </span>
-              {{ despacho.numero }}
+              {{ despacho.Despacho_no || 'prioridad' }} / {{ despacho.Fecha_Requerida || 'sin fecha de despacho' }}
             </button>
   
             <!-- Contenido Collapse -->
             <div 
-              v-show="expandedDespachos.includes(despacho.id)"
-              class="bg-white rounded-lg p-4 mx-4 space-y-3"
+              v-show="expandedDespachos.includes(despacho.Despacho_no)"
+              v-for="orden in despacho.ordenes" :key="orden.entrega" 
+              class="bg-white rounded-lg p-4 mx-4 space-y-3 items-center"
             >
+            <label class="w-full text-center text-blue-800 border-t border-gray-200 pt-2">{{ orden.entrega }} / {{ orden.cte }}</label>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="handleGestionEntrega(despacho.id)"
+                @click="handleGestionEntrega(orden.entrega)"
               >
               [ENTREGA FACTURADA]
               </button>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="handleGestionEntrega(despacho.id)"
+                @click="handleGestionEntrega(orden.entrega)"
               >
                 Gestion Entrega
               </button>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="handleVerOrden(despacho.id)"
+                @click="handleVerOrden(orden.entrega)"
               >
                 Ver Orden de Transporte
               </button>
@@ -70,11 +73,14 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref ,onMounted} from 'vue'
+  import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
   
   const router = useRouter()
   const expandedDespachos = ref([])
+  const store = UseDespachoStore()
+
   
   // Datos de ejemplo - esto normalmente vendría de una API
   const despachos = ref([
@@ -91,6 +97,10 @@
       estado: 'ENTREGA FACTURADA'
     }
   ])
+
+  const despachosx = ref(store.despachos)
+  console.log('Datos cargados despues:', JSON.stringify(despachosx))
+
   
   // Funciones
   const toggleDespacho = (id) => {
@@ -113,6 +123,9 @@ const handleVerOrden = (id) => {
   const goToMenu = () => {
     router.push('/menu')
   }
+
+
+
   </script>
   
   <style scoped>

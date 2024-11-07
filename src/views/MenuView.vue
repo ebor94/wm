@@ -45,10 +45,13 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref , onMounted} from 'vue'
+
+   import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
   
   const router = useRouter()
+  const storeDespachos = UseDespachoStore()
   
   // Lista de opciones del menú
   const menuItems = [
@@ -83,6 +86,11 @@
   const handleGestionEntrega = () => {
   window.location.href = 'http://ci.ceramicaitalia.com/transporte/Gestion/GestionEntrega.asp'
 }
+
+onMounted(async () => {
+  await storeDespachos.fetchDespachos()
+  console.log('Datos cargados:', JSON.stringify(storeDespachos.despachos))
+})
   </script>
   
   <style scoped>
