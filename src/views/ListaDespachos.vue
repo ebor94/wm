@@ -1,5 +1,9 @@
 <template>
     <div class="min-h-screen flex flex-col">
+      <LoaderComponent 
+      v-if="isLoading"
+      loading-text="Iniciando sesión..."
+    />
       <!-- Header -->
       <header class="bg-italia-red text-white p-4 text-center font-bold">
         Toma de Picking
@@ -38,7 +42,7 @@
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                 @click="handleGestionEntrega(orden.entrega)"
               >
-              [ENTREGA FACTURADA]
+              {{ getEstadoEntrega(orden.entrega)?.mensaje || 'Sin estado' }}
               </button>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
@@ -76,11 +80,12 @@
   import { ref ,onMounted} from 'vue'
   import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
+  import { useLoader } from '../composables/useLoader' 
   
   const router = useRouter()
   const expandedDespachos = ref([])
   const store = UseDespachoStore() 
-
+const {  loadingText, showLoader, hideLoader } = useLoader()
   
   // Funciones
   const toggleDespacho = (id) => {
@@ -91,6 +96,10 @@
       expandedDespachos.value.splice(index, 1)
     }
   }
+
+  const getEstadoEntrega = (entrega) => {
+  return store.detalleEntregas.find(detalle => detalle.entrega === entrega)
+}
   
   const handleGestionEntrega = (id) => {
   router.push(`/entrega/${id}`)
@@ -104,7 +113,18 @@ const handleVerOrden = (id) => {
     router.push('/menu')
   }
 
+  onMounted(async () => {
 
+  try {
+    await store.getEntregas()
+  } catch (error) {
+    console.error('Error:', error)
+  } finally {
+  
+    hideLoader();
+  }
+   
+})
 //aca debe hacer el onmounted cuando cargue el componente traer los de talles de la entregas  y preguntar si  el store de despachos exite ,sino volver a generarlo cuando se recargue la pagina
   </script>
   

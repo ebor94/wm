@@ -1,5 +1,9 @@
 <template>
     <div class="min-h-screen flex flex-col">
+      <LoaderComponent 
+      v-if="isLoading"
+      loading-text="Iniciando sesión..."
+    />
       <!-- Header Rojo -->
       <header class="bg-italia-red text-white p-4 text-center font-bold text-xl">
         Menú inicial
@@ -73,14 +77,18 @@ const authStore = useAuthStore()
   
   // Manejo de clicks en el menú
   const handleMenuClick = (action) => {
-    console.log('Navegando a:', action)
-    // Aquí implementaremos la navegación a cada sección
-
+   try {
+    showLoader("cargando...")
     if(action == 'gestion-entrega') {
       handleGestionEntrega();
       return
     }
     router.push(`/${action}`)
+   } catch (error) {
+    
+   }
+
+ 
   }
   
   // Manejo de cierre de sesión
@@ -96,8 +104,7 @@ const authStore = useAuthStore()
 
 onMounted(async () => {
   await storeDespachos.fetchDespachos()
- // console.log('Datos cargados:', JSON.stringify(storeDespachos.despachos))
-  hideLoader()
+   hideLoader()
 })
   </script>
   

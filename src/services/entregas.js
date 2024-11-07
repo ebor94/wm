@@ -12,7 +12,7 @@ export const infoDespachos = {
   },
 
   async getEntregaStatus(entrega) {
-    return axios.get(`${domain}/transporte/detalleEntrega${entrega}`, {
+    return axios.get(`${domain}/transporte/detalleEntrega/${entrega}`, {
       headers: { "Content-Type": "application/json" },
     });
   },

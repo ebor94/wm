@@ -30,9 +30,13 @@ export const UseDespachoStore = defineStore('despacho',{
            await this.getEntregasDetails();
           },
         async getEntregasDetails() {
-            this.detalleEntregas = this.entregas.map(async entrega =>  {
-                await infoDespachos.getEntregaStatus(entrega)
-            })
+            this.detalleEntregas = await Promise.all(
+                this.entregas.map(async entrega => {
+                    let response = await infoDespachos.getEntregaStatus(entrega)
+                    response.data.entrega = entrega;
+                    return response.data
+                })
+            )
         }
     }
 
