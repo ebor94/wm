@@ -28,7 +28,7 @@ const router = createRouter({
       component: () => import('../views/CargueView.vue')
     },
     {
-        path: '/entrega/:id',
+        path: '/entrega/:entrega',
         name: 'Lista-entrega',
         component: () => import('../views/picking/MaterialListaPickingView.vue')
       },
@@ -80,7 +80,7 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['/']
   const authRequired = !publicPages.includes(to.path)
 
-  if (authRequired && !authStore.isAuthenticated) {
+  if (authRequired && !authStore.isAuthenticated ) {
     return next('/')
   }
 

@@ -40,7 +40,7 @@
             <label class="w-full text-center text-blue-800 border-t border-gray-200 pt-2">{{ orden.entrega }} / {{ orden.cte }}</label>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="handleGestionEntrega(orden.entrega)"
+                @click="handleListMaterial(orden.entrega)"
               >
               {{ getEstadoEntrega(orden.entrega)?.mensaje || 'Sin estado' }}
               </button>
@@ -98,9 +98,19 @@ const {  loadingText, showLoader, hideLoader } = useLoader()
   }
 
   const getEstadoEntrega = (entrega) => {
-  return store.detalleEntregas.find(detalle => detalle.entrega === entrega)
+    try {
+      return store.detalleEntregas.find(detalle => detalle.entrega === entrega)
+    } catch (error) {
+      
+    }finally{
+      hideLoader();
+    }
+ 
 }
   
+const handleListMaterial = (id) => {
+  router.push(`/entrega/${id}`)
+}
   const handleGestionEntrega = (id) => {
   router.push(`/entrega/${id}`)
 }
@@ -119,9 +129,6 @@ const handleVerOrden = (id) => {
     await store.getEntregas()
   } catch (error) {
     console.error('Error:', error)
-  } finally {
-  
-    hideLoader();
   }
    
 })

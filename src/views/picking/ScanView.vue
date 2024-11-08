@@ -202,6 +202,8 @@
   const handleBack = () => {
     router.back()
   }
+
+
   </script>
   
   <style scoped>
