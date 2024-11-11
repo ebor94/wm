@@ -8,18 +8,18 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4">
+    <main class="flex-1 p-4  bg-gray-800">
       <!-- Peso Total -->
-      <div class="mb-4 bg-white p-3 rounded-lg shadow-sm">
+      <!-- <div class="mb-4 bg-white p-3 rounded-lg shadow-sm">
         <span class="text-gray-800 font-semibold">Peso: </span>
         <span class="text-gray-700">1.20 Ton.</span>
-      </div>
+      </div> -->
 
       <!-- Material Card -->
       <div v-for="material in entregaDetalles" :key="material.tapos"
-        class="bg-white rounded-lg shadow-lg overflow-hidden" @click="handleMaterialClick">
+        class="bg-white rounded-lg shadow-lg overflow-hidden" @click="handleMaterialClick(entre, material.tapos)">
         <!-- Código de producto -->
-        <div class="bg-green-600 text-white p-2 font-bold">
+        <div :class="[material.acumulado === material.nsola ? 'bg-green-600' : 'bg-red-600','text-white p-2 font-bold']">
           {{ material.vlpla }}
         </div>
 
@@ -37,9 +37,11 @@
 
           <!-- Medidas -->
           <div class="grid grid-cols-2 gap-4 text-sm">
-            <div class="text-gray-700">
-              {{ getAcumulado(material.vbeln, material.tapos, material.tanum) }} / {{ material.nsola }}
-              <!-- <span class="font-medium">Medidas:</span> 63.000/63.000 M -->
+            <div class="text-gray-700" v-if="material.acumulado !== undefined">
+              {{ material.acumulado }} / {{ material.nsola }}
+            </div>
+            <div v-else class="text-gray-700">
+              Cargando...
             </div>
             <div class="text-gray-700">
               <span class="font-medium">OT:</span> {{ material.tanum }}
@@ -55,7 +57,7 @@
     </main>
 
     <!-- Bottom Buttons -->
-    <div class="p-4 grid grid-cols-2 gap-4">
+    <div class="p-4 grid grid-cols-2 gap-4  bg-gray-300">
       <button @click="handleTerminarEntrega"
         class="bg-italia-red text-white py-3 px-6 rounded-full font-medium shadow-md hover:bg-red-700 active:bg-red-800">
         Terminar entrega
@@ -74,9 +76,10 @@
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router'  // Añadir useRoute
+import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
+import { infoDespachos } from '../../services/entregas'
 
 const router = useRouter()
 const route = useRoute()
@@ -94,20 +97,27 @@ const goToMenu = () => {
 }
 
 
-const handleMaterialClick = (materialId) => {
-  router.push(`/picking/scan/${materialId}`)
+const handleMaterialClick = (entrega, posOt) => {
+  router.push(`/picking/scan/${entrega}/${posOt}`)
 }
-const getDetallesEntrega = (numeroEntrega) => {
+const getDetallesEntrega = async (numeroEntrega) => {
   const detalleEntrega = store.detalleEntregas.find(detalle =>
     detalle.entrega === numeroEntrega
   )
   if (detalleEntrega && detalleEntrega.datos) {
     entregaDetalles.value = detalleEntrega.datos
+    // Cargar los acumulados para cada material
+    for (const material of entregaDetalles.value) {
+      const acumulado = await getAcumulado(material.vbeln, material.tapos, material.tanum)
+      material.acumulado = Number(acumulado)
+    }
   }
 }
 
-const getAcumulado = (entrega, posOt, ot) => {
-  return "11111"
+const getAcumulado = async (entrega, posOt, ot) => {
+  const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
+  //console.log(responseDespachos)
+  return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
 
 }
 

@@ -1,236 +1,391 @@
 <template>
-    <div class="min-h-screen flex flex-col bg-gray-50">
-      <!-- Header con información del picking -->
-      <header class="bg-white border-b">
-        <div class="p-4">
-          <h1 class="text-center text-lg font-semibold text-gray-800">
-            .:. Picking .:.
-          </h1>
-          <div class="text-center text-sm text-gray-600 mt-1">
-            [63.000 - Pend: 63.000]M²
-          </div>
+  <div class="min-h-screen flex flex-col bg-gray-50">
+    <!-- Header con información del picking -->
+    <header class="bg-red-600 border-b">
+      <div class="p-4">
+        <h1 class="text-center text-lg font-semibold text-white">
+          .:. Picking .:.
+        </h1>
+        <div class="text-center text-sm text-white mt-1">
+          {{ nameProduct }}
         </div>
-      </header>
-  
-      <main class="flex-1 p-4 space-y-6">
-        <!-- Barra de Progreso -->
-        <div class="bg-white p-4 rounded-lg shadow-sm">
-          <div class="flex items-center justify-between mb-2">
-            <div class="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden">
-              <div class="h-full bg-italia-red" style="width: 0%"></div>
-            </div>
-            <button class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm">
-              Manual
-            </button>
-          </div>
+        <div class="text-center text-sm text-white mt-1">
+          Acum : {{ acumulado }} / 
         </div>
-  
-        <!-- Formulario de Lectura -->
-        <div class="space-y-4">
-          <!-- Valor de etiqueta -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-              Valor de etiqueta
-            </label>
-            <input
-              type="text"
-              v-model="scanValue"
-              class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-              placeholder="Escanee o ingrese el valor"
-            />
+        
+      </div>
+    </header>
+
+    <main class="flex-1 p-4 space-y-6 bg-gray-800">
+      <!-- Barra de Progreso -->
+      <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <div class="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden">
+
           </div>
-  
-          <!-- Cantidad buena -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-              Cantidad buena
-            </label>
-            <input
-              type="number"
-              v-model="goodQuantity"
-              class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-              placeholder="Ingrese cantidad"
-            />
-          </div>
-  
-          <!-- Cantidad material con rotura -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700">
-              Cantidad material con rotura
-            </label>
-            <input
-              type="number"
-              v-model="brokenQuantity"
-              class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-              placeholder="Ingrese cantidad con rotura"
-            />
-          </div>
-  
-          <!-- Grid de información adicional -->
-          <div class="grid grid-cols-2 gap-4 mt-4">
+          {{ matnr }}{{ batch }}
+          <button class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm hover:bg-gray-200">
+            Manual
+          </button>
+        </div>
+      </div>
+
+      <!-- Formulario de Lectura -->
+      <div class="space-y-4">
+        <!-- Valor de etiqueta -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-white">
+            Valor de etiqueta
+          </label>
+          <input type="text" v-model="scanValue" @change="handleChangeScan" @keyup.enter="handleEnterScan"
+            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+            placeholder="Escanee o ingrese el valor" />
+        </div>
+
+        <!-- Cantidad buena -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-white">
+            Cantidad buena
+          </label>
+          <input type="number" v-model="goodQuantity" ref="goodQuantityInput"
+            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+            placeholder="Ingrese cantidad" />
+        </div>
+
+        <!-- Cantidad material con rotura -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-white">
+            Cantidad material con rotura
+          </label>
+          <input type="number" v-model="brokenQuantity"
+            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+            placeholder="Ingrese cantidad con rotura" />
+        </div>
+
+
+        <!-- Grid de información adicional -->
+        <div class="w-full p-1 border rounded-lg bg-white">
+
+          <button @click="isOpen = !isOpen"
+            class="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200 rounded-t-lg transition-colors">
+            Información Adicional
+            <span class="material-icons">
+              expand_less
+            </span>
+          </button>
+          <div v-show="isOpen" class="border border-gray-200 border-t-0 rounded-b-lg p-4 space-y-4 bg-white">
             <!-- Cod. material -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 Cod. material
               </label>
-              <input
-                type="text"
-                v-model="materialCode"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="materialCode" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
-  
+
             <!-- Consecutivo estiba -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 Consecutivo estiba
               </label>
-              <input
-                type="text"
-                v-model="palletNumber"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="palletNumber" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
-  
+
             <!-- Lote -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 Lote
               </label>
-              <input
-                type="text"
-                v-model="batch"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="batch" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
-  
+
             <!-- Posición OT -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 Posición OT
               </label>
-              <input
-                type="text"
-                v-model="otPosition"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="otPosition" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
-  
+
             <!-- UM Base -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 UM Base
               </label>
-              <input
-                type="text"
-                value="M2"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="meins" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
-  
+
             <!-- Número OT -->
             <div class="space-y-1">
               <label class="block text-xs font-medium text-gray-500">
                 Número OT
               </label>
-              <input
-                type="text"
-                value="0001"
-                class="w-full p-2 border rounded-lg bg-gray-50"
-                disabled
-              />
+              <input type="text" v-model="tanum" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
             </div>
           </div>
         </div>
-      </main>
-  
-      <!-- Botones de acción -->
-      <div class="p-4 grid grid-cols-2 gap-4 bg-white border-t">
-        <button 
-          @click="handleAccept"
-          class="flex items-center justify-center gap-2 bg-italia-red text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700"
-        >
-          <span class="material-icons">check</span>
-          Aceptar
-        </button>
-        <button 
-          @click="handleBack"
-          class="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-200"
-        >
-          <span class="material-icons">arrow_back</span>
-          Volver
-        </button>
       </div>
-  
-      <!-- Footer -->
-      <footer class="bg-white border-t p-2 text-center text-gray-600 text-sm">
-        Cerámica Italia ©2024
-      </footer>
+    </main>
+
+
+    <!-- Botones de acción -->
+    <div class="p-4 grid grid-cols-2 gap-4  bg-gray-300 border-t">
+      <button @click="handleAccept"
+        class="flex items-center justify-center gap-2 bg-italia-red text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700">
+        <span class="material-icons">check</span>
+        Aceptar
+      </button>
+      <button @click="handleBack"
+        class="flex items-center justify-center gap-2 bg-gray-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-200">
+        <span class="material-icons">arrow_back</span>
+        Volver
+      </button>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  
-  const router = useRouter()
-  
-  // Variables reactivas
-  const scanValue = ref('')
-  const goodQuantity = ref('')
-  const brokenQuantity = ref('')
-  const materialCode = ref('B18PROD21')
-  const palletNumber = ref('001')
-  const batch = ref('000/00/90/05')
-  const otPosition = ref('0001')
-  
-  // Funciones de manejo
-  const handleAccept = () => {
-    // Validar y procesar la lectura
+
+    <!-- Footer -->
+    <footer class="bg-red-600 border-t p-2 text-center text-white text-sm">
+      Cerámica Italia ©2024
+    </footer>
+    <!-- Agregar el Popup -->
+    <BasePopup v-model="showPopup" :title="popupTitle" :message="popupMessage" :type=popupType confirmText="Entendido"
+      :showConfirm="true" @confirm="handlePopupConfirm" />
+  </div>
+</template>
+
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { UseDespachoStore } from '../../store/despachos';
+import BasePopup from '../../components/BasePopup.vue';
+import { infoDespachos, InfoWm } from '../../services/entregas';
+
+
+const router = useRouter()
+const route = useRoute()
+const store = UseDespachoStore()
+const isOpen = ref(false)
+
+
+// Variables reactivas
+const materialCode = ref('')
+const scanValue = ref('')
+const goodQuantity = ref(0)
+const brokenQuantity = ref(0)
+const locations = ref('')
+const palletNumber = ref('')
+const batch = ref('')
+const otPosition = ref('')
+const meins = ref('')
+const tanum = ref('')
+const matnr = ref('')
+const nameProduct = ref('')
+const material = ref('')
+const QuantityPallet = ref('')
+const pallet = ref('')
+const lote = ref('')
+const goodQuantityInput = ref(null)
+const registroOk = ref(false)
+const acumulado = ref(0)
+
+
+// Agregar estados para el popup
+const showPopup = ref(false);
+const popupTitle = ref('');
+const popupMessage = ref('');
+const popupType = ref('');
+
+
+// Funciones de manejo
+const handleAccept = () => {
+  // Validar y procesar la lectura
+  validaformulario()
+  if(!registroOk){
+    console.log(registroOk)
+  }else{
     console.log('Procesando lectura:', {
-      scanValue: scanValue.value,
-      goodQuantity: goodQuantity.value,
-      brokenQuantity: brokenQuantity.value
-    })
+    scanValue: scanValue.value,
+    goodQuantity: goodQuantity.value,
+    brokenQuantity: brokenQuantity.value
+  })
   }
-  
-  const handleBack = () => {
-    router.back()
+}
+
+const handleBack = () => {
+  router.back()
+}
+
+const validaformulario = () => {
+ 
+  if( goodQuantity.value > QuantityPallet.value || goodQuantity.value == 0 || goodQuantity.value == '' || goodQuantity.value.length == 0) { 
+    console.log("debe abrir el modal")   
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `cantidad no permitida`;
+    showPopup.value = true;
+    popupType.value = 'error' 
+    scanValue.value = '';
+   
+    return false
+  }
+  if(material.value.length == 0) { 
+    console.log("debe abrir el modal MATERIAL")   
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `Material vacio, no permitido`;
+    showPopup.value = true;
+    popupType.value = 'error' 
+    scanValue.value = '';
+    
+    return false
+  }
+  if(scanValue.value.length == 0) { 
+    console.log("debe abrir el modal MATERIAL")   
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `Material vacio, no permitido`;
+    showPopup.value = true;
+    popupType.value = 'error' 
+    scanValue.value = '';
+    
+    return false
   }
 
+  let  total =  acumulado.value + goodQuantity.value + brokenQuantity.value
+  if(total > acumulado.value) {      
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `excede cantidad acumulada, no permitido`;
+    showPopup.value = true;
+    popupType.value = 'error' 
+    scanValue.value = '';
+    
+    return false
+  }
 
-  </script>
-  
-  <style scoped>
-  /* Optimizaciones para dispositivos industriales */
-  input, button {
-    min-height: 44px;
-    touch-action: manipulation;
+  registroOk.value = true
+ 
+
+}
+const handleChangeScan = async (event) => {
+
+  //1 dividir numero de equiqueta
+  divideEtiquetas(scanValue.value, 'a');
+  //2 validar que el material lote ingresado coincida con el de la ot
+  validaCampos(batch.value, lote.value, "lote");
+  validaCampos(matnr.value, material.value, "materaial");
+  AsignaCampos();
+  await GetPalletQuantity(palletNumber.value);
+  //3 actulizar los campos del formulario del final
+  // validar campos vacion
+  // limpiar campos
+}
+
+
+const divideEtiquetas = (codigo, tipo) => {
+  codigo = codigo.trim()
+  material.value = codigo.slice(0, 18)        // " 000000000000203080000001566000001990534"   
+  lote.value = codigo.slice(18, 28)          // "0000012280"
+  tipo == "a" ? pallet.value = codigo.slice(-10) : pallet.value = codigo.slice(-10) //0001990534
+
+
+}
+
+const validaCampos = (campo1, campo2, campo) => {
+  if (campo1 !== campo2) {
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `El ${campo} escaneado no corresponde con el ${campo} de la OT`;
+    showPopup.value = true;
+    popupType.value = 'error'
+    scanValue.value = '';
+    
+  } else {
+    goodQuantityInput.value?.focus()
   }
-  
-  /* Prevenir zoom en inputs */
-  input {
-    font-size: 16px;
+}
+
+const AsignaCampos = () => {
+  materialCode.value = material.value;
+  palletNumber.value = pallet.value;
+}
+
+async function GetPalletQuantity(pallet) {
+  console.log(pallet, 'for get quantity')
+  if (pallet == '') {
+    goodQuantity.value = '';
+  } else {
+    const infoPallet = await InfoWm.GetInfoPallet(pallet);
+    console.log(infoPallet.data.success)
+    if (infoPallet.data.success) {
+      let cantidad = infoPallet.data.data.mensaje
+      let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
+      result == 'PALLET NO EXISTE' ? goodQuantity.value = '' : goodQuantity.value = Number(result);
+      QuantityPallet.value = Number(result)
+    }
   }
-  
-  /* Ajustes para mejor visibilidad */
-  :root {
-    color-scheme: light;
+
+}
+
+const getAcumulado = async (entrega, posOt, ot) => {
+  const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
+  //console.log(responseDespachos)
+  return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
+
+}
+
+
+onMounted(async () => {
+  try {
+    let entrega = route.params.entrega
+
+    const detalleEntrega = store.detalleEntregas.find(detalle =>
+      detalle.entrega === entrega
+    )
+    if (detalleEntrega) {
+      let pos = Number(route.params.pos)
+      const materialTapos1 = detalleEntrega.datos.find(item => item.tapos === pos)
+
+      if (materialTapos1) {
+
+        locations.value = materialTapos1.vlpla || ''
+        batch.value = materialTapos1.charg || ''
+        otPosition.value = materialTapos1.tapos || ''
+        meins.value = materialTapos1.meins || ''
+        tanum.value = materialTapos1.tanum || ''
+        matnr.value = materialTapos1.matnr || ''
+        nameProduct.value = materialTapos1.maktx || ''
+        acumulado.value = await getAcumulado(entrega, materialTapos1.tapos,materialTapos1.tanum )
+
+      }
+    }
+
+  } catch (error) {
+    console.error('Error al cargar los materiales:', error)
   }
-  
-  /* Ajustes para campos deshabilitados */
-  input:disabled {
-    opacity: 0.8;
-    cursor: not-allowed;
-  }
-  
-  /* Estilo para los iconos de Material */
-  .material-icons {
-    font-size: 20px;
-  }
-  </style>
+})
+
+</script>
+
+<style scoped>
+/* Optimizaciones para dispositivos industriales */
+input,
+button {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+/* Prevenir zoom en inputs */
+input {
+  font-size: 16px;
+}
+
+/* Ajustes para mejor visibilidad */
+:root {
+  color-scheme: light;
+}
+
+/* Ajustes para campos deshabilitados */
+input:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* Estilo para los iconos de Material */
+.material-icons {
+  font-size: 20px;
+}
+</style>

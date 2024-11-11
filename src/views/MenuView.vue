@@ -2,7 +2,7 @@
     <div class="min-h-screen flex flex-col">
       <LoaderComponent 
       v-if="isLoading"
-      loading-text="Iniciando sesión..."
+      loading-text="cargando ..."
     />
       <!-- Header Rojo -->
       <header class="bg-italia-red text-white p-4 text-center font-bold text-xl">
