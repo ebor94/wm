@@ -10,7 +10,7 @@
           {{ nameProduct }}
         </div>
         <div class="text-center text-sm text-white mt-1">
-          Acum : {{ acumulado }} / 
+          Acum : {{ acumulado }} / {{ totalPos }}
         </div>
         
       </div>
@@ -24,7 +24,10 @@
 
           </div>
           {{ matnr }}{{ batch }}
-          <button class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm hover:bg-gray-200">
+          <button
+           class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm hover:bg-gray-200"
+           @click="handleManual"
+           >
             Manual
           </button>
         </div>
@@ -37,9 +40,13 @@
           <label class="block text-sm font-medium text-white">
             Valor de etiqueta
           </label>
-          <input type="text" v-model="scanValue" @change="handleChangeScan" @keyup.enter="handleEnterScan"
-            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-            placeholder="Escanee o ingrese el valor" />
+          <input
+           type="text" 
+           v-model="scanValue"
+           @change="handleChangeScan"
+           @keyup.enter="handleEnterScan"
+           class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+           placeholder="Escanee o ingrese el valor" />
         </div>
 
         <!-- Cantidad buena -->
@@ -185,6 +192,12 @@ const lote = ref('')
 const goodQuantityInput = ref(null)
 const registroOk = ref(false)
 const acumulado = ref(0)
+const entregaPicking = ref('')
+const totalPos = ref(0)
+const tipolectura = ref('A')
+const flag = ref('4')
+const idRegistro = ref('')
+const palletMAnual = ref(0)
 
 
 // Agregar estados para el popup
@@ -195,7 +208,7 @@ const popupType = ref('');
 
 
 // Funciones de manejo
-const handleAccept = () => {
+const handleAccept = async  () => {
   // Validar y procesar la lectura
   validaformulario()
   if(!registroOk){
@@ -206,7 +219,44 @@ const handleAccept = () => {
     goodQuantity: goodQuantity.value,
     brokenQuantity: brokenQuantity.value
   })
+    await RegistrarPicking();
+ 
   }
+}
+
+const handleManual = async () => {
+  palletNumber.value = palletMAnual.value + 1 
+  palletMAnual.value =  palletNumber.value  
+  material.value = matnr.value
+  materialCode.value = matnr.value
+  tipolectura.value = 'M'
+  scanValue.value = `${matnr.value}${batch.value}${palletNumber.value}`
+  goodQuantityInput.value?.focus()
+  
+
+ 
+}
+
+const RegistrarPicking = async () =>{
+  let entrega     =  entregaPicking.value;  
+  let posicion    =  "000000";
+  let materialx   =  material.value;
+  let lote        =  batch.value;
+  let consestib   =  palletNumber.value;
+  let cantbuena   =  goodQuantity.value; 
+  let cantrotura  =  brokenQuantity.value;
+  let UMBASE      =  meins.value;
+  let usuario     =  localStorage.getItem("user");
+  let bandera     =  flag.value; 
+  let IDX         =  idRegistro.value;
+  let POSOT       =  otPosition.value;
+  let OT          =  tanum.value;
+  let tplectura   =  tipolectura.value
+
+
+  const regPicking = await InfoWm.RegistryPicking(entrega,posicion,materialx,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,tplectura)
+  console.log(regPicking.data.data[0])
+
 }
 
 const handleBack = () => {
@@ -214,11 +264,24 @@ const handleBack = () => {
 }
 
 const validaformulario = () => {
- 
-  if( goodQuantity.value > QuantityPallet.value || goodQuantity.value == 0 || goodQuantity.value == '' || goodQuantity.value.length == 0) { 
+
+  if(tipolectura.value === "A" && goodQuantity.value > QuantityPallet.value ){
     console.log("debe abrir el modal")   
     popupTitle.value = 'Error de Validación';
-    popupMessage.value = `cantidad no permitida`;
+    popupMessage.value = `cantidad no permitida ${goodQuantity.value}, supera cantidad del pallet`;
+    showPopup.value = true;
+    popupType.value = 'error' 
+    scanValue.value = '';
+   
+    return false
+
+  }
+
+ 
+  if(  goodQuantity.value == 0 || goodQuantity.value == '' || goodQuantity.value.length == 0) { 
+    console.log("debe abrir el modal")   
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `cantidad no permitida ${goodQuantity.value}`;
     showPopup.value = true;
     popupType.value = 'error' 
     scanValue.value = '';
@@ -247,7 +310,7 @@ const validaformulario = () => {
   }
 
   let  total =  acumulado.value + goodQuantity.value + brokenQuantity.value
-  if(total > acumulado.value) {      
+  if(total > totalPos.value) {      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `excede cantidad acumulada, no permitido`;
     showPopup.value = true;
@@ -269,10 +332,9 @@ const handleChangeScan = async (event) => {
   validaCampos(batch.value, lote.value, "lote");
   validaCampos(matnr.value, material.value, "materaial");
   AsignaCampos();
-  await GetPalletQuantity(palletNumber.value);
-  //3 actulizar los campos del formulario del final
-  // validar campos vacion
-  // limpiar campos
+  if(tipolectura.value === 'A'){
+    await GetPalletQuantity(palletNumber.value)
+  } 
 }
 
 
@@ -309,7 +371,7 @@ async function GetPalletQuantity(pallet) {
     goodQuantity.value = '';
   } else {
     const infoPallet = await InfoWm.GetInfoPallet(pallet);
-    console.log(infoPallet.data.success)
+    //console.log(infoPallet.data.success)
     if (infoPallet.data.success) {
       let cantidad = infoPallet.data.data.mensaje
       let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
@@ -331,6 +393,8 @@ const getAcumulado = async (entrega, posOt, ot) => {
 onMounted(async () => {
   try {
     let entrega = route.params.entrega
+    entregaPicking.value = entrega
+    totalPos.value = route.params.totalPos
 
     const detalleEntrega = store.detalleEntregas.find(detalle =>
       detalle.entrega === entrega

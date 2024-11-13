@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', {
               this.isAuthenticated = true
               
               // Guardar en localStorage
-              localStorage.setItem('user', JSON.stringify(username))
+              localStorage.setItem('user', username)
               localStorage.setItem('isAuthenticated', 'true')
               
               return true

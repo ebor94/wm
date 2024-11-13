@@ -38,5 +38,29 @@ export const InfoWm = {
     let almacen           = '1101' ;
     let bandera           = '2' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${centro}/${ubicacionDestino}/${almacen}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+  },
+
+  async RegistryPicking(entrega,posicion,material,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,TPLECTURA){
+
+    return axios.post(
+      `${domain}/transporte/Registraalistamiento`,
+      { "entrega"   : entrega,
+        "posicion"  : posicion,
+        "material"  : material,
+        "lote"      : lote,
+        "consestib" : consestib,
+        "cantbuena" : cantbuena,
+        "cantrotura": cantrotura,
+        "UMBASE"    : UMBASE,
+        "usuario"   : usuario,
+        "bandera"   : bandera,
+        "IDX"       : IDX,
+        "POSOT"     : POSOT,
+        "OT"        : OT,
+        "TPLECTURA" : TPLECTURA
+       },
+      { headers: headers }
+    );
+
   }
 }
