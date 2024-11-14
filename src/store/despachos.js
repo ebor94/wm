@@ -15,7 +15,7 @@ export const UseDespachoStore = defineStore('despacho',{
             this.error = null
             try {
                  this.loading = true
-                const responseDespachos = await infoDespachos.getEntregas('9979')                
+                const responseDespachos = await infoDespachos.getEntregas(localStorage.getItem('user'))                
                 this.despachos = responseDespachos.data
                 //await this.getEntregas()
             }catch(error){
@@ -26,7 +26,7 @@ export const UseDespachoStore = defineStore('despacho',{
               }
         },
        async  getEntregas() {
-            this.entregas = this.despachos.flatMap(item => item.ordenes.map(orden => orden.entrega))
+            this.entregas = this.despachos.flatMap(item => item.ordenes.map(orden => orden.entrega))            
            await this.getEntregasDetails();
           },
         async getEntregasDetails() {

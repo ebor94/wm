@@ -27,6 +27,9 @@
         <div class="p-4 space-y-3">
           <!-- Nombre del producto -->
           <div class="text-gray-800 font-semibold">
+            {{ material.matnr }}
+          </div>
+          <div class="text-gray-800 font-semibold">
             {{ material.maktx }}
           </div>
 

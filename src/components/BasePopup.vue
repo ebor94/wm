@@ -1,61 +1,4 @@
-<script setup>
-import { computed } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true
-  },
-  title: {
-    type: String,
-    default: 'Mensaje'
-  },
-  message: {
-    type: String,
-    default: ''
-  },
-  type: {
-    type: String,
-    default: 'info',
-    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
-  },
-  showConfirm: {
-    type: Boolean,
-    default: false
-  },
-  confirmText: {
-    type: String,
-    default: 'Aceptar'
-  },
-  cancelText: {
-    type: String,
-    default: 'Cancelar'
-  }
-})
-
-const emit = defineEmits(['update:modelValue', 'confirm'])
-
-// Computed para el icono según el tipo
-const icon = computed(() => {
-  switch (props.type) {
-    case 'success':
-      return 'check_circle'
-    case 'error':
-      return 'error'
-    case 'warning':
-      return 'warning'
-    case 'info':
-      return 'info'
-    default:
-      return 'info'
-  }
-})
-
-const handleConfirm = () => {
-  emit('confirm')
-  emit('update:modelValue', false)
-}
-</script>
 
 <template>
   <Transition name="fade">
@@ -125,25 +68,93 @@ const handleConfirm = () => {
         <!-- Footer -->
         <div class="flex justify-end gap-2 p-4 border-t bg-gray-50">
           <slot name="actions">
-            <button 
-              v-if="showConfirm"
-              @click="handleConfirm"
-              class="px-4 py-2 bg-italia-red text-white rounded-lg hover:bg-red-700"
-            >
-              {{ confirmText }}
-            </button>
-            <button 
-              @click="$emit('update:modelValue', false)"
-              class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-            >
-              {{ cancelText }}
-            </button>
-          </slot>
-        </div>
+      <button 
+        v-if="showConfirm"
+        @click="handleConfirm"
+        class="px-4 py-2 bg-italia-red text-white rounded-lg hover:bg-red-700"
+      >
+        {{ confirmText }}
+      </button>
+      <button 
+        @click="$emit('update:modelValue', false)"
+        class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+      >
+        {{ cancelText }}
+      </button>
+    </slot>
+  </div>
       </div>
     </div>
   </Transition>
 </template>
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    required: true
+  },
+  title: {
+    type: String,
+    default: 'Mensaje'
+  },
+  message: {
+    type: String,
+    default: ''
+  },
+  type: {
+    type: String,
+    default: 'info',
+    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
+  },
+  showConfirm: {
+    type: Boolean,
+    default: false
+  },
+  confirmText: {
+    type: String,
+    default: 'Aceptar'
+  },
+  cancelText: {
+    type: String,
+    default: 'Cancelar'
+  },
+  action: {
+    type: String,
+    default: 'normal' // puede ser 'normal', 'update', etc.
+  }
+})
+
+const emit = defineEmits(['update:modelValue', 'confirm', 'update'])
+
+const handleConfirm = () => {
+  if (props.action === 'update') {
+    emit('update')
+  } else {
+    emit('confirm')
+  }
+  emit('update:modelValue', false)
+}
+
+// Computed para el icono según el tipo
+const icon = computed(() => {
+  switch (props.type) {
+    case 'success':
+      return 'check_circle'
+    case 'error':
+      return 'error'
+    case 'warning':
+      return 'warning'
+    case 'info':
+      return 'info'
+    default:
+      return 'info'
+  }
+})
+
+
+</script>
 
 <style scoped>
 .fade-enter-active,

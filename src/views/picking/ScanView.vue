@@ -43,6 +43,7 @@
           <input
            type="text" 
            v-model="scanValue"
+           :disabled="isManualMode" 
            @change="handleChangeScan"
            @keyup.enter="handleEnterScan"
            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
@@ -153,8 +154,22 @@
       Cerámica Italia ©2024
     </footer>
     <!-- Agregar el Popup -->
-    <BasePopup v-model="showPopup" :title="popupTitle" :message="popupMessage" :type=popupType confirmText="Entendido"
-      :showConfirm="true" @confirm="handlePopupConfirm" />
+    <BasePopup
+     v-model="showPopup"
+     :title="popupTitle" 
+     :message="popupMessage" 
+     :type=popupType 
+     :action="popupAction" 
+     confirmText="Aceptar"
+     :showConfirm="true" 
+     @confirm="handlePopupConfirm"
+     @update="handlePopupUpdate"
+      />
+     
+      <LoaderComponent 
+      v-if="isLoading"
+      loading-text="cargando ..."
+    />
   </div>
 </template>
 
@@ -164,13 +179,14 @@ import { ref, onMounted } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
 import BasePopup from '../../components/BasePopup.vue';
 import { infoDespachos, InfoWm } from '../../services/entregas';
+import { useLoader } from '../../composables/useLoader';
 
 
 const router = useRouter()
 const route = useRoute()
 const store = UseDespachoStore()
 const isOpen = ref(false)
-
+const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
 
 // Variables reactivas
 const materialCode = ref('')
@@ -190,7 +206,7 @@ const QuantityPallet = ref('')
 const pallet = ref('')
 const lote = ref('')
 const goodQuantityInput = ref(null)
-const registroOk = ref(false)
+const registroOk = ref(true)
 const acumulado = ref(0)
 const entregaPicking = ref('')
 const totalPos = ref(0)
@@ -198,6 +214,7 @@ const tipolectura = ref('A')
 const flag = ref('4')
 const idRegistro = ref('')
 const palletMAnual = ref(0)
+const isManualMode = ref(false) 
 
 
 // Agregar estados para el popup
@@ -205,26 +222,28 @@ const showPopup = ref(false);
 const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
+const popupAction = ref('normal')
 
-
-// Funciones de manejo
 const handleAccept = async  () => {
   // Validar y procesar la lectura
   validaformulario()
-  if(!registroOk){
-    console.log(registroOk)
+  if(!registroOk.value){
+   // console.log(registroOk)
+    registroOk.value = true
   }else{
     console.log('Procesando lectura:', {
     scanValue: scanValue.value,
     goodQuantity: goodQuantity.value,
     brokenQuantity: brokenQuantity.value
   })
+    showLoader("Registrando Informacion...")
     await RegistrarPicking();
  
   }
 }
 
 const handleManual = async () => {
+  isManualMode.value = true 
   palletNumber.value = palletMAnual.value + 1 
   palletMAnual.value =  palletNumber.value  
   material.value = matnr.value
@@ -255,7 +274,31 @@ const RegistrarPicking = async () =>{
 
 
   const regPicking = await InfoWm.RegistryPicking(entrega,posicion,materialx,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,tplectura)
-  console.log(regPicking.data.data[0])
+  //console.log(regPicking.data.data[0])
+
+  let mensaje = regPicking.data.data[0].mensaje;
+  if (mensaje == "RESGISTRO EXITOSO"){
+    hideLoader()
+    acumulado.value = regPicking.data.data[0].acumulado + acumulado.value 
+    idRegistro.value = regPicking.data.data[0].id
+    popupTitle.value = 'Estado De Registro';
+    popupMessage.value = mensaje
+    showPopup.value = true;
+    popupType.value = 'success' 
+    popupAction.value = 'normal'
+
+  }else if(mensaje == "UP"){
+    hideLoader()
+    showPopup.value = true
+    popupTitle.value = 'Actualización Requerida'
+    popupMessage.value = 'Se requiere actualizar el registro. ¿Desea continuar?'
+    popupType.value = 'warning'
+    popupAction.value = 'update'
+    vibrate()
+    
+
+  }
+
 
 }
 
@@ -266,46 +309,51 @@ const handleBack = () => {
 const validaformulario = () => {
 
   if(tipolectura.value === "A" && goodQuantity.value > QuantityPallet.value ){
-    console.log("debe abrir el modal")   
+   
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `cantidad no permitida ${goodQuantity.value}, supera cantidad del pallet`;
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'warning' 
     scanValue.value = '';
-   
+    registroOk.value = false
+    vibrate()
     return false
 
   }
 
  
   if(  goodQuantity.value == 0 || goodQuantity.value == '' || goodQuantity.value.length == 0) { 
-    console.log("debe abrir el modal")   
+     
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `cantidad no permitida ${goodQuantity.value}`;
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'warning' 
     scanValue.value = '';
+    registroOk.value = false
+    vibrate()
    
     return false
   }
   if(material.value.length == 0) { 
-    console.log("debe abrir el modal MATERIAL")   
+      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `Material vacio, no permitido`;
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'warning' 
     scanValue.value = '';
-    
+    registroOk.value = false
+    vibrate()
     return false
   }
   if(scanValue.value.length == 0) { 
-    console.log("debe abrir el modal MATERIAL")   
+      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `Material vacio, no permitido`;
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'warning' 
     scanValue.value = '';
-    
+    registroOk.value = false
+    vibrate()
     return false
   }
 
@@ -314,20 +362,28 @@ const validaformulario = () => {
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `excede cantidad acumulada, no permitido`;
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'warning' 
     scanValue.value = '';
+    registroOk.value = false
+    vibrate()
     
     return false
   }
 
-  registroOk.value = true
+  
  
 
+}
+
+const vibrate = ()=> {
+  if (navigator.vibrate) {
+        navigator.vibrate(200)
+      }
 }
 const handleChangeScan = async (event) => {
 
   //1 dividir numero de equiqueta
-  divideEtiquetas(scanValue.value, 'a');
+  divideEtiquetas(scanValue.value, 'A');
   //2 validar que el material lote ingresado coincida con el de la ot
   validaCampos(batch.value, lote.value, "lote");
   validaCampos(matnr.value, material.value, "materaial");
@@ -342,7 +398,7 @@ const divideEtiquetas = (codigo, tipo) => {
   codigo = codigo.trim()
   material.value = codigo.slice(0, 18)        // " 000000000000203080000001566000001990534"   
   lote.value = codigo.slice(18, 28)          // "0000012280"
-  tipo == "a" ? pallet.value = codigo.slice(-10) : pallet.value = codigo.slice(-10) //0001990534
+  tipo === "A" ? pallet.value = codigo.slice(-10) : null //0001990534
 
 
 }
@@ -366,7 +422,7 @@ const AsignaCampos = () => {
 }
 
 async function GetPalletQuantity(pallet) {
-  console.log(pallet, 'for get quantity')
+
   if (pallet == '') {
     goodQuantity.value = '';
   } else {
@@ -389,6 +445,86 @@ const getAcumulado = async (entrega, posOt, ot) => {
 
 }
 
+
+const handlePopupConfirm = () => {
+  showPopup.value = false
+
+}
+const handlePopupUpdate = async () => {
+  try {
+    // Usar los mismos datos que el registro original
+    let entrega     =  entregaPicking.value;  
+    let posicion    =  "000000";
+    let materialx   =  material.value;
+    let lote        =  batch.value;
+    let consestib   =  palletNumber.value;
+    let cantbuena   =  goodQuantity.value; 
+    let cantrotura  =  brokenQuantity.value;
+    let UMBASE      =  meins.value;
+    let usuario     =  localStorage.getItem("user");
+    let bandera     =  "2"; // Cambiar bandera para actualización
+    let IDX         =  idRegistro.value;
+    let POSOT       =  otPosition.value;
+    let OT          =  tanum.value;
+    let tplectura   =  tipolectura.value
+
+    // Llamar a la API con bandera de actualización
+    showLoader("actualizando Informacion...")
+    const regPicking = await InfoWm.RegistryPicking(
+      entrega,
+      posicion,
+      materialx,
+      lote,
+      consestib,
+      cantbuena,
+      cantrotura,
+      UMBASE,
+      usuario,
+      bandera,
+      IDX,
+      POSOT,
+      OT,
+      tplectura
+    )
+    console.log(regPicking)
+    const mensaje = regPicking.data.data[0].mensaje;
+    
+    if (mensaje === "OK" || mensaje === "RESGISTRO EXITOSO") {
+      hideLoader()
+      acumulado.value = regPicking.data.data[0].acumulado
+      showPopup.value = true
+      popupTitle.value = 'Éxito'
+      popupMessage.value = 'Actualización exitosa'
+      popupType.value = 'success'
+      popupAction.value = 'normal'
+
+      // Limpiar campos después de actualización exitosa
+      scanValue.value = ''
+      goodQuantity.value = 0
+      brokenQuantity.value = 0
+      hideLoader()
+    } else {
+      hideLoader()
+      showPopup.value = true
+      popupTitle.value = 'Error'
+      popupMessage.value = mensaje || 'Error al actualizar'
+      popupType.value = 'error'
+      popupAction.value = 'normal'
+      vibrate()
+   
+    }
+  } catch (error) {
+    hideLoader()
+    console.error('Error en actualización:', error)
+    showPopup.value = true
+    popupTitle.value = 'Error'
+    popupMessage.value = 'Error al procesar la actualización'
+    popupType.value = 'error'
+    popupAction.value = 'normal'
+    vibrate()
+    
+  }
+}
 
 onMounted(async () => {
   try {
