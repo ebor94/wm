@@ -64,9 +64,6 @@ export const InfoWm = {
 
   },
 
-
-
-  
 }
 
 
@@ -94,6 +91,15 @@ export const InfoEntrega = {
       "hora": hora,
       "accion": "00003",
       "usuario": localStorage.getItem('user')
+    },{ headers: headers })
+  },
+
+  async finishOrder(order, Ot ){
+
+    return axios.post(`${domain}/transporte/apruebaOt/`,{
+      "entrega": order,
+      "ot": Ot,
+      "posicion": ""
     },{ headers: headers })
   }
 }

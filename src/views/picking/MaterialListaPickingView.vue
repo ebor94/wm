@@ -100,8 +100,9 @@ const entre = ref('')
 const entregaDetalles = ref([])
 const horaInicioAlistamiento = ref('')
 
-const handleTerminarEntrega = () => {
+const handleTerminarEntrega = async () => {
   // Implementar lógica para terminar entrega
+  const finishOrder = await InfoEntrega.finishOrder(entre.value);
   console.log('Terminando entrega...')
 }
 
@@ -111,8 +112,7 @@ const goToMenu = () => {
 
 
 const handleMaterialClick = (entrega, posOt, totalpos) => {
-  loadingText.value = "xxxxxxxxxx"
-  showLoader()
+   showLoader()
   router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}`)
 }
 const getDetallesEntrega = async (numeroEntrega) => {
@@ -140,16 +140,18 @@ const getAcumulado = async (entrega, posOt, ot) => {
 const getGestionEntrega = async (entrega) => {
   const gestion = await InfoEntrega.getGestion(entrega);
   let gestionData;
-  let horaFull  ; 
+  let horaFull;
   if (gestion.status == 200) {
-     gestionData = gestion.data.data;
-     horaFull    = gestionData.find(detalle => detalle.DescAccion === 'Hora Inicio alistamiento')?.Valor;
-     if (horaFull === "Pendiente de Registro") {
-      let registroFechaHora  = await InfoEntrega.RegisterAccionFechahora(entrega);
-      if(registroFechaHora.status == 200){
-        gestionData = gestion.data.data;
-        horaFull = gestionData.split('/')
-        horaInicioAlistamiento.value = horaFull[0].replace('Fecha Registrada :', '')
+    gestionData = gestion.data.data;
+    horaFull = gestionData.find(detalle => detalle.DescAccion === 'Hora Inicio alistamiento')?.Valor;
+    if (horaFull === "Pendiente de Registro") {
+      let registroFechaHora = await InfoEntrega.RegisterAccionFechahora(entrega);
+      if (registroFechaHora.status == 200) {
+        gestionData = registroFechaHora.data.data;
+        console.log("Registrando hora inicio alistamiento",gestionData)
+        horaFull = gestionData[0].resultado
+        horaFull = horaFull.replace('Act. Con  Fecha :', '')
+        horaInicioAlistamiento.value = horaFull 
       }
 
     } else {
