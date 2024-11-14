@@ -18,7 +18,7 @@
   
         <!-- Lista de Despachos -->
         <div class="space-y-4">
-          <div  v-for="despacho in store.despachos" :key="despacho.Despacho_no || 'null'" class="space-y-2">
+          <div  v-for="despacho in filtrarDespachosCargue(store.despachos)" :key="despacho.Despacho_no || 'null'" class="space-y-2">
          
             <!-- Botón Collapse -->
             <button 
@@ -85,7 +85,7 @@
   const router = useRouter()
   const expandedDespachos = ref([])
   const store = UseDespachoStore() 
-const {  loadingText, showLoader, hideLoader } = useLoader()
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   
   // Funciones
   const toggleDespacho = (id) => {
@@ -96,6 +96,12 @@ const {  loadingText, showLoader, hideLoader } = useLoader()
       expandedDespachos.value.splice(index, 1)
     }
   }
+
+  const filtrarDespachosCargue = (despachos) => {
+  return despachos.filter(despacho => 
+    despacho.ordenes.some(orden => orden.accion === "Alistar")
+  )
+}
 
   const getEstadoEntrega = (entrega) => {
     try {
@@ -108,7 +114,7 @@ const {  loadingText, showLoader, hideLoader } = useLoader()
  
 }
   
-const handleListMaterial = (id) => {
+const handleListMaterial = (id) => {  
   router.push(`/entrega/${id}`)
 }
   const handleGestionEntrega = (id) => {

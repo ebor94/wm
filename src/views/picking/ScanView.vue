@@ -19,17 +19,16 @@
     <main class="flex-1 p-4 space-y-6 bg-gray-800">
       <!-- Barra de Progreso -->
       <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="flex items-center justify-between mb-2">
-          <div class="h-2 flex-1 bg-gray-200 rounded-full overflow-hidden">
-
-          </div>
-          {{ matnr }}{{ batch }}
-          <button
+        <button
            class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm hover:bg-gray-200"
            @click="handleManual"
            >
             Manual
           </button>
+        <div class="flex items-center justify-between mb-2">
+
+          {{ matnr }}{{ batch }}
+         
         </div>
       </div>
 
@@ -168,8 +167,10 @@
      
       <LoaderComponent 
       v-if="isLoading"
-      loading-text="cargando ..."
+      loadingText="cargando ..."
     />
+
+  
   </div>
 </template>
 
@@ -469,7 +470,8 @@ const handlePopupUpdate = async () => {
     let tplectura   =  tipolectura.value
 
     // Llamar a la API con bandera de actualización
-    showLoader("actualizando Informacion...")
+   
+    showLoader()
     const regPicking = await InfoWm.RegistryPicking(
       entrega,
       posicion,

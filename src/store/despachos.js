@@ -26,7 +26,7 @@ export const UseDespachoStore = defineStore('despacho',{
               }
         },
        async  getEntregas() {
-            this.entregas = this.despachos.flatMap(item => item.ordenes.map(orden => orden.entrega))            
+            this.entregas = this.despachos.flatMap(item => item.ordenes.map(orden => orden.entrega))
            await this.getEntregasDetails();
           },
         async getEntregasDetails() {

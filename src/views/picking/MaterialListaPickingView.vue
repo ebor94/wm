@@ -70,6 +70,10 @@
         Ir menú
       </button>
     </div>
+    <LoaderComponent 
+      v-if="isLoading"
+      loading-text="Cargando Lista Materiales..."
+    />
 
     <!-- Footer -->
     <footer class="bg-gray-200 p-2 text-center text-gray-600 text-sm">
@@ -83,7 +87,10 @@ import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
 import { infoDespachos } from '../../services/entregas'
+import { useLoader } from '../../composables/useLoader';
 
+
+const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
 const router = useRouter()
 const route = useRoute()
 const store = UseDespachoStore()
@@ -101,9 +108,12 @@ const goToMenu = () => {
 
 
 const handleMaterialClick = (entrega, posOt, totalpos) => {
+   loadingText.value = "xxxxxxxxxx"
+  showLoader()
   router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}`)
 }
 const getDetallesEntrega = async (numeroEntrega) => {
+  showLoader()
   const detalleEntrega = store.detalleEntregas.find(detalle =>
     detalle.entrega === numeroEntrega
   )
@@ -120,17 +130,21 @@ const getDetallesEntrega = async (numeroEntrega) => {
 const getAcumulado = async (entrega, posOt, ot) => {
   const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
   //console.log(responseDespachos)
+  hideLoader()
   return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
 
 }
 
 onMounted(async () => {
   try {
+    
     entre.value = route.params.entrega
     getDetallesEntrega(entre.value)
     console.log('Número de entrega:', entre.value)
+   
   } catch (error) {
     console.error('Error al cargar los materiales:', error)
+    hideLoader()
   }
 })
 </script>
