@@ -5,6 +5,9 @@
       <h1 class="text-gray-800 text-lg font-bold text-center">
         Listado material - Alistamiento
       </h1>
+      <div class="text-gray-800 text-lg font-bold text-center">
+        <span class="font-medium"> {{ horaInicioAlistamiento }}</span>
+      </div>
     </header>
 
     <!-- Main Content -->
@@ -17,9 +20,11 @@
 
       <!-- Material Card -->
       <div v-for="material in entregaDetalles" :key="material.tapos"
-        class="bg-white rounded-lg shadow-lg overflow-hidden" @click="handleMaterialClick(entre, material.tapos, material.nsola)">
+        class="bg-white rounded-lg shadow-lg overflow-hidden"
+        @click="handleMaterialClick(entre, material.tapos, material.nsola)">
         <!-- Código de producto -->
-        <div :class="[material.acumulado === material.nsola ? 'bg-green-600' : 'bg-red-600','text-white p-2 font-bold']">
+        <div
+          :class="[material.acumulado === material.nsola ? 'bg-green-600' : 'bg-red-600', 'text-white p-2 font-bold']">
           {{ material.vlpla }}
         </div>
 
@@ -67,13 +72,10 @@
       </button>
       <button @click="goToMenu"
         class="bg-white text-gray-700 py-3 px-6 rounded-full font-medium shadow-md hover:bg-gray-50 active:bg-gray-100 border border-gray-300">
-        Ir menú
+        Volver
       </button>
     </div>
-    <LoaderComponent 
-      v-if="isLoading"
-      loading-text="Cargando Lista Materiales..."
-    />
+    <LoaderComponent v-if="isLoading" loading-text="Cargando Lista Materiales..." />
 
     <!-- Footer -->
     <footer class="bg-gray-200 p-2 text-center text-gray-600 text-sm">
@@ -86,7 +88,7 @@
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
-import { infoDespachos } from '../../services/entregas'
+import { infoDespachos, InfoEntrega } from '../../services/entregas'
 import { useLoader } from '../../composables/useLoader';
 
 
@@ -96,6 +98,7 @@ const route = useRoute()
 const store = UseDespachoStore()
 const entre = ref('')
 const entregaDetalles = ref([])
+const horaInicioAlistamiento = ref('')
 
 const handleTerminarEntrega = () => {
   // Implementar lógica para terminar entrega
@@ -103,12 +106,12 @@ const handleTerminarEntrega = () => {
 }
 
 const goToMenu = () => {
-  router.push('/menu')
+  router.push('/alistamiento')
 }
 
 
 const handleMaterialClick = (entrega, posOt, totalpos) => {
-   loadingText.value = "xxxxxxxxxx"
+  loadingText.value = "xxxxxxxxxx"
   showLoader()
   router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}`)
 }
@@ -134,14 +137,39 @@ const getAcumulado = async (entrega, posOt, ot) => {
   return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
 
 }
+const getGestionEntrega = async (entrega) => {
+  const gestion = await InfoEntrega.getGestion(entrega);
+  let gestionData;
+  let horaFull  ; 
+  if (gestion.status == 200) {
+     gestionData = gestion.data.data;
+     horaFull    = gestionData.find(detalle => detalle.DescAccion === 'Hora Inicio alistamiento')?.Valor;
+     if (horaFull === "Pendiente de Registro") {
+      let registroFechaHora  = await InfoEntrega.RegisterAccionFechahora(entrega);
+      if(registroFechaHora.status == 200){
+        gestionData = gestion.data.data;
+        horaFull = gestionData.split('/')
+        horaInicioAlistamiento.value = horaFull[0].replace('Fecha Registrada :', '')
+      }
+
+    } else {
+      horaFull = horaFull.split('/')
+      horaInicioAlistamiento.value = horaFull[0].replace('Fecha Registrada :', '')
+      console.log(horaInicioAlistamiento.value)
+    }
+  }
+
+
+}
 
 onMounted(async () => {
   try {
-    
+
     entre.value = route.params.entrega
     getDetallesEntrega(entre.value)
     console.log('Número de entrega:', entre.value)
-   
+    getGestionEntrega(entre.value)
+
   } catch (error) {
     console.error('Error al cargar los materiales:', error)
     hideLoader()

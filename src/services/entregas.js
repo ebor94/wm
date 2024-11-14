@@ -62,5 +62,63 @@ export const InfoWm = {
       { headers: headers }
     );
 
+  },
+
+
+
+  
+}
+
+
+export const InfoEntrega = {
+  async getGestion(entrega){
+
+    return axios.post(`${domain}/transporte/listaAcciones/`,{
+      "codDestinatario": "A1",
+      "codTipoDoc": "EN",
+      "ordNo": entrega,
+      "campoLibre4": null,
+      "campoLibre2": null
+  },{ headers: headers });
+  },
+
+  async RegisterAccionFechahora(entrega){
+    let fecha = GetDateHour("F");
+    let hora = GetDateHour("H");
+
+    return axios.post(`${domain}/transporte/grabarAccionFecha`,{
+      "codDestinatario": "A1",
+      "codTipoDoc": "EN",
+      "docNo": entrega,
+      "fecha": fecha,
+      "hora": hora,
+      "accion": "00003",
+      "usuario": localStorage.getItem('user')
+    },{ headers: headers })
   }
+}
+
+
+
+
+function GetDateHour(bandera) {
+  const ahora = new Date();
+  let response = '';
+  const año = ahora.getFullYear();
+  const mes = ahora.getMonth() + 1; // Los meses van de 0 a 11
+  const dia = ahora.getDate();
+  const hora = ahora.getHours();
+  const minutos = ahora.getMinutes();
+  const segundos = ahora.getSeconds();
+
+  if (bandera === 'F') {
+    response = `${año}-${mes}-${dia}`;
+  }
+  if (bandera === 'H') {
+    response = `${hora}:${minutos}:${segundos}`;
+  }
+
+  return response;
+
+
 }
