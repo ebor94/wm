@@ -75,7 +75,19 @@
         Volver
       </button>
     </div>
-    <LoaderComponent v-if="isLoading" loading-text="Cargando Lista Materiales..." />
+    <LoaderComponent 
+    v-if="isLoading" loading-text="Cargando..." />
+    <BasePopup
+     v-model="showPopup"
+     :title="popupTitle" 
+     :message="popupMessage" 
+     :type=popupType 
+     :action="popupAction" 
+     confirmText="Aceptar"
+     :showConfirm="true" 
+     @confirm="handlePopupConfirm"
+     @update="handlePopupUpdate"
+      />
 
     <!-- Footer -->
     <footer class="bg-gray-200 p-2 text-center text-gray-600 text-sm">
@@ -90,6 +102,7 @@ import { ref, onMounted } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
 import { infoDespachos, InfoEntrega } from '../../services/entregas'
 import { useLoader } from '../../composables/useLoader';
+import BasePopup from '../../components/BasePopup.vue';
 
 
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
@@ -99,11 +112,57 @@ const store = UseDespachoStore()
 const entre = ref('')
 const entregaDetalles = ref([])
 const horaInicioAlistamiento = ref('')
+const showPopup = ref(false);
+const popupTitle = ref('');
+const popupMessage = ref('');
+const popupType = ref('');
+const popupAction = ref('normal')
 
 const handleTerminarEntrega = async () => {
   // Implementar lógica para terminar entrega
-  const finishOrder = await InfoEntrega.finishOrder(entre.value);
-  console.log('Terminando entrega...')
+  try {
+    showLoader()
+    const finishOrder = await InfoEntrega.finishOrder(entre.value,"");
+    if(finishOrder.status == 200){
+      switch (finishOrder.data[0].message) {
+      case 'NO EXISTE INFORMACION DE ALISTAMIENTO':
+      hideLoader()
+      popupTitle.value = 'Estado De Registro';
+      popupMessage.value = "NO EXISTE INFORMACION DE ALISTAMIENTO"
+      showPopup.value = true;
+      popupType.value = 'info' 
+      popupAction.value = 'normal'
+        break     
+      case 'OK':
+      hideLoader()
+      popupTitle.value = 'Estado De Registro';
+      popupMessage.value = "CONFIRMACION EXITOSA"
+      showPopup.value = true;
+      popupType.value = 'success' 
+      popupAction.value = 'normal'
+        break       
+    
+      default:
+      hideLoader()
+      popupTitle.value = 'Estado De Registro';
+      popupMessage.value = finishOrder.data[0].message
+      showPopup.value = true;
+      popupType.value = 'warning' 
+      popupAction.value = 'normal'
+    }
+
+    }
+    hideLoader()
+  } catch (error) {
+    hideLoader()
+      popupTitle.value = 'ERROR catch';
+      popupMessage.value = error
+      showPopup.value = true;
+      popupType.value = 'error' 
+      popupAction.value = 'normal'
+  }
+ 
+
 }
 
 const goToMenu = () => {
