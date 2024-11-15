@@ -1,124 +1,126 @@
 <template>
-    <div class="min-h-screen flex flex-col bg-white">
-      <!-- Header -->
-      <header class="bg-gray-100 border-b p-4">
-        <h1 class="text-center text-gray-800 text-lg font-semibold">
-          Listado material - por ubicación
-        </h1>
-      </header>
-  
-      <main class="flex-1 p-4 flex flex-col space-y-4">
-        <!-- Ubicación a consultar -->
-        <div class="space-y-2">
-          <label class="text-sm text-gray-600">Ubicación a consultar</label>
-          <div class="relative">
-            <input
-              v-model="ubicacionConsulta"
-              type="text"
-              placeholder="B18PRODF21"
-              class="w-full p-3 bg-white border rounded-lg focus:ring-2 focus:ring-italia-red focus:border-italia-red text-gray-800 text-lg"
-            />
-            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <i class="material-icons">search</i>
-            </span>
-          </div>
-        </div>
-  
-        <!-- Lista de Materiales -->
-        <div class="flex-1 space-y-4 overflow-auto">
-          <!-- Primer Material -->
-          <div class="border rounded-lg p-4 space-y-3 bg-gray-50">
-            <h3 class="font-bold text-gray-800">STELVIO GREY 19.3X118.4 PRIMERA RECT</h3>
-            
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p class="text-gray-600">B18PRODF21</p>
-                <p class="text-gray-600">Lote: 0000015272</p>
-              </div>
-              <div class="text-right">
-                <p class="font-semibold text-green-600">Existencia: 164.160 M²</p>
-                <p class="font-semibold text-blue-600">Disponible: 164.160 M²</p>
-              </div>
-            </div>
-            
-            <div class="text-gray-500 text-sm">
-              Doc: -
-            </div>
-          </div>
-  
-          <!-- Segundo Material -->
-          <div class="border rounded-lg p-4 space-y-3 bg-gray-50">
-            <h3 class="font-bold text-gray-800">LIBANO CAFE 19.3X118.4 PRIMERA DUAL RECT</h3>
-            
-            <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p class="text-gray-600">B18PRODF21</p>
-                <p class="text-gray-600">Lote: 0000015972</p>
-              </div>
-              <div class="text-right">
-                <p class="font-semibold text-green-600">Existencia: 820.800 M²</p>
-                <p class="font-semibold text-blue-600">Disponible: 820.800 M²</p>
-              </div>
-            </div>
-            
-            <div class="text-gray-500 text-sm">
-              Doc: -
-            </div>
-          </div>
-  
-          <!-- Totales -->
-          <div class="border-t pt-4 mt-4">
-            <div class="grid grid-cols-2 gap-4 font-semibold text-gray-800">
-              <div>Total Metros:</div>
-              <div class="text-right">984.960</div>
-              <div>TOTAL DISPONIBLE:</div>
-              <div class="text-right">984.960</div>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Ubicación Destino -->
-        <div class="space-y-2 pt-4 border-t">
-          <label class="text-sm text-gray-600">Ubicación Destino</label>
+  <div class="min-h-screen flex flex-col bg-slate-900">
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4">
+      <h1 class="text-center text-white text-lg font-semibold">
+        Listado material - por ubicación
+      </h1>
+    </header>
+ 
+    <main class="flex-1 p-4 flex flex-col space-y-4">
+      <!-- Ubicación a consultar -->
+      <div class="space-y-2">
+        <label class="text-sm text-slate-300">Ubicación a consultar</label>
+        <div class="relative">
           <input
-            v-model="ubicacionDestino"
+            v-model="ubicacionConsulta"
             type="text"
-            placeholder="Ubicación Destino"
-            class="w-full p-3 bg-white border rounded-lg focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+            placeholder="B18PRODF21"
+            class="w-full p-3 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-lg placeholder-slate-500"
           />
+          <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+            <i class="material-icons">search</i>
+          </span>
         </div>
-  
-        <!-- Botones de Acción -->
-        <div class="grid grid-cols-2 gap-4 pt-4">
-          <button 
-            @click="consultarUbicacion"
-            class="flex items-center justify-center gap-2 bg-italia-red text-white py-3 px-6 rounded-lg hover:bg-red-700"
-          >
-            <span class="material-icons">search</span>
-            Consultar Ubicación
-          </button>
+      </div>
+ 
+      <!-- Lista de Materiales -->
+      <div class="grid grid-cols-1 gap-4 auto-rows-min">
+        <!-- Material Card -->
+        <div class="border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800">
+          <h3 class="font-bold text-white">STELVIO GREY 19.3X118.4 PRIMERA RECT</h3>
           
-          <button 
-            @click="vaciarUbicacion"
-            class="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 border"
-          >
-            <span class="material-icons">delete_outline</span>
-            Vaciar Ubicación
-          </button>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-slate-400">B18PRODF21</p>
+              <p class="text-slate-400">Lote: 0000015272</p>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-emerald-400">Existencia: 164.160 M²</p>
+              <p class="font-semibold text-blue-400">Disponible: 164.160 M²</p>
+            </div>
+          </div>
+          
+          <div class="text-slate-500 text-sm">
+            Doc: -
+          </div>
         </div>
-  
-        <!-- Botón Volver -->
+ 
+        <!-- Second Material Card -->
+        <div class="border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800">
+          <h3 class="font-bold text-white">LIBANO CAFE 19.3X118.4 PRIMERA DUAL RECT</h3>
+          
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p class="text-slate-400">B18PRODF21</p>
+              <p class="text-slate-400">Lote: 0000015972</p>
+            </div>
+            <div class="text-right">
+              <p class="font-semibold text-emerald-400">Existencia: 820.800 M²</p>
+              <p class="font-semibold text-blue-400">Disponible: 820.800 M²</p>
+            </div>
+          </div>
+          
+          <div class="text-slate-500 text-sm">
+            Doc: -
+          </div>
+        </div>
+ 
+        <!-- Totales -->
+        <div class="border-t border-slate-700 pt-4 mt-4">
+          <div class="grid grid-cols-2 gap-4 font-semibold text-white">
+            <div>Total Metros:</div>
+            <div class="text-right">984.960</div>
+            <div>TOTAL DISPONIBLE:</div>
+            <div class="text-right">984.960</div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Ubicación Destino -->
+      <div class="space-y-2 pt-4 border-t border-slate-700">
+        <label class="text-sm text-slate-300">Ubicación Destino</label>
+        <input
+          v-model="ubicacionDestino"
+          type="text"
+          placeholder="Ubicación Destino"
+          class="w-full p-3 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-500"
+        />
+      </div>
+ 
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-2 gap-4 pt-4">
         <button 
-          @click="volver"
-          class="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 border"
-        >
-          <span class="material-icons">arrow_back</span>
-          Volver
+          @click="consultarUbicacion"
+          
+          class="flex items-center justify-center gap-2 bg-italia-red text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors">
+     
+          <span class="material-icons">search</span>
+          Consultar Ubicación
         </button>
-      </main>
-    </div>
-  </template>
-  
+        
+        <button 
+          @click="vaciarUbicacion"
+          class="flex items-center justify-center gap-2 bg-slate-700 text-white py-3 px-6 rounded-lg hover:bg-slate-600 transition-colors border border-slate-600"
+        >
+          <span class="material-icons">delete_outline</span>
+          Vaciar Ubicación
+        </button>
+      </div>
+ 
+      <!-- Back Button -->
+      <button 
+        @click="volver"
+        class="w-full flex items-center justify-center gap-2 bg-slate-800 text-white py-3 px-6 rounded-lg hover:bg-slate-700 transition-colors border border-slate-700"
+      >
+        <span class="material-icons">arrow_back</span>
+        Volver
+      </button>
+    </main>
+  </div>
+ </template>
+ 
+
   <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'

@@ -37,7 +37,7 @@ export const InfoWm = {
     let centro            = '1100' ;
     let almacen           = '1101' ;
     let bandera           = '2' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${centro}/${ubicacionDestino}/${almacen}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
 
   async RegistryPicking(entrega,posicion,material,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,TPLECTURA){
@@ -62,6 +62,29 @@ export const InfoWm = {
       { headers: headers }
     );
 
+  },
+
+  async GetInfoLocationMaterialBach(material,lote,pallet){
+    let ubicacionOrigen   = 'x'
+    let ubicacionDestino  = 'x';
+    let cantidad          = 'x';
+    let codsap            = material.slice(-6)
+    let loteDestino       = 'x';
+    let usuario           = 'x';
+    let centro            = '1100' ;
+    let almacen           = '1101' ;
+    let bandera           = '2' ;    
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+  },
+
+  async MoveMaterial(material,lote,pallet,cantidad, ubicacionOrigen, ubicacionDestino){    
+    let codsap            = material.slice(-6)
+    let loteDestino       = 'x';
+    let usuario           = localStorage.getItem('user');
+    let centro            = '1100' ;
+    let almacen           = '1101' ;
+    let bandera           = '1' ;    
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
 
 }

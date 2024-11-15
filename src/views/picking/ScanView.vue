@@ -44,7 +44,7 @@
            v-model="scanValue"
            :disabled="isManualMode" 
            @change="handleChangeScan"
-           @keyup.enter="handleEnterScan"
+           @keyup.enter="handleChangeScan"
            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
            placeholder="Escanee o ingrese el valor" />
         </div>
