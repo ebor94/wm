@@ -124,6 +124,7 @@
   <script setup>
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import { InfoWm } from '../services/entregas';
   
   const router = useRouter()
   
@@ -132,8 +133,17 @@
   const ubicacionDestino = ref('')
   
   // Funciones
-  const consultarUbicacion = () => {
-    console.log('Consultando ubicación:', ubicacionConsulta.value)
+  const consultarUbicacion = async () => {
+    try {
+      console.log('Consultando ubicación:', ubicacionConsulta.value)
+      const StockLocation = await InfoWm.SerachLocationStockAvailable(ubicacionConsulta.value);
+      console.log(StockLocation)
+      
+    } catch (error) {
+      console.log('Consultando ubicación:', error)
+      
+    }
+   
   }
   
   const vaciarUbicacion = () => {

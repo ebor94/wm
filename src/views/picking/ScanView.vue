@@ -257,6 +257,12 @@ const handleManual = async () => {
  
 }
 
+const resetFields = async () => {
+  scanValue.value ='';
+  goodQuantity.value = '';
+  goodQuantityInput.value = '';
+}
+
 const RegistrarPicking = async () =>{
   let entrega     =  entregaPicking.value;  
   let posicion    =  "000000";
@@ -275,7 +281,7 @@ const RegistrarPicking = async () =>{
 
 
   const regPicking = await InfoWm.RegistryPicking(entrega,posicion,materialx,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,tplectura)
-  //console.log(regPicking.data.data[0])
+  console.log(regPicking.data.data[0])
 
   let mensaje = regPicking.data.data[0].mensaje;
   if (mensaje == "RESGISTRO EXITOSO"){
@@ -298,9 +304,19 @@ const RegistrarPicking = async () =>{
     vibrate()
     
 
+  }else{
+    hideLoader()
+    acumulado.value = regPicking.data.data[0].acumulado + acumulado.value 
+    idRegistro.value = regPicking.data.data[0].id
+    popupTitle.value = 'Estado De Registro';
+    popupMessage.value = mensaje
+    showPopup.value = true;
+    popupType.value = 'warning' 
+    popupAction.value = 'normal'
+
   }
 
-
+  resetFields();
 }
 
 const handleBack = () => {
@@ -359,7 +375,7 @@ const validaformulario = () => {
   }
 
   let  total =  acumulado.value + goodQuantity.value + brokenQuantity.value
-  if(total > totalPos.value) {      
+ if(total > totalPos.value) {      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `excede cantidad acumulada, no permitido`;
     showPopup.value = true;
@@ -532,7 +548,7 @@ onMounted(async () => {
   try {
     let entrega = route.params.entrega
     entregaPicking.value = entrega
-    totalPos.value = route.params.totalPos
+    totalPos.value = Number(route.params.totalPos)
 
     const detalleEntrega = store.detalleEntregas.find(detalle =>
       detalle.entrega === entrega
