@@ -286,7 +286,7 @@ const RegistrarPicking = async () =>{
   let mensaje = regPicking.data.data[0].mensaje;
   if (mensaje == "RESGISTRO EXITOSO"){
     hideLoader()
-    acumulado.value = regPicking.data.data[0].acumulado + acumulado.value 
+    acumulado.value = Number(regPicking.data.data[0].acumulado) + acumulado.value 
     idRegistro.value = regPicking.data.data[0].id
     popupTitle.value = 'Estado De Registro';
     popupMessage.value = mensaje
@@ -306,7 +306,7 @@ const RegistrarPicking = async () =>{
 
   }else{
     hideLoader()
-    acumulado.value = regPicking.data.data[0].acumulado + acumulado.value 
+    acumulado.value = Number(regPicking.data.data[0].acumulado) + acumulado.value 
     idRegistro.value = regPicking.data.data[0].id
     popupTitle.value = 'Estado De Registro';
     popupMessage.value = mensaje
@@ -458,7 +458,7 @@ async function GetPalletQuantity(pallet) {
 const getAcumulado = async (entrega, posOt, ot) => {
   const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
   //console.log(responseDespachos)
-  return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
+  return responseDespachos.data.success ?  parseFloat(responseDespachos.data.data[0].acumulado) : 0
 
 }
 

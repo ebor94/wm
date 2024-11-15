@@ -27,17 +27,18 @@
       <!-- Lista de Materiales -->
       <div class="grid grid-cols-1 gap-4 auto-rows-min">
         <!-- Material Card -->
-        <div class="border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800">
-          <h3 class="font-bold text-white">STELVIO GREY 19.3X118.4 PRIMERA RECT</h3>
+        <div v-for="locations in stockLocations" :key="locations.ubicacion" 
+        class="border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800">
+          <h3 class="font-bold text-white">{{locations.matnr}}</h3>
           
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p class="text-slate-400">B18PRODF21</p>
-              <p class="text-slate-400">Lote: 0000015272</p>
+              <p class="text-slate-400">{{locations.ubicacion}}</p>
+              <p class="text-slate-400">Lote: {{locations.lote}}</p>
             </div>
             <div class="text-right">
-              <p class="font-semibold text-emerald-400">Existencia: 164.160 M²</p>
-              <p class="font-semibold text-blue-400">Disponible: 164.160 M²</p>
+              <p class="font-semibold text-emerald-400">Existencia: {{locations.existencia}} M²</p>
+              <p class="font-semibold text-blue-400">Disponible: {{locations.disponible}} M²</p>
             </div>
           </div>
           
@@ -46,33 +47,15 @@
           </div>
         </div>
  
-        <!-- Second Material Card -->
-        <div class="border border-slate-700 rounded-lg p-4 space-y-3 bg-slate-800">
-          <h3 class="font-bold text-white">LIBANO CAFE 19.3X118.4 PRIMERA DUAL RECT</h3>
-          
-          <div class="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p class="text-slate-400">B18PRODF21</p>
-              <p class="text-slate-400">Lote: 0000015972</p>
-            </div>
-            <div class="text-right">
-              <p class="font-semibold text-emerald-400">Existencia: 820.800 M²</p>
-              <p class="font-semibold text-blue-400">Disponible: 820.800 M²</p>
-            </div>
-          </div>
-          
-          <div class="text-slate-500 text-sm">
-            Doc: -
-          </div>
-        </div>
+ 
  
         <!-- Totales -->
         <div class="border-t border-slate-700 pt-4 mt-4">
           <div class="grid grid-cols-2 gap-4 font-semibold text-white">
             <div>Total Metros:</div>
-            <div class="text-right">984.960</div>
+            <div class="text-right">{{ disponibleubica }}</div>
             <div>TOTAL DISPONIBLE:</div>
-            <div class="text-right">984.960</div>
+            <div class="text-right">{{totalubica}}</div>
           </div>
         </div>
       </div>
@@ -126,18 +109,23 @@
   import { useRouter } from 'vue-router'
   import { InfoWm } from '../services/entregas';
   
-  const router = useRouter()
-  
+  const router = useRouter();
   // Variables reactivas
-  const ubicacionConsulta = ref('B18PRODF21')
-  const ubicacionDestino = ref('')
+  const ubicacionConsulta = ref('B18PRODF21');
+  const ubicacionDestino = ref('');
+  const stockLocations = ref([]);
+  const totalubica = ref(0);
+  const disponibleubica = ref(0)
   
   // Funciones
   const consultarUbicacion = async () => {
     try {
       console.log('Consultando ubicación:', ubicacionConsulta.value)
       const StockLocation = await InfoWm.SerachLocationStockAvailable(ubicacionConsulta.value);
-      console.log(StockLocation)
+      stockLocations.value =  StockLocation.data.data.datos;
+      disponibleubica.value  = StockLocation.data.data.disponibleubica; 
+      totalubica.value = StockLocation.data.data.totalubica;
+      console.log(StockLocation.data.data)
       
     } catch (error) {
       console.log('Consultando ubicación:', error)

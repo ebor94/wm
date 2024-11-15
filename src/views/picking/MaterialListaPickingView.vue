@@ -6,8 +6,12 @@
         Listado material - Alistamiento
       </h1>
       <div class="text-gray-800 text-lg font-bold text-center">
-        <span class="font-medium"> {{ horaInicioAlistamiento }}</span>
+        <span class="font-medium"> {{ horaInicioAlistamiento }}</span>       
       </div>
+      <div class="text-gray-800 text-lg font-bold text-center">
+         <span class="font-medium"> Total Estibas : {{ totalPallets }}</span>
+      </div>
+     
     </header>
 
     <!-- Main Content -->
@@ -117,6 +121,7 @@ const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
+const totalPallets = ref(0)
 
 const handleTerminarEntrega = async () => {
   // Implementar lógica para terminar entrega
@@ -185,6 +190,7 @@ const getDetallesEntrega = async (numeroEntrega) => {
     for (const material of entregaDetalles.value) {
       const acumulado = await getAcumulado(material.vbeln, material.tapos, material.tanum)
       material.acumulado = Number(acumulado)
+      totalPallets.value = totalPallets.value + Number(material.cantestb)
     }
   }
 }
