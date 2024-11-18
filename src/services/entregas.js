@@ -96,7 +96,19 @@ export const InfoWm = {
     let pallet            = 'x';
     let centro            = '1100' ;
     let almacen           = '1101' ;
-    let bandera           = '6 ' ;    
+    let bandera           = '6' ;    
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+  },
+  async ClearLocationStockAvailable(ubicacionOrigen,ubicacionDestino){    
+    let cantidad          = 'x';
+    let codsap            = 'x';
+    let loteDestino       = 'x';
+    let lote              = 'x';
+    let usuario           = 'x';
+    let pallet            = 'x';
+    let centro            = '1100' ;
+    let almacen           = '1101' ;
+    let bandera           = '7' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
 
