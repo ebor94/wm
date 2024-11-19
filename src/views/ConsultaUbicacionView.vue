@@ -165,7 +165,9 @@ const vaciarUbicacion = async() => {
   } catch (error) {
     console.log('vaciando ubicación:', error)
   } finally {
+    ubicacionDestino.value = '';
     hideLoader()
+    await consultarUbicacion()
   }
 
 }
