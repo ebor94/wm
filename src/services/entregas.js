@@ -111,6 +111,20 @@ export const InfoWm = {
     let bandera           = '7' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
+  async GetInfoMaterialAvailable(material){    
+    let ubicacionOrigen   = 'x'
+    let ubicacionDestino  = 'x';
+    let cantidad          = 'x';
+    let codsap            = material;
+    let loteDestino       = 'x';
+    let lote              = 'x';
+    let usuario           = 'x';
+    let pallet            = 'x';
+    let centro            = '1100' ;
+    let almacen           = '1101' ;
+    let bandera           = '10' ;    
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+  },
 
 }
 
