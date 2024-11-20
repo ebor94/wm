@@ -125,6 +125,21 @@ export const InfoWm = {
     let bandera           = '10' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
+  async GetOtPending(user){
+    let data = {
+      "alacenwm": "110",
+      "tipoAlmacen": "920"
+  }
+
+   let response =  axios.post(`${domain}/transporte/lt22`,data,{headers: headers})
+
+   
+
+    return response 
+    }
+   
+
+
 
 }
 

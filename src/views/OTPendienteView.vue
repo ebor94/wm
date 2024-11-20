@@ -8,40 +8,40 @@
       </header>
   
       <!-- Main Content -->
-      <main class="flex-1 p-4 space-y-4">
+      <main class="flex-1 p-4 bg-gray-800 text-white space-y-4">
         <!-- Lista de Pallets con Collapse -->
         <div class="space-y-3">
           <div 
             v-for="pallet in pallets" 
-            :key="pallet.id"
+            :key="pallet.consecutivo"
             class="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <!-- Cabecera del Pallet (Siempre visible) -->
             <div 
-              @click="togglePallet(pallet.id)"
+              @click="togglePallet(pallet.consecutivo)"
               class="p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50"
             >
               <div class="flex items-center space-x-2">
                 <span class="material-icons text-gray-500">
-                  {{ expandedPallet === pallet.id ? 'expand_less' : 'expand_more' }}
+                  {{ expandedPallet === pallet.consecutivo ? 'expand_less' : 'expand_more' }}
                 </span>
-                <span class="font-medium text-gray-700">pallet: {{ pallet.numero }}</span>
+                <span class="font-medium text-gray-700">pallet: {{ pallet.consecutivo }}</span>
               </div>
               <span class="material-icons text-red-500">close</span>
             </div>
   
             <!-- Contenido Colapsable -->
             <div 
-              v-show="expandedPallet === pallet.id"
+              v-show="expandedPallet === pallet.consecutivo"
               class="border-t bg-blue-50"
             >
               <div class="p-4 space-y-3">
                 <!-- Detalles del Material -->
                 <div class="space-y-2">
-                  <h3 class="text-blue-600 font-medium">{{ pallet.material }}</h3>
+                  <h3 class="text-blue-600 font-medium">{{ pallet.maktx }}</h3>
                   <div class="flex items-center space-x-2">
                     <span class="text-sm text-gray-600">Lote:</span>
-                    <span class="text-sm font-medium">{{ pallet.lote }}</span>
+                    <span class="text-sm font-medium text-gray-700">{{ pallet.charg }}</span>
                     <span class="material-icons text-green-500 text-sm">check_circle</span>
                   </div>
                 </div>
@@ -50,7 +50,7 @@
                 <div class="space-y-1">
                   <div class="flex items-center space-x-2">
                     <span class="text-sm text-gray-600">OT:</span>
-                    <span class="text-sm font-medium">{{ pallet.ot }}</span>
+                    <span class="text-sm font-medium text-gray-700">{{ pallet.tanum }}</span>
                   </div>
                   <div class="text-sm text-gray-700">
                     <span class="text-gray-600">Usuario:</span> {{ pallet.usuario }}
@@ -63,10 +63,10 @@
       </main>
   
       <!-- Footer con Botón de Volver -->
-      <footer class="p-4 border-t bg-white">
+      <footer class="p-4 border-t bg-gray-800">
         <button 
           @click="volver"
-          class="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-full hover:bg-gray-200 transition-colors"
+          class="w-full flex items-center justify-center space-x-2 bg-italia-red text-white py-3 px-6 rounded-full hover:bg-gray-200 hover:text-gray-600 transition-colors"
         >
           <span class="material-icons">arrow_back</span>
           <span>Volver</span>
@@ -80,78 +80,15 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import { InfoWm } from '../services/entregas';
   
   const router = useRouter()
   const expandedPallet = ref(null)
   
   // Lista de pallets con datos completos
-  const pallets = ref([
-    {
-      id: 1,
-      numero: '1986988',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 2,
-      numero: '1987100',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 3,
-      numero: '1987150',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 4,
-      numero: '1987188',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 5,
-      numero: '1987200',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 6,
-      numero: '1987276',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    },
-    {
-      id: 7,
-      numero: '1988800',
-      material: 'GINEVRA 60X60 CYR PRIMERA',
-      lote: '0000015743',
-      ot: '289934',
-      usuario: 'Jorge Elias Sanchez Ortega',
-      estado: 'pendiente'
-    }
-  ])
+  const pallets = ref([])
   
   // Función para manejar el collapse
   const togglePallet = (palletId) => {
@@ -165,6 +102,11 @@
   const volver = () => {
     router.back()
   }
+
+  onMounted( async () => {
+    const listOt = await InfoWm.GetOtPending(localStorage.getItem('user'));
+    pallets.value = listOt.data;    
+  })
   </script>
   
   <style scoped>
