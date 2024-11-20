@@ -75,6 +75,10 @@
         <div class="text-center text-sm text-gray-500 mt-4">
           Cerámica Italia ©2024
         </div>
+        <loader-component 
+     v-if="isLoading"
+     :loading-text="loadingText"
+      />
       </footer>
     </div>
   </template>
@@ -83,6 +87,9 @@
   import { onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { InfoWm } from '../services/entregas';
+  import { useLoader } from '../composables/useLoader'
+
+const { isLoading, loadingText, showLoader, hideLoader } = useLoader()  
   
   const router = useRouter()
   const expandedPallet = ref(null)
@@ -104,8 +111,16 @@
   }
 
   onMounted( async () => {
-    const listOt = await InfoWm.GetOtPending(localStorage.getItem('user'));
-    pallets.value = listOt.data;    
+    showLoader('Consultando Pallets...')
+    try {
+      const listOt = await InfoWm.GetOtPending(localStorage.getItem('user'));
+      pallets.value = listOt.data;  
+    } catch (error) {
+      
+    }finally{
+      hideLoader();
+    }
+  
   })
   </script>
   
