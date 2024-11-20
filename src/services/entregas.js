@@ -131,13 +131,14 @@ export const InfoWm = {
       "tipoAlmacen": "920"
   }
 
-   let response =  axios.post(`${domain}/transporte/lt22`,data,{headers: headers})
-
-   
-
+   let response = await axios.post(`${domain}/transporte/lt22`,data,{headers: headers})    
+      response.data.forEach(async(order) => {
+      let userName = await axios.get(`${domain}/corporativo/empleado/${order.usuario}`)
+      order.username = userName.data.data[0].NombreEmpleado
+      })
+      
     return response 
     }
-   
 
 
 

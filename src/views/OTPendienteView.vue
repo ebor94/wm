@@ -53,7 +53,7 @@
                     <span class="text-sm font-medium text-gray-700">{{ pallet.tanum }}</span>
                   </div>
                   <div class="text-sm text-gray-700">
-                    <span class="text-gray-600">Usuario:</span> {{ pallet.usuario }}
+                    <span class="text-gray-600">Usuario:</span> {{ pallet.username }}
                   </div>
                 </div>
               </div>
