@@ -114,12 +114,12 @@ const {  loadingText, showLoader, hideLoader } = useLoader()
 
 const filtrarDespachosCargue = (despachos) => {
   return despachos.filter(despacho => 
-    despacho.ordenes.some(orden => orden.accion === "Cargue")
+    despacho.ordenes.some(orden => orden.accion === "Cargar")
   )
 }
 
 const filtrarOrdenesCargue = (ordenes) => {
-  return ordenes.filter(orden => orden.accion === "Cargue")
+  return ordenes.filter(orden => orden.accion === "Cargar")
 }
   
 const handleListMaterial = (id) => {

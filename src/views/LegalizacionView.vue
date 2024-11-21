@@ -14,6 +14,7 @@
         <div class="w-full">
           <label class="text-xs font-bold text-white">Etiqueta</label>
           <input v-model="formData.etiqueta" type="text"
+                  @keyup.enter="handleEnterScan"
              class="w-full p-2 bg-slate-800 border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm placeholder-slate-500" />
         </div>
 
@@ -22,7 +23,7 @@
           <!-- Código -->
           <div>
             <label class="text-xs font-bold text-white">Código</label>
-            <input v-model="formData.codigo" type="text"
+            <input v-model="formData.material" type="text"
                class="w-full p-2 bg-slate-800 border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm placeholder-slate-500" />
           </div>
 
@@ -137,7 +138,7 @@ const router = useRouter()
 
 const formData = ref({
   etiqueta: '', // Nuevo campo añadido
-  codigo: '',
+  material: '',
   lote: '',
   numeroEstiba: '',
   cantidad: '',
@@ -163,6 +164,18 @@ const handlePendienteTraslado = () => {
 
 const handleSubmit = () => {
   console.log('Form submitted:', formData.value)
+}
+const  handleEnterScan = () => {
+  console.log('Form submitted:', formData.value)
+  divideEtiquetas(formData.value.etiqueta)
+}
+const divideEtiquetas = (codigo) => {
+  codigo = codigo.trim()
+  formData.value.material = codigo.slice(0, 18);       // " 000000000000203080000001566000001990534"   
+  formData.value.lote = codigo.slice(18, 28);          // "0000012280"
+  formData.value.numeroEstiba = codigo.slice(-10) ; //0001990534
+
+
 }
 </script>
 
