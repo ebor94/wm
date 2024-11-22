@@ -182,6 +182,17 @@ export const InfoEntrega = {
   }
 }
 
+export const InfoProduct = {
+
+ async GetInfoPallet(pallet,lote,material){
+
+  return axios.get(`${domain}/producto/infopallet/${pallet}/${lote}/${material}`, { headers: headers })
+
+ }
+
+
+}
+
 
 
 

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <!-- Header - Reducido el padding -->
-    <header class="bg-gray-800 text-white p-2">
+    <header class="bg-italia-red text-white p-2">
       <h1 class="text-center text-lg font-bold">
         LEGALIZACION
       </h1>
@@ -16,7 +16,11 @@
           <input v-model="formData.etiqueta" type="text"
                   @keyup.enter="handleEnterScan"
              class="w-full p-2 bg-slate-800 border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm placeholder-slate-500" />
-        </div>
+             <input disabled v-model="formData.nameMaterial" type="text"
+                  @keyup.enter="handleEnterScan"
+             class="w-full p-2 bg-slate-800 border border-slate-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white text-sm placeholder-slate-500" />
+           
+            </div>
 
         <!-- Grid de 2 columnas para el resto de campos -->
         <div class="grid grid-cols-2 gap-2">
@@ -125,13 +129,21 @@
       </div>
     </footer>
     <TrasladoModal :isOpen="showTrasladoModal" @close="showTrasladoModal = false" />
+    <loader-component 
+     v-if="isLoading"
+     :loading-text="loadingText"
+      />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { InfoProduct } from '../services/entregas'
 import TrasladoModal from '../components/TrasladoModal.vue'
+import { useLoader } from '../composables/useLoader'
+
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoader() 
 
 const showTrasladoModal = ref(false)
 const router = useRouter()
@@ -147,7 +159,8 @@ const formData = ref({
   destino: '',
   calidad: '',
   peso: '',
-  usuario: ''
+  usuario: localStorage.getItem('user'),
+  nameMaterial:''
 })
 
 const handleRegistroAutomatico = () => {
@@ -165,9 +178,19 @@ const handlePendienteTraslado = () => {
 const handleSubmit = () => {
   console.log('Form submitted:', formData.value)
 }
-const  handleEnterScan = () => {
-  console.log('Form submitted:', formData.value)
+const  handleEnterScan = async () => {
+  showLoader('Cargando datos....')
   divideEtiquetas(formData.value.etiqueta)
+  try {
+    let response =  await InfoProduct.GetInfoPallet(formData.value.numeroEstiba,formData.value.lote, formData.value.material)
+    formData.value.cantidad = response.data.data.cantmts
+    formData.value.nameMaterial = response.data.data.descripcion
+    console.log(response.data.data)
+  } catch (error) {
+    
+  }finally{
+    hideLoader()
+  }
 }
 const divideEtiquetas = (codigo) => {
   codigo = codigo.trim()
