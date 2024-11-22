@@ -1,11 +1,11 @@
 <template>
-    <div class="min-h-screen flex flex-col bg-gray-50">
+    <div class="min-h-screen flex flex-col bg-gray-800">
       <!-- Header -->
-      <header class="bg-gray-200 p-4">
-        <h1 class="text-center text-gray-800 text-lg font-bold">
-          ORDENES DE TRANSPORTE
-        </h1>
-      </header>
+      <header class="bg-italia-red text-white p-2">
+      <h1 class="text-center text-lg font-bold">
+        Lista Ordenes de Transporte
+      </h1>
+    </header>
   
       <!-- Main Content -->
       <main class="flex-1 p-4 space-y-4">
@@ -61,21 +61,12 @@
                 Confirmar OT completa
               </button>
           </div>
+          <LoaderComponent 
+     v-if="isLoading"
+     :loading-text="loadingText"
+      />
         </div>
   
-        <!-- Segunda Orden -->
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div 
-            @click="toggleOrden('orden2')"
-            class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-          >
-             <!-- Contenido Colapsable -->
-          
-           
-          </div>
-  
-       
-        </div>
       </main>
   
       <!-- Footer -->
@@ -96,19 +87,36 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  
+  import { ref, onMounted } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useLoader } from '../composables/useLoader'
+  const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
+
   const router = useRouter()
+  const route = useRoute()
   const expandedOrden = ref(null)
-  
+  const entre = ref('')
   const toggleOrden = (ordenId) => {
     expandedOrden.value = expandedOrden.value === ordenId ? null : ordenId
   }
+
+ 
   
   const volver = () => {
     router.back()
   }
+
+  onMounted(async () => {
+    showLoader("cargando OT....")
+    try {
+      entre.value = route.params.entrega
+    } catch (error) {
+      
+    }finally{
+      hideLoader();
+    }
+   
+ })
   </script>
   
   <style scoped>

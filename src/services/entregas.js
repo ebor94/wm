@@ -138,7 +138,13 @@ export const InfoWm = {
       })
       
     return response 
+    },
+
+    async GetListOtOrder(entrega){
+      
     }
+
+
 
 
 

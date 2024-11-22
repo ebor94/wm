@@ -63,7 +63,7 @@ const router = createRouter({
         component: () => import('../views/LegalizacionView.vue')
       },
       {
-        path: '/orden-transporte/:id',
+        path: '/orden-transporte/:entrega/',
         name: 'orden-transporte',
         component: () => import('../views/OrdenTransporteView.vue')
       },
