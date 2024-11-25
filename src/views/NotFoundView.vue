@@ -3,7 +3,7 @@
       <!-- Logo Container -->
       <div class="mb-8">
         <img 
-          src="../assets/log.png" 
+          src="../assets/logo.png" 
           alt="LogiCIT" 
           class="h-16 mb-2"
         />
@@ -59,7 +59,7 @@
   const router = useRouter()
   
   const goToHome = () => {
-    router.push('/')
+    router.push('/pickapp')
   }
   
   const goBack = () => {

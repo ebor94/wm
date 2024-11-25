@@ -43,10 +43,10 @@
                 @click="handleListMaterial(orden.entrega)">
                 {{ getEstadoEntrega(orden.entrega)?.mensaje || 'Sin estado' }}
               </button>
-              <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
+              <!-- <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                 @click="handleGestionEntrega(orden.entrega)">
                 Gestion Entrega
-              </button>
+              </button> -->
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                 @click="handleVerOrden(orden.entrega)">
                 Ver Orden de Transporte
