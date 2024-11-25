@@ -6,6 +6,7 @@ import { authService } from '../services/auth'
 export const useAuthStore = defineStore('auth', {
     state: () => ({
       user: null,
+      nameUser: null,
       token: null,
       isAuthenticated: false,
       loading: false,
@@ -24,6 +25,8 @@ export const useAuthStore = defineStore('auth', {
               this.isAuthenticated = true
               
               // Guardar en localStorage
+              localStorage.setItem('NameUser', response[0].nombre)
+              this.nameUser = response[0].nombre;
               localStorage.setItem('user', username)
               localStorage.setItem('isAuthenticated', 'true')
               

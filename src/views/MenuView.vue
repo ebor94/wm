@@ -13,7 +13,7 @@
       <main class="flex-1 bg-gray-800 p-4 flex flex-col">
         <!-- Nombre de Usuario y Mensaje -->
         <div class="bg-gray-300 rounded-lg p-4 mb-4 text-center">
-          <div class="text-gray-700 font-bold">OSCAR SANCHEZ</div>
+          <div class="text-gray-700 font-bold">{{ authStore.nameUser || 'Usuario' }}</div>
           <div class="text-gray-600">Por favor seleccione</div>
         </div>
   
