@@ -198,7 +198,6 @@ const handleAccept = async  () => {
     localStorage.setItem('ubicacionDestino', formData.value.ubicacionDestino)
     hideLoader();
     response.status == 200 ? popupType.value = 'success'  : popupType.value = 'info'     
-    console.log(response.data)
     popupTitle.value = 'Resultado';
     popupMessage.value = response.data.data.mensaje
     showPopup.value = true;    

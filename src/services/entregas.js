@@ -141,7 +141,7 @@ export const InfoWm = {
     },
 
     async GetListOtOrder(entrega){
-      
+
     }
 
 
@@ -185,7 +185,37 @@ export const InfoEntrega = {
       "ot": Ot,
       "posicion": ""
     },{ headers: headers })
+  },
+
+  async getOrderTranport(entrega, part){
+    let data = {
+       "noentrega": entrega,
+        "tipoInfo": part
+    }
+    return axios.post(`${domain}/transporte/listotEnterga/`,data, {headers: headers})
+  },
+
+  async confirmarPosicion(entrega, pos,ot){
+    let data = {            
+      "entrega": entrega,
+      "ot": ot,
+      "posicion": pos
   }
+   return axios.post(`${domain}/transporte/apruebaOt/`,data, {headers: headers})
+ },
+
+ async confirmarOTCompleta(ot,entrega){
+  let data = {            
+    "entrega": entrega,
+    "ot": ot,
+    "posicion": ''
+}
+ return axios.post(`${domain}/transporte/apruebaOt/`,data, {headers: headers})
+}
+
+
+
+
 }
 
 export const InfoProduct = {
