@@ -151,7 +151,7 @@
                     class="w-full p-2 border rounded-lg resize-none focus:ring-2 focus:ring-italia-red focus:border-italia-red bg-gray-50"
                     placeholder="Escriba la novedad aquí..."></textarea>
                   <div class="flex justify-end space-x-2">
-                    <button @click="registrarNovedad"
+                    <button @click="registrarNovedad(selectedEntrega)"
                       class="flex items-center gap-1 bg-italia-red text-white px-4 py-2 rounded-lg hover:bg-red-700">
                       <span class="material-icons text-sm">save</span>
                       Registrar
@@ -240,17 +240,15 @@ const cargarNovedades = async (entrega) => {
 }
 
 // Función para registrar nueva novedad
-const registrarNovedad = async () => {
+const registrarNovedad = async (entrega) => {
   if (!nuevaNovedad.value.trim()) return
 
   try {
     // Aquí irá tu llamada a la API para registrar la novedad
-    const fecha = new Date().toLocaleString()
-    novedades.value.unshift({
-      texto: nuevaNovedad.value,
-      fecha: fecha
-    })
 
+    console.log(nuevaNovedad.value, entrega)
+    let response = await InfoEntrega.saveActionText(entrega,nuevaNovedad.value,localStorage.getItem('user'))
+    console.log(response.data)
     nuevaNovedad.value = '' // Limpiar el campo
   } catch (error) {
     console.error('Error al registrar novedad:', error)

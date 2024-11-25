@@ -152,9 +152,23 @@ export const InfoWm = {
 
 
 export const InfoEntrega = {
+
+  async saveActionText (entrega, texto, user) {
+    let  data = {
+      "codDestinatario": "A1",
+      "codTipoDoc": "EN",
+      "docNo": entrega,
+      "texto": texto,
+      "accion": "00160",
+      "usuario": user
+    }
+
+    return axios.post(`${domain}/transporte/grabarAccionTexto`, data, {headers:headers})
+  },
+
   async getGestion(entrega){
 
-    return axios.post(`${domain}/transporte/listaAcciones/`,{
+      return axios.post(`${domain}/transporte/listaAcciones/`,{
       "codDestinatario": "A1",
       "codTipoDoc": "EN",
       "ordNo": entrega,
