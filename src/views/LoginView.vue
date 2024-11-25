@@ -63,19 +63,10 @@
           </button>
         </form>
 
-        <!-- Enlaces de ayuda -->
-        <div class="mt-4 text-center space-y-2">
-          <a href="#" class="text-gray-600 text-sm block hover:underline">
-            ¿Olvidó su clave?
-          </a>
-          <a href="#" class="text-gray-600 text-sm block hover:underline">
-            Contacte al administrador(PBX)
-          </a>
-        </div>
-
-        <!-- Footer -->
+      <!-- Footer -->
         <div class="mt-6 text-center text-xs text-gray-500">
-          Derechos reservados T.I.Cerámica Italia S.A
+          <div>Cerámica Italia ©{{ currentYear }}</div>
+          <div class="text-xs">v{{ fullVersion }} - {{ environment }}</div>
         </div>
       </div>
     </div>
@@ -83,13 +74,14 @@
 </template>
   
   <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed  } from 'vue'
 import router from '../router';
 import { useLoader } from '../composables/useLoader' 
 import { useAuthStore } from '../store/auth';
+import { fullVersion, environment, buildDate } from '../version'
 
 
-
+const currentYear = computed(() => new Date().getFullYear())
 const authStore = useAuthStore()
   const usernameInput = ref(null)
   const passwordInput = ref(null)
