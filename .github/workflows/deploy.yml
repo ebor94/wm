@@ -1,0 +1,56 @@
+name: Build and Deploy Pickapp
+on:
+  push:
+    branches:
+      - main  # O la rama que uses
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-pickapp-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-pickapp-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the app
+        run: npm run build
+
+      - name: Start SSH agent
+        id: ssh-agent
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+
+      - name: Add SSH Key
+        env:
+          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
+          SSH_PRIVATE_KEY: ${{ secrets.APP_QUOTE_KEY }} # Puedes reusar la misma clave si es el mismo servidor
+        run: |
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+
+      - name: Deploy to server
+        env:
+          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          REMOTE_PATH: '/app02/ceramicaitalia.com/www/html/pickapp' 
+        run: |    
+          # Transferir archivos
+          scp -P $SSH_PORT -r dist/* $SSH_USER@$SSH_HOST:$REMOTE_PATH/
