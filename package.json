@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/version-bump.js",
-    "build": "vite build",
+    "build": "cross-env NODE_ENV=production node scripts/version-bump.js && vite build",
+    "build:dev": "cross-env NODE_ENV=development node scripts/version-bump.js && vite build",
     "preview": "vite preview",
     "ngrok": "ngrok http 5173",
     "dev:public": "concurrently \"npm run dev\" \"npm run ngrok\""
@@ -21,6 +22,7 @@
     "@vitejs/plugin-vue": "^5.1.4",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
     "pinia": "^2.2.5",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",

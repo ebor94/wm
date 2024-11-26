@@ -39,6 +39,7 @@
               @keyup.enter="focusPassword"
               ref="usernameInput"
               :disabled="authStore.isLoading"
+              autocomplete = "off"
             />
           </div>
 
@@ -51,6 +52,7 @@
               @keyup.enter="handleSubmit"
               ref="passwordInput"
               :disabled="authStore.isLoading"
+              autocomplete = "off"
             />
           </div>
 

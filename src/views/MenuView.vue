@@ -72,7 +72,7 @@ const authStore = useAuthStore()
     { title: 'OT Pendiente confirmar', action: 'ot-pendiente' },
     { title: 'Consultar material', action: 'consultar-material' },
     { title: 'Gestion Entrega', action: 'gestion-entrega' },
-    { title: 'Legalizacion', action: 'legalizacion' },
+    // { title: 'Legalizacion', action: 'legalizacion' },
   ]
   
   // Manejo de clicks en el menú

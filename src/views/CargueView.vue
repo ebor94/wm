@@ -6,7 +6,7 @@
     />
       <!-- Header -->
       <header class="bg-italia-red text-white p-4 text-center font-bold">
-        Toma de Picking
+        Cargue de material
       </header>
   
       <!-- Main Content -->
@@ -126,7 +126,7 @@ const handleListMaterial = (id) => {
   router.push(`/entrega/${id}`)
 }
   const handleGestionEntrega = (id) => {
-  router.push(`/entrega/${id}`)
+  window.location.href = `http://ci.ceramicaitalia.com/transporte/Gestion/GestionEntrega.asp?noentrega=${id}`
 }
   
 const handleVerOrden = (id) => {

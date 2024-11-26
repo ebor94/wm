@@ -55,6 +55,12 @@
                 @click="showNovedades(orden.entrega)">
                 Ver Novedades
               </button>
+              <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'OK'">
+                <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
+                @click="showNovedades(orden.entrega)">
+                Contabilizar Entrega
+              </button>
+              </div>
             </div>
             <div v-else>
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
