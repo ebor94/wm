@@ -181,10 +181,14 @@ const handleMaterialClick = (entrega, posOt, totalpos) => {
 }
 const getDetallesEntrega = async (numeroEntrega) => {
   showLoader()
+  
   const detalleEntrega = store.detalleEntregas.find(detalle =>
     detalle.entrega === numeroEntrega
   )
-  if (detalleEntrega && detalleEntrega.datos) {
+
+  let data = detalleEntrega.datos
+  
+  if (data.length > 0) {
     entregaDetalles.value = detalleEntrega.datos
     // Cargar los acumulados para cada material
     for (const material of entregaDetalles.value) {
@@ -192,6 +196,13 @@ const getDetallesEntrega = async (numeroEntrega) => {
       material.acumulado = Number(acumulado)
       totalPallets.value = totalPallets.value + Number(material.cantestb)
     }
+  }else{
+    hideLoader()
+      popupTitle.value = 'Sin datos';
+      popupMessage.value = `sin datos para la entrega ${numeroEntrega}` 
+      showPopup.value = true;
+      popupType.value = 'error' 
+      popupAction.value = 'normal'
   }
 }
 
