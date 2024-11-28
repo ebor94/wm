@@ -10,7 +10,7 @@
           {{ nameProduct }}
         </div>
         <div class="text-center text-sm text-white mt-1">
-          Acum : {{ acumulado }} / {{ totalPos }}
+          Acum : {{ nuevoAcumulado }} / {{ totalPos }}
         </div>
         
       </div>
@@ -209,6 +209,7 @@ const lote = ref('')
 const goodQuantityInput = ref(null)
 const registroOk = ref(true)
 const acumulado = ref(0)
+const nuevoAcumulado = ref(acumulado)
 const entregaPicking = ref('')
 const totalPos = ref(0)
 const tipolectura = ref('A')
@@ -286,13 +287,15 @@ const RegistrarPicking = async () =>{
   let mensaje = regPicking.data.data[0].mensaje;
   if (mensaje == "RESGISTRO EXITOSO"){
     hideLoader()
-    acumulado.value = Number(regPicking.data.data[0].acumulado) + acumulado.value 
-    idRegistro.value = regPicking.data.data[0].id
+    acumulado.value = Number(regPicking.data.data[0].acumulado) + acumulado.value ;
+    nuevoAcumulado.value = acumulado.value;
+    idRegistro.value = regPicking.data.data[0].id;
     popupTitle.value = 'Estado De Registro';
-    popupMessage.value = mensaje
+    popupMessage.value = mensaje;
     showPopup.value = true;
-    popupType.value = 'success' 
-    popupAction.value = 'normal'
+    popupType.value = 'success' ;
+    popupAction.value = 'normal';
+    acumulado.value = 0;
 
   }else if(mensaje == "UP"){
     hideLoader()
@@ -374,10 +377,10 @@ const validaformulario = () => {
     return false
   }
 
-  let  total =  acumulado.value + goodQuantity.value + brokenQuantity.value
+  let  total =  nuevoAcumulado.value + goodQuantity.value + brokenQuantity.value
  if(total > totalPos.value) {      
     popupTitle.value = 'Error de Validación';
-    popupMessage.value = `excede cantidad acumulada, no permitido`;
+    popupMessage.value = `excede cantidad acumulada, no permitido ${total}`;
     showPopup.value = true;
     popupType.value = 'warning' 
     scanValue.value = '';
