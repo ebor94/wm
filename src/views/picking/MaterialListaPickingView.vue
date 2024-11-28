@@ -195,8 +195,6 @@ const handleTerminarEntrega = async () => {
           popupAction.value = 'normal'
 
         }
-
-
       }
     } catch (error) {
       hideLoader()
@@ -207,16 +205,7 @@ const handleTerminarEntrega = async () => {
       popupAction.value = 'normal'
 
     }
-
-
-
-
-
-
-  }
-
-
-
+}
 }
 
 const goToMenu = () => {
