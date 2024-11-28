@@ -3,7 +3,7 @@
     <!-- Header -->
     <header class="bg-gray-200 p-4 shadow-md">
       <h1 class="text-gray-800 text-lg font-bold text-center">
-        Listado material - Alistamiento
+        Listado material - {{actions}}
       </h1>
       <div class="text-gray-800 text-lg font-bold text-center">
         <span class="font-medium"> {{ horaInicioAlistamiento }}</span>
@@ -72,7 +72,7 @@
     <div class="p-4 grid grid-cols-2 gap-4  bg-gray-300">
       <button @click="handleTerminarEntrega"
         class="bg-italia-red text-white py-3 px-6 rounded-full font-medium shadow-md hover:bg-red-700 active:bg-red-800">
-        {{ tetxButtonAction }}
+        {{ textButtonAction }}
       </button>
       <button @click="goToMenu"
         class="bg-white text-gray-700 py-3 px-6 rounded-full font-medium shadow-md hover:bg-gray-50 active:bg-gray-100 border border-gray-300">
@@ -297,6 +297,7 @@ onMounted(async () => {
     getDetallesEntrega(entre.value)
     console.log('Número de entrega:', entre.value)
     getGestionEntrega(entre.value)
+  
 
     console.log(actions.value)
   } catch (error) {
