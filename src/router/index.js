@@ -28,7 +28,7 @@ const router = createRouter({
       component: () => import('../views/CargueView.vue')
     },
     {
-        path: '/entrega/:entrega',
+        path: '/entrega/:entrega/:action',
         name: 'Lista-entrega',
         component: () => import('../views/picking/MaterialListaPickingView.vue')
       },

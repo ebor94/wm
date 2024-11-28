@@ -177,7 +177,7 @@ export const InfoEntrega = {
   },{ headers: headers });
   },
 
-  async RegisterAccionFechahora(entrega){
+  async RegisterAccionFechahora(entrega, accion){
     let fecha = GetDateHour("F");
     let hora = GetDateHour("H");
 
@@ -187,7 +187,7 @@ export const InfoEntrega = {
       "docNo": entrega,
       "fecha": fecha,
       "hora": hora,
-      "accion": "00003",
+      "accion": accion ,
       "usuario": localStorage.getItem('user')
     },{ headers: headers })
   },

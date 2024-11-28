@@ -123,7 +123,7 @@ const filtrarOrdenesCargue = (ordenes) => {
 }
   
 const handleListMaterial = (id) => {
-  router.push(`/entrega/${id}`)
+  router.push(`/entrega/${id}/cargue`)
 }
   const handleGestionEntrega = (id) => {
   window.location.href = `http://ci.ceramicaitalia.com/transporte/Gestion/GestionEntrega.asp?noentrega=${id}`

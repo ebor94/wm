@@ -288,7 +288,7 @@ const getEstadoEntrega = (entrega) => {
 }
 
 const handleListMaterial = (id) => {
-  router.push(`/entrega/${id}`)
+  router.push(`/entrega/${id}/alistar`)
 }
 const handleGestionEntrega = (id) => {
 
