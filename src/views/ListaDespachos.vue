@@ -55,12 +55,12 @@
                 @click="showNovedades(orden.entrega)">
                 Ver Novedades
               </button>
-<!--               <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'OK'">
+              <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'OK'">
                 <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="showNovedades(orden.entrega)">
+                @click="contabilizar(orden.entrega)">
                 Contabilizar Entrega
               </button>
-              </div> -->
+              </div> 
             </div>
             <div v-else>
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
@@ -174,6 +174,17 @@
           </div>
         </div>
       </div>
+      <BasePopup
+     v-model="showPopup"
+     :title="popupTitle" 
+     :message="popupMessage" 
+     :type=popupType 
+     :action="popupAction" 
+     confirmText="Aceptar"
+     :showConfirm="true" 
+     @confirm="handlePopupConfirm"
+     @update="handlePopupUpdate"
+      />
 
       <!-- Botón Ir al Menú -->
       <button @click="goToMenu" class="bg-white rounded-full p-3 text-center mt-auto">
@@ -218,6 +229,28 @@ const closeNovedades = () => {
   showNovedadesModal.value = false
   nuevaNovedad.value = ''
   selectedEntrega.value = ''
+}
+
+const contabilizar = async (entrega) => {
+  try {
+    showLoader()
+    let response  = await InfoEntrega.Contabilizar(entrega)
+    popupTitle.value = 'Resultado';
+    popupMessage.value = response.data.data.mensaje2
+    showPopup.value = true;
+    popupType.value = 'error' 
+    popupAction.value = 'normal'
+    hideLoader()
+  } catch (error) {
+    popupTitle.value = 'Error Catch';
+    popupMessage.value = error
+    showPopup.value = true;
+    popupType.value = 'error' 
+    popupAction.value = 'normal'
+    
+  }
+  
+
 }
 
 

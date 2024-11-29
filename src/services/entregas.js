@@ -225,9 +225,12 @@ export const InfoEntrega = {
     "posicion": ''
 }
  return axios.post(`${domain}/transporte/apruebaOt/`,data, {headers: headers})
+},
+
+async Contabilizar(entrega){
+
+  return axios.get(`${domain}/transporte/contab-entrega/${entrega}/x`,{headers:headers})
 }
-
-
 
 
 }
