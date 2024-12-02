@@ -1,6 +1,6 @@
 
-export const version = '2024.11.26';
-export const buildNumber = 2;
-export const buildDate = '2024-11-26T20:41:26.844Z';
+export const version = '2024.11.29';
+export const buildNumber = 4;
+export const buildDate = '2024-11-29T19:12:16.211Z';
 export const environment = 'production';
-export const fullVersion = '2024.11.26-build.2';
+export const fullVersion = '2024.11.29-build.4';

@@ -245,13 +245,13 @@ const handleAccept = async  () => {
 }
 
 const handleManual = async () => {
-  isManualMode.value = true 
-  palletNumber.value = palletMAnual.value + 1 
-  palletMAnual.value =  palletNumber.value  
-  material.value = matnr.value
-  materialCode.value = matnr.value
-  tipolectura.value = 'M'
-  scanValue.value = `${matnr.value}${batch.value}${palletNumber.value}`
+  isManualMode.value  = true 
+  palletNumber.value  = await store.getConsecutivoManual();
+  palletMAnual.value  = palletNumber.value  
+  material.value      = matnr.value
+  materialCode.value  = matnr.value
+  tipolectura.value   = 'M'
+  scanValue.value     = `${matnr.value}${batch.value}${palletNumber.value}`
   goodQuantityInput.value?.focus()
   
 

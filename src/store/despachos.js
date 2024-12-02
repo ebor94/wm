@@ -7,6 +7,7 @@ export const UseDespachoStore = defineStore('despacho',{
         entregas:[],
         loading: false,
         error: null,
+        consEstibaManual : 100,
         detalleEntregas: [],
     }),
     actions:{
@@ -37,6 +38,11 @@ export const UseDespachoStore = defineStore('despacho',{
                     return response.data
                 })
             )
+        },
+
+        async getConsecutivoManual(){
+            this.consEstibaManual = this.consEstibaManual - 1;
+            return this.consEstibaManual
         }
     }
 
