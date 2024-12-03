@@ -33,7 +33,7 @@ const router = createRouter({
         component: () => import('../views/picking/MaterialListaPickingView.vue')
       },
       {
-        path: '/picking/scan/:entrega/:pos/:totalPos',
+        path: '/picking/scan/:entrega/:pos/:totalPos/:ot',
         name: 'scan',
         component: () => import('../views/picking/ScanView.vue')
       },

@@ -25,7 +25,7 @@
       <!-- Material Card -->
       <div v-for="material in entregaDetalles" :key="material.tapos"
         class="bg-white rounded-lg shadow-lg overflow-hidden"
-        @click="handleMaterialClick(entre, material.tapos, material.nsola)">
+        @click="handleMaterialClick(entre, material.tapos, material.nsola, material.tanum)">
         <!-- Código de producto -->
         <div
           :class="[material.acumulado === material.nsola ? 'bg-green-600' : 'bg-red-600', 'text-white p-2 font-bold']">
@@ -213,9 +213,9 @@ const goToMenu = () => {
 }
 
 
-const handleMaterialClick = (entrega, posOt, totalpos) => {
+const handleMaterialClick = (entrega, posOt, totalpos, ot) => {
   showLoader()
-  router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}`)
+  router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}/${ot}`)
 }
 const getDetallesEntrega = async (numeroEntrega) => {
   showLoader()

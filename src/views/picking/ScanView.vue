@@ -557,8 +557,10 @@ onMounted(async () => {
       detalle.entrega === entrega
     )
     if (detalleEntrega) {
+      console.log(detalleEntrega)
       let pos = Number(route.params.pos)
-      const materialTapos1 = detalleEntrega.datos.find(item => item.tapos === pos)
+      let ot = Number(route.params.ot)
+      const materialTapos1 = detalleEntrega.datos.find(item => item.tapos === pos && item.tanum === ot)
 
       if (materialTapos1) {
 
