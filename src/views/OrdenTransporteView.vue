@@ -40,7 +40,11 @@
                     <p class="text-sm text-gray-600">
                       <span class="font-medium">Lote:</span> {{ detalle.charg || 'N/A' }}
                     </p>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium">Material:</span> {{ detalle.matnr || 'N/A' }}
+                    </p>
                   </div>
+                  
                   <span class="text-sm font-medium px-2 py-1 rounded-full"
                         :class="detalle.estado === 'C' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
                     {{ detalle.pquit === 'X' ? '✅' : '❌' }}
@@ -151,8 +155,11 @@ const cargarDetallesOrden = async (tanum) => {
   showLoader("Cargando detalles...")
   try {
     const response = await InfoEntrega.getOrderTranport(route.params.entrega, 'D', tanum)
-    console.log(response.data)
-    ordenDetalles.value[tanum] = response.data
+    let arrOt = []
+    let ot = response.data
+    let otx = ot.filter(item => item.tanum === tanum);
+   
+    ordenDetalles.value[tanum] = otx
   } catch (error) {
     popupType.value = 'error'     
     popupTitle.value = 'Resultado';
