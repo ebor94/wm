@@ -46,9 +46,10 @@
         <div class="border-t border-slate-700 pt-4 mt-4">
           <div class="grid grid-cols-2 gap-4 font-semibold text-white">
             <div>Total Metros:</div>
-            <div class="text-right">{{ disponibleubica }}</div>
-            <div>TOTAL DISPONIBLE:</div>
             <div class="text-right">{{ totalubica }}</div>
+            <div>TOTAL DISPONIBLE:</div>
+            <div class="text-right">{{ disponibleubica }}</div>
+            
           </div>
         </div>
       </div>
