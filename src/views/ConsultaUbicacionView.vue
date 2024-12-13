@@ -111,7 +111,7 @@ import { useLoader } from '../composables/useLoader'
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
 const router = useRouter();
 // Variables reactivas
-const ubicacionConsulta = ref('B18PRODF21');
+const ubicacionConsulta = ref('');
 const ubicacionDestino = ref('');
 const stockLocations = ref([]);
 const totalubica = ref(0);
@@ -150,15 +150,23 @@ const consultarUbicacion = async () => {
 }
 
 const vaciarUbicacion = async() => {
+  console.log('vaciando ubicación:', ubicacionConsulta.value, ubicacionDestino.value)
   if (ubicacionDestino.value === '' || ubicacionDestino.value.length === 0) {
     showPopup.value     = true ;
     return false;
   }
   try {
     showLoader("vaciando ubicación")
-    console.log('vaciando ubicación:', ubicacionConsulta.value, ubicacionDestino.value)
-    const StockLocation = await InfoWm.SerachLocationStockAvailable(ubicacionConsulta.value, ubicacionDestino.value);
+    
+    let ubicacionOrigen = ubicacionConsulta.value;
+    let ubicacionOrigenUpper = ubicacionOrigen.toUpperCase();
+
+    let ubicaDestino = ubicacionDestino.value;
+    let ubicacionDestionUpper = ubicaDestino.toUpperCase();
+
+    const StockLocation = await InfoWm.ClearLocationStockAvailable(ubicacionOrigenUpper, ubicacionDestionUpper);
     let mensaje = StockLocation.data.data.mensaje;
+    console.log(mensaje)
     showPopup.value = true;   
     popupTitle.value = 'Vaciar Ubicacion';  
     popupMessage.value = mensaje;
