@@ -41,7 +41,7 @@
               v-for="orden in filtrarOrdenesCargue(despacho.ordenes)" :key="orden.entrega" 
               class="bg-white rounded-lg p-4 mx-4 space-y-3 items-center"
             >
-            <label class="w-full text-center text-blue-800 border-t border-gray-200 pt-2">{{ orden.entrega }} / {{ orden.cte }}</label>
+            <label class="w-full text-center text-blue-800 border-t border-gray-200 pt-2">{{ orden.entrega }} / {{ orden.cte }}/ {{ orden.placa }}</label>
               <button 
                 class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                 @click="handleListMaterial(orden.entrega)"

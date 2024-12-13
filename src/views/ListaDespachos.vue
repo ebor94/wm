@@ -215,6 +215,12 @@ const showNovedadesModal = ref(false)
 const selectedEntrega = ref('')
 const nuevaNovedad = ref('')
 const novedades = ref([])
+// Agregar estados para el popup
+const showPopup = ref(false);
+const popupTitle = ref('');
+const popupMessage = ref('');
+const popupType = ref('');
+const popupAction = ref('normal')
 
 // Función para mostrar modal de novedades
 const showNovedades = async (entrega) => {

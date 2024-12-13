@@ -132,9 +132,11 @@ const consultarUbicacion = async () => {
   }
   try {
     
-    showLoader('Consultando  ubicación...')
-    console.log('Consultando ubicación:', ubicacionConsulta.value)
-    const StockLocation = await InfoWm.SerachLocationStockAvailable(ubicacionConsulta.value);
+    showLoader('Consultando  ubicación...')    
+    let ubicacionx = ubicacionConsulta.value;
+    let ubicacionUpper = ubicacionx.toUpperCase();
+    console.log('Consultando ubicación:', ubicacionUpper)
+    const StockLocation = await InfoWm.SerachLocationStockAvailable(ubicacionUpper);
     stockLocations.value = StockLocation.data.data.datos;
     disponibleubica.value = StockLocation.data.data.disponibleubica;
     totalubica.value = StockLocation.data.data.totalubica;
