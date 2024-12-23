@@ -22,13 +22,13 @@
           class="space-y-2">
 
           <!-- Botón Collapse -->
-          <button class="w-full bg-white rounded-full p-3 text-left flex items-center gap-2"
+          <button :class="[totalWeight > 33 ? 'w-full bg-purple-700 rounded-full p-3 text-white text-left flex items-center gap-2' : 'w-full bg-white rounded-full p-3 text-left flex items-center gap-2']"
             @click="toggleDespacho(despacho.Despacho_no)">
             <span class="material-icons">
               {{ expandedDespachos.includes(despacho.Despacho_no) ? 'expand_less' : 'expand_more' }}
             </span>
             {{ despacho.despachoVerificado == 1 ? '✅' : '❌' }}{{ despacho.Despacho_no || 'prioridad' }} / {{
-              despacho.Fecha_Requerida || 'sin fecha de despacho' }}
+              despacho.Fecha_Requerida || 'sin fecha de despacho' }} / Peso Total: {{ totalWeight }} Ton
           </button>
 
           <!-- Contenido Collapse -->
@@ -36,7 +36,7 @@
           <div v-show="expandedDespachos.includes(despacho.Despacho_no)" v-for="orden in despacho.ordenes"
             :key="orden.entrega" class="bg-white rounded-lg p-4 mx-4 space-y-3 items-center">
             <label class="w-full text-center text-blue-800 border-t border-gray-200 pt-2">
-              {{ orden.estadoEntrega == 1 ? '✅' : '❌' }}/{{ orden.entrega }} / {{ orden.cte == null ? 'Asignado a Otro Tecnico' : orden.cte}}
+              {{ orden.estadoEntrega == 1 ? '✅' : '❌' }}/{{ orden.entrega }} / {{ orden.cte == null ? 'Asignado a Otro Tecnico' : orden.cte}}/ Peso : {{ deliveryWeights[orden.entrega] || 'Cargando Peso...' }} Ton
             </label>
             <div v-if="orden.cte !== null">
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
@@ -200,7 +200,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed  } from 'vue'
 import { UseDespachoStore } from '../store/despachos'
 import { useRouter } from 'vue-router'
 import { useLoader } from '../composables/useLoader'
@@ -215,6 +215,7 @@ const showNovedadesModal = ref(false)
 const selectedEntrega = ref('')
 const nuevaNovedad = ref('')
 const novedades = ref([])
+const deliveryWeights = ref({})
 // Agregar estados para el popup
 const showPopup = ref(false);
 const popupTitle = ref('');
@@ -259,7 +260,26 @@ const contabilizar = async (entrega) => {
 
 }
 
+const totalWeight = computed(() => { //peso total del despacho basado en las entregas y el peso teorico
+  let total = 0;
+  Object.values(deliveryWeights.value).forEach(weight => {
+    total += parseFloat(weight || 0);
+  });
+  return total.toFixed(2);
+});
 
+const GetweightDelivery = async (entrega) => {
+  if (!deliveryWeights.value[entrega]) {
+    try {
+      const response = await InfoEntrega.GetWeight(entrega)
+      deliveryWeights.value[entrega] = (response.data.data[0].pesoent / 1000).toFixed(2)
+    } catch (error) {
+      console.log(error)
+      deliveryWeights.value[entrega] = 'Error'
+    }
+  }
+  return deliveryWeights.value[entrega]
+}
 
 // Función para obtener el valor de una novedad específica por CodAccion
 const getNovedadValor = (codAccion) => {
@@ -348,6 +368,12 @@ onMounted(async () => {
 
   try {
     await store.getEntregas()
+    // Cargar pesos para todas las entregas
+    for (const despacho of store.despachos) {
+      for (const orden of despacho.ordenes) {
+        await GetweightDelivery(orden.entrega)
+      }
+    }
   } catch (error) {
     console.error('Error:', error)
   }

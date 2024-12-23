@@ -230,6 +230,10 @@ export const InfoEntrega = {
 async Contabilizar(entrega){
 
   return axios.get(`${domain}/transporte/contab-entrega/${entrega}/x`,{headers:headers})
+},
+
+async GetWeight(entrega){ 
+  return axios.get(`${domain}/transporte/pesoentrega/${entrega}`,{headers:headers})
 }
 
 
