@@ -22,13 +22,13 @@
           class="space-y-2">
 
           <!-- Botón Collapse -->
-          <button :class="[totalWeight > 33 ? 'w-full bg-purple-700 rounded-full p-3 text-white text-left flex items-center gap-2' : 'w-full bg-white rounded-full p-3 text-left flex items-center gap-2']"
-            @click="toggleDespacho(despacho.Despacho_no)">
+          <button :class="[isOverweight(despacho) ? 'w-full bg-purple-700 rounded-full p-3 text-white text-left flex items-center gap-2' : 'w-full bg-white rounded-full p-3 text-left flex items-center gap-2']"
+        @click="toggleDespacho(despacho.Despacho_no)">
             <span class="material-icons">
               {{ expandedDespachos.includes(despacho.Despacho_no) ? 'expand_less' : 'expand_more' }}
             </span>
             {{ despacho.despachoVerificado == 1 ? '✅' : '❌' }}{{ despacho.Despacho_no || 'prioridad' }} / {{
-              despacho.Fecha_Requerida || 'sin fecha de despacho' }} / Peso Total: {{ totalWeight }} Ton
+              despacho.Fecha_Requerida || 'sin fecha de despacho' }} /  Peso Total: {{ getTotalWeightByDespacho(despacho) }} Ton 
           </button>
 
           <!-- Contenido Collapse -->
@@ -260,19 +260,19 @@ const contabilizar = async (entrega) => {
 
 }
 
-const totalWeight = computed(() => { //peso total del despacho basado en las entregas y el peso teorico
+const isOverweight = (despacho) => {
   let total = 0;
-  Object.values(deliveryWeights.value).forEach(weight => {
-    total += parseFloat(weight || 0);
+  despacho.ordenes.forEach(orden => {
+    total += parseFloat(deliveryWeights.value[orden.entrega] || 0);
   });
-  return total.toFixed(2);
-});
+  return total > 33;
+};
 
 const GetweightDelivery = async (entrega) => {
   if (!deliveryWeights.value[entrega]) {
     try {
       const response = await InfoEntrega.GetWeight(entrega)
-      deliveryWeights.value[entrega] = (response.data.data[0].pesoent / 1000).toFixed(2)
+      deliveryWeights.value[entrega] = (response.data.data[0].pesopick / 1000).toFixed(2)
     } catch (error) {
       console.log(error)
       deliveryWeights.value[entrega] = 'Error'
@@ -280,6 +280,15 @@ const GetweightDelivery = async (entrega) => {
   }
   return deliveryWeights.value[entrega]
 }
+
+const getTotalWeightByDespacho = (despacho) => {
+  let total = 0;
+  despacho.ordenes.forEach(orden => {
+    total += parseFloat(deliveryWeights.value[orden.entrega] || 0);
+  });
+  
+  return total.toFixed(2);
+};
 
 // Función para obtener el valor de una novedad específica por CodAccion
 const getNovedadValor = (codAccion) => {
