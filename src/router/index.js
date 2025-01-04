@@ -43,6 +43,11 @@ const router = createRouter({
         component: () => import('../views/TrasladosView.vue')
       },
       {
+        path: '/traslado-lotes',
+        name: 'traslado-lotes',
+        component: () => import('../views/TrasladoLoteView.vue')
+      },
+      {
         path: '/consultar-ubicacion',
         name: 'consultar-ubicacion',
         component: () => import('../views/ConsultaUbicacionView.vue')
