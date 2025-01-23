@@ -73,6 +73,11 @@ const router = createRouter({
         component: () => import('../views/OrdenTransporteView.vue')
       },
       {
+        path: '/indicator/',
+        name: 'indicator',
+        component: () => import('../views/Indicator.vue')
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: NotFoundView

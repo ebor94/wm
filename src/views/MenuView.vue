@@ -68,11 +68,12 @@ const authStore = useAuthStore()
     { title: 'Alistamiento', action: 'alistamiento' },
     { title: 'Cargue', action: 'cargue' },
     { title: 'Traslado ubicacion', action: 'traslado' },
-    { title: 'Traslado / Lotes', action: 'traslado-lotes' },
+    // { title: 'Traslado / Lotes', action: 'traslado-lotes' },
     { title: 'Consultar Ubicacion', action: 'consultar-ubicacion' },
     { title: 'OT Pendiente confirmar', action: 'ot-pendiente' },
     { title: 'Consultar material', action: 'consultar-material' },
     { title: 'Gestion Entrega', action: 'gestion-entrega' },
+    { title: 'Indicador De Despacho', action: 'indicator' },
     // { title: 'Legalizacion', action: 'legalizacion' },
   ]
   
