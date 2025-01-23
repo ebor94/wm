@@ -1,10 +1,8 @@
 <template>
     <div class="min-h-screen flex flex-col">
       <!-- Header -->
-      <header class="bg-italia-red text-white p-4 text-center font-bold text-lg">
-        .:. Traslado Entre lotes .:.
-      </header>
-  
+      <Header title=".:. Traslado Entre lotes .:." ></Header>
+
       <!-- Main Content -->
       <main class="flex-1 bg-gray-800 p-4 flex flex-col space-y-4">
         <!-- Formulario -->
@@ -119,6 +117,7 @@
   import { InfoWm } from '../services/entregas';
   import { useLoader } from '../composables/useLoader';
   import BasePopup from '../components/BasePopup.vue';
+import Header from '../components/Header.vue';
   
   const router = useRouter()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()

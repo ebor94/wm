@@ -1,11 +1,9 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <!-- Header con información del picking -->
+    <Header title=".:. Picking .:." ></Header>
     <header class="bg-red-600 border-b">
       <div class="p-4">
-        <h1 class="text-center text-lg font-semibold text-white">
-          .:. Picking .:.
-        </h1>
         <div class="text-center text-sm text-white mt-1">
           {{ nameProduct }}
         </div>
@@ -181,6 +179,7 @@ import { UseDespachoStore } from '../../store/despachos';
 import BasePopup from '../../components/BasePopup.vue';
 import { infoDespachos, InfoWm } from '../../services/entregas';
 import { useLoader } from '../../composables/useLoader';
+import Header from '../../components/Header.vue';
 
 
 const router = useRouter()

@@ -1,11 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col bg-slate-900">
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4">
-      <h1 class="text-center text-white text-lg font-semibold">
-        Listado material - por ubicación
-      </h1>
-    </header>
+    <Header title="Listado material - por ubicación" ></Header>
+
 
     <main class="flex-1 p-4 flex flex-col space-y-4">
       <!-- Ubicación a consultar -->

@@ -1,9 +1,10 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-100">
     <!-- Header -->
+    <Header title="Lista materiales" ></Header>
     <header class="bg-gray-200 p-4 shadow-md">
       <h1 class="text-gray-800 text-lg font-bold text-center">
-        Listado material - {{actions}}
+        {{actions}}
       </h1>
       <div class="text-gray-800 text-lg font-bold text-center">
         <span class="font-medium"> {{ horaInicioAlistamiento }}</span>
@@ -97,6 +98,7 @@ import { UseDespachoStore } from '../../store/despachos';
 import { infoDespachos, InfoEntrega } from '../../services/entregas'
 import { useLoader } from '../../composables/useLoader';
 import BasePopup from '../../components/BasePopup.vue';
+import Header from '../../components/Header.vue';
 
 
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()

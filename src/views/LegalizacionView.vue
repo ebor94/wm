@@ -1,11 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <!-- Header - Reducido el padding -->
-    <header class="bg-italia-red text-white p-2">
-      <h1 class="text-center text-lg font-bold">
-        LEGALIZACION
-      </h1>
-    </header>
+    <Header title="LEGALIZACION" ></Header>
+ 
 
     <!-- Main Content -->
     <main class="flex-1 p-2 bg-gray-800 text-white">
@@ -142,6 +139,7 @@ import { useRouter } from 'vue-router'
 import { InfoProduct } from '../services/entregas'
 import TrasladoModal from '../components/TrasladoModal.vue'
 import { useLoader } from '../composables/useLoader'
+import Header from '../components/Header.vue'
 
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader() 
 

@@ -1,11 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-800">
     <!-- Header -->
-    <header class="bg-italia-red text-white p-2">
-      <h1 class="text-center text-lg font-bold">
-        Lista Ordenes de Transporte
-      </h1>
-    </header>
+    <Header title="Lista Ordenes de Transporte" ></Header>
+
 
     <!-- Main Content -->
     <main class="flex-1 p-4 space-y-4">
@@ -124,6 +121,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLoader } from '../composables/useLoader'
 import { InfoEntrega } from '../services/entregas'
 import BasePopup from '../components/BasePopup.vue';
+import Header from '../components/Header.vue';
 
 // Agregar estados para el popup
 const showPopup = ref(false);

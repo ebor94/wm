@@ -1,11 +1,8 @@
 <template>
     <div class="min-h-screen flex flex-col bg-gray-50">
       <!-- Header -->
-      <header class="bg-gray-800 text-white p-4">
-        <h1 class="text-center text-lg font-bold">
-          ORDENES DE TRANSPORTE PENDIENTE CONFIRMAR
-        </h1>
-      </header>
+      <Header title="ORDENES DE TRANSPORTE PENDIENTE CONFIRMAR" ></Header>
+ 
   
       <!-- Main Content -->
       <main class="flex-1 p-4 bg-gray-800 text-white space-y-4">
@@ -88,6 +85,7 @@
   import { useRouter } from 'vue-router'
   import { InfoWm } from '../services/entregas';
   import { useLoader } from '../composables/useLoader'
+import Header from '../components/Header.vue';
 
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()  
   

@@ -1,8 +1,7 @@
 <template>
     <div class="min-h-screen flex flex-col bg-gray-800">
-      <header class="bg-italia-red text-white p-2">
-        <h1 class="text-center text-lg font-bold">Indicador de Despacho</h1>
-      </header>
+        <Header title="Indicador de Despacho" ></Header>
+    
       <main class="flex-1 p-2 bg-gray-800 text-white">
         <GaugeChart
           :percentage="valorprocentual"
@@ -30,6 +29,7 @@
   import { useAuthStore } from '../store/auth';
   import { infoDespachos } from '../services/entregas';
   import GaugeChart from '../components/GaugeChart.vue';
+import Header from '../components/Header.vue';
   
   const store = useAuthStore();
   const router = useRouter()

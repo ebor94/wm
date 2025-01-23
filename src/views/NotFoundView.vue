@@ -1,4 +1,6 @@
 <template>
+  
+  <Header title="404" ></Header>
     <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <!-- Logo Container -->
       <div class="mb-8">
@@ -55,6 +57,7 @@
   
   <script setup>
   import { useRouter } from 'vue-router'
+import Header from '../components/Header.vue';
   
   const router = useRouter()
   

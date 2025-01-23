@@ -5,9 +5,8 @@
      :loading-text="loadingText"
       />
     <!-- Header -->
-    <header class="bg-italia-red text-white p-4 text-center font-bold">
-      Toma de Picking
-    </header>
+    <Header title="Toma de Picking" ></Header>
+
 
     <!-- Main Content -->
     <main class="flex-1 bg-gray-800 p-4 flex flex-col gap-4">
@@ -205,6 +204,7 @@ import { UseDespachoStore } from '../store/despachos'
 import { useRouter } from 'vue-router'
 import { useLoader } from '../composables/useLoader'
 import { InfoEntrega } from '../services/entregas';
+import Header from '../components/Header.vue';
 
 const router = useRouter()
 const expandedDespachos = ref([])

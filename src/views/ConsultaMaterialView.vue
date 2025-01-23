@@ -1,11 +1,8 @@
 <template>
     <div class="min-h-screen flex flex-col bg-slate-900">
       <!-- Header -->
-      <header class="bg-slate-800 border-b border-slate-700 p-4">
-      <h1 class="text-center text-white text-lg font-semibold">
-        Consulta de Material
-      </h1>
-    </header>
+      <Header title="Consulta de Material" ></Header>
+
   
       <main class="flex-1 p-4 flex flex-col space-y-4">
         <!-- Campo de búsqueda -->
@@ -104,6 +101,7 @@
   import { useRouter } from 'vue-router'
   import { InfoWm } from '../services/entregas';
   import { useLoader } from '../composables/useLoader'
+import Header from '../components/Header.vue';
 
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()  
   const router = useRouter()

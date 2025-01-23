@@ -5,9 +5,8 @@
       loading-text="Iniciando sesión..."
     />
       <!-- Header -->
-      <header class="bg-italia-red text-white p-4 text-center font-bold">
-        Cargue de material
-      </header>
+      <Header title=" Cargue de material" ></Header>
+   
   
       <!-- Main Content -->
       <main class="flex-1 bg-gray-800 p-4 flex flex-col gap-4">
@@ -85,6 +84,7 @@
   import { UseDespachoStore } from '../store/despachos'
   import { useRouter } from 'vue-router'
   import { useLoader } from '../composables/useLoader' 
+import Header from '../components/Header.vue'
   
   const router = useRouter()
   const expandedDespachos = ref([])
