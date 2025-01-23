@@ -10,6 +10,8 @@ export const useAuthStore = defineStore('auth', {
       token: null,
       isAuthenticated: false,
       loading: false,
+      ptoExpedicion: null,
+      almaceMM: null,
       error: null
     }),
     actions: {
@@ -27,6 +29,8 @@ export const useAuthStore = defineStore('auth', {
               // Guardar en localStorage
               localStorage.setItem('NameUser', response[0].nombre)
               this.nameUser = response[0].nombre;
+              this.ptoExpedicion = response[0].centro;
+              this.almaceMM = response[0].almacen;
               localStorage.setItem('user', username)
               localStorage.setItem('isAuthenticated', 'true')
               

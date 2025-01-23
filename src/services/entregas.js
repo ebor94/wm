@@ -22,6 +22,11 @@ export const infoDespachos = {
       headers: headers,
     });
   },
+  async indicadorDespacho(ptoExpedicion){
+    return axios.get(`${domain}/transporte/indicadorDespacho/${ptoExpedicion}`, {
+      headers: headers,
+    });
+  }
 };
 
 export const InfoWm = {

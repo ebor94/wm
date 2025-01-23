@@ -8,100 +8,74 @@
    
     </div>
     <p class="text-center text-lg font-bold text-center text-sm text-gray-500">
-        Min: {{ min }} | Max: {{ max }} | Acumulado: {{ acumulado }}
+         Requerido: {{ max }} | Despachado Dia: {{ acumulado }}
       </p>
   </div>
+  
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { Chart, ArcElement, DoughnutController } from 'chart.js/auto';
 
 Chart.register(ArcElement, DoughnutController);
 
-export default {
-  props: {
-    percentage: {
-      type: Number,
-      required: true,
-    },
-    color: {
-      type: String,
-      default: '#007C65',
-    },
-    backgroundColor: {
-      type: String,
-      default: '#C4C4C4',
-    },
-    min: {
-      type: Number,
-      required: true,
-    },
-    max: {
-      type: Number,
-      required: true,
-    },
-    acumulado: {
-      type: Number,
-      required: true,
-    },
-  },
-  setup(props) {
-    const chartCanvas = ref(null);
-    let gaugeChart = null;
+const props = defineProps({
+  percentage: { type: Number, required: true },
+  color: { type: String, default: '#FF0000'},
+  backgroundColor: { type: String, default: '#C4C4C4' },
+  min: { type: Number, required: true },
+  max: { type: Number, required: true },
+  acumulado: { type: Number, required: true }
+});
 
-    const data = computed(() => ({
-      datasets: [
-        {
-          data: [props.percentage, 100 - props.percentage],
-          backgroundColor: [props.color, props.backgroundColor],
-          borderWidth: 0,
-          cutout: '50%', 
-        },
-      ],
-    }));
+const chartCanvas = ref(null);
+let gaugeChart = null;
 
-    onMounted(() => {
-      renderChart();
-    });
+const data = computed(() => ({
+  datasets: [{
+    data: [props.percentage, 100 - props.percentage],
+    backgroundColor: [props.color, props.backgroundColor],
+    borderWidth: 0,
+    cutout: '50%'
+  }]
+}));
 
-    watch(
-      () => props.percentage,
-      () => {
-        if (gaugeChart) {
-          gaugeChart.data.datasets[0].data = [
-            props.percentage,
-            100 - props.percentage,
-          ];
-          gaugeChart.update();
-        }
+const formattedPercentage = computed(() => `${props.percentage}%`);
+
+const renderChart = () => {
+  const ctx = chartCanvas.value.getContext('2d');
+  gaugeChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: data.value,
+    options: {
+      aspectRatio: 1,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
       }
-    );
-
-    const renderChart = () => {
-      const ctx = chartCanvas.value.getContext('2d');
-      gaugeChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: data.value,
-        options: {
-          aspectRatio: 1,
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              enabled: false,
-            },
-          },
-        },
-      });
-    };
-
-    const formattedPercentage = computed(() => {
-      return `${props.percentage}%`;
-    });
-
-    return { chartCanvas, formattedPercentage, min: props.min, max: props.max, acumulado: props.acumulado };
-  },
+    }
+  });
 };
+
+onMounted(renderChart);
+
+watch(
+  [() => props.percentage, () => props.color],
+  () => {
+    if (gaugeChart) {
+      gaugeChart.data.datasets[0].data = [props.percentage, 100 - props.percentage];
+      gaugeChart.data.datasets[0].backgroundColor = [props.color, props.backgroundColor];
+      gaugeChart.update();
+    }
+  }
+);
+
+defineExpose({
+  chartCanvas,
+  formattedPercentage,
+  min: props.min,
+  max: props.max,
+  acumulado: props.acumulado
+});
 </script>

@@ -5,10 +5,8 @@
       loading-text="cargando ..."
     />
       <!-- Header Rojo -->
-      <header class="bg-italia-red text-white p-4 text-center font-bold text-xl">
-        Menú inicial
-      </header>
-  
+       <Header title=" Menú inicial" ></Header>
+
       <!-- Contenido Principal -->
       <main class="flex-1 bg-gray-800 p-4 flex flex-col">
         <!-- Nombre de Usuario y Mensaje -->
@@ -55,6 +53,7 @@
   import { useRouter } from 'vue-router'
   import { useLoader } from '../composables/useLoader' 
   import { useAuthStore } from '../store/auth';
+import Header from '../components/Header.vue';
 
 
 
