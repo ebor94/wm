@@ -16,7 +16,7 @@
 
     <main class="flex-1 p-4 space-y-6 bg-gray-800">
       <!-- Barra de Progreso -->
-      <div class="bg-white p-4 rounded-lg shadow-sm">
+<!--       <div class="bg-white p-4 rounded-lg shadow-sm">
         <button
            class="ml-4 px-4 py-1 border rounded-full text-gray-600 text-sm hover:bg-gray-200"
            @click="handleManual"
@@ -28,7 +28,7 @@
           {{ matnr }}{{ batch }}
          
         </div>
-      </div>
+      </div> -->
 
       <!-- Formulario de Lectura -->
       <div class="space-y-4">
