@@ -11,6 +11,7 @@ Aplicación web para la gestión de logística de los tecnicos de montacarga y a
 - Consulta de ubicaciones y materiales
 - Control de entregas y novedades
 - Monitoreo de conexión en tiempo real
+- Indicador de Despacho
 
 ## Tecnologías Utilizadas
 
