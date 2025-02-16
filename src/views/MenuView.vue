@@ -49,7 +49,7 @@
   <script setup>
   import { ref , onMounted} from 'vue'
 
-   import { UseDespachoStore } from '../store/despachos'
+   import { UseDespachoStore } from '../store/despachos'; 
   import { useRouter } from 'vue-router'
   import { useLoader } from '../composables/useLoader' 
   import { useAuthStore } from '../store/auth';
@@ -73,6 +73,7 @@ const authStore = useAuthStore()
     { title: 'Consultar material', action: 'consultar-material' },
     { title: 'Gestion Entrega', action: 'gestion-entrega' },
     { title: 'Indicador De Despacho', action: 'indicator' },
+    { title: 'Validar Etiqueta', action: 'info-etiqueta' },
     // { title: 'Legalizacion', action: 'legalizacion' },
   ]
   
