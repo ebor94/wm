@@ -77,6 +77,12 @@ const router = createRouter({
         name: 'indicator',
         component: () => import('../views/Indicator.vue')
       },
+      ,
+      {
+        path: '/info-etiqueta/',
+        name: 'Etiqeuta',
+        component: () => import('../views/ViewEtique.vue')
+      },
       {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
