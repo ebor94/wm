@@ -39,8 +39,8 @@ export const InfoWm = {
     let lote              = 'x';
     let loteDestino       = 'x';
     let usuario           = 'x';
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '2' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
@@ -76,8 +76,8 @@ export const InfoWm = {
     let codsap            = material.slice(-6)
     let loteDestino       = 'x';
     let usuario           = 'x';
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '2' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
@@ -86,8 +86,8 @@ export const InfoWm = {
     let codsap            = material.slice(-6)
     let loteDestino       = 'x';
     let usuario           = localStorage.getItem('user');
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '1' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
@@ -99,8 +99,8 @@ export const InfoWm = {
     let lote              = 'x';
     let usuario           = 'x';
     let pallet            = 'x';
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '6' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
@@ -111,8 +111,8 @@ export const InfoWm = {
     let lote              = 'x';
     let usuario           = 'x';
     let pallet            = 'x';
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '7' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },
@@ -125,8 +125,8 @@ export const InfoWm = {
     let lote              = 'x';
     let usuario           = 'x';
     let pallet            = 'x';
-    let centro            = '1100' ;
-    let almacen           = '1101' ;
+    let centro            = localStorage.getItem('centro') ;
+    let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '10' ;    
     return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
   },

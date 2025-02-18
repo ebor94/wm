@@ -31,6 +31,8 @@ export const useAuthStore = defineStore('auth', {
               this.nameUser = response[0].nombre;
               this.ptoExpedicion = response[0].centro;
               this.almaceMM = response[0].almacen;
+              localStorage.setItem('centro', response[0].centro)
+              localStorage.setItem('almacen', response[0].almacen)
               localStorage.setItem('user', username)
               localStorage.setItem('isAuthenticated', 'true')
               
