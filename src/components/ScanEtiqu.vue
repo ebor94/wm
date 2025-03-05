@@ -44,7 +44,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'onChange'])
 
 const handleChange = (event) => {
-    console.log('ingreso al componente padre')
+    //console.log('ingreso al componente padre')
   const value = event.target.value
   emit('onChange', value)
 }
