@@ -12,7 +12,9 @@ export const infoDespachos = {
   },
 
   async getEntregaStatus(entrega) {
-    return axios.get(`${domain}/transporte/detalleEntrega/${entrega}`, {
+    //return axios.get(`${domain}/transporte/detalleEntrega/${entrega}`, {
+      return axios.get(`http://localhost:3001/transporte/detalleEntrega/${entrega}`, {
+      
       headers: headers,
     });
   },
@@ -239,6 +241,139 @@ async Contabilizar(entrega){
 
 async GetWeight(entrega){ 
   return axios.get(`${domain}/transporte/pesoentrega/${entrega}`,{headers:headers})
+},
+
+async getListMt(entrega){
+  try {
+    const token = localStorage.getItem('token'); // O donde almacenes tu token
+    
+    const response = await axios.get(
+      `http://localhost:3001/transporte/ingreso-mt/${entrega}/${localStorage.getItem('centro')}`,
+      {
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error al consultar ingreso MT:', error);
+    throw error;
+  }
+
+},
+async  getIngresoMaterialInfo( estado = 'L', entrega ,  centro = localStorage.getItem('centro'), almacen = localStorage.getItem('almacen'),consecutivo = '') {
+  // Validar que se proporcionen los parámetros requeridos
+
+  
+  if (!localStorage.getItem('token')) {
+    throw new Error('El token de autorización es requerido');
+  }
+
+  try {  // Construir los parámetros de consulta
+ 
+      const params = {
+      consecutivo,  
+      estado,
+      centro,
+      almacen,
+      entrega
+    };
+      
+    // Hacer la petición GET con axios
+    const response = await axios({
+      method: 'GET',
+      url: 'http://localhost:3001/transporte/ingreso-mt-info/',
+      params,
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+
+    return response.data;
+  } catch (error) {
+    // Manejar errores de la petición
+    console.error('Error al obtener información de ingreso de material:', error.message);
+    
+    // Si hay una respuesta con error del servidor
+    if (error.response) {
+      console.error('Respuesta del servidor:', error.response.data);
+      console.error('Código de estado:', error.response.status);
+      throw new Error(`Error del servidor: ${error.response.status}`);
+    } else if (error.request) {
+      // Si la petición fue hecha pero no se recibió respuesta
+      throw new Error('No se recibió respuesta del servidor');
+    } else {
+      // Error en la configuración de la petición
+      throw error;
+    }
+  }
+},  
+
+async  enterPallet(VBELN, MATNR, CHARG, PALLET, CENTRO_ING, LGORT, UBICACION1, UBICACION2, POS_ENTREGA, CANTIDAD, COD_USUARIO, BANDERA) {
+  try {
+    // Validación básica de parámetros requeridos
+    if (!VBELN || !MATNR || !PALLET || !CENTRO_ING) {
+      throw new Error('Faltan parámetros obligatorios: VBELN, MATNR, PALLET y CENTRO_ING son requeridos');
+    }
+
+    const data = {
+      VBELN,
+      MATNR,
+      CHARG,
+      PALLET,
+      CENTRO_ING,
+      LGORT,
+      UBICACION1,
+      UBICACION2,
+      POS_ENTREGA,
+      CANTIDAD,
+      COD_USUARIO,
+      BANDERA
+    };
+    console.log(data);
+
+    const endpoint = `http://localhost:3001/transporte/ingreso-mt-reg/`;
+    
+    
+    const response = await axios.post(endpoint, data, { 
+      headers: {
+        'accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      timeout: 10000 // Timeout de 10 segundos
+    });
+
+    if (typeof response.data.MENSAJE === 'string' && response.data.MENSAJE.includes('|')) {
+      const [status, message] = response.data.split('|').map(item => item.trim());
+      return {
+        success: status.toLowerCase() === 'ok',
+        status,
+        message,
+        raw: response.data
+      };
+    }
+    
+    return response.data;
+  }catch (error) {
+    // Manejo de errores mejorado
+    if (error.response) {
+      // Error de respuesta del servidor
+      console.error(`Error del servidor: ${error.response.status}`, error.response.data);
+      throw new Error(`Error al registrar pallet: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+    } else if (error.request) {
+      // Error de red (no se recibió respuesta)
+      console.error('Error de red:', error.request);
+      throw new Error('Error de conexión al registrar pallet. Verifique su conexión a internet.');
+    } else {
+      // Error en la configuración de la solicitud
+      console.error('Error:', error.message);
+      throw error;
+    }
+  }
 }
 
 
