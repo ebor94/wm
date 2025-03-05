@@ -376,8 +376,15 @@ const validaformulario = () => {
     return false
   }
 
-  let  total =  nuevoAcumulado.value + goodQuantity.value + brokenQuantity.value
- if(total > totalPos.value) {      
+  let total = (  
+    parseFloat(nuevoAcumulado.value) +  
+    parseFloat(goodQuantity.value) +  
+    parseFloat(brokenQuantity.value)  
+  ).toFixed(3);
+
+  total = parseFloat(total);
+  console.log(total,'*******', parseFloat(totalPos.value) )
+ if(total > parseFloat(totalPos.value)) {      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `excede cantidad acumulada, no permitido ${total}`;
     showPopup.value = true;
