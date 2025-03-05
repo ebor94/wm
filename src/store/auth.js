@@ -22,19 +22,21 @@ export const useAuthStore = defineStore('auth', {
           try {
             const response = await authService.login(username, password)
             console.log(response)
-            if (response[0].nombre !== '') { 
+            if (response.success) { 
               this.user = username
               this.isAuthenticated = true
               
               // Guardar en localStorage
-              localStorage.setItem('NameUser', response[0].nombre)
-              this.nameUser = response[0].nombre;
-              this.ptoExpedicion = response[0].centro;
-              this.almaceMM = response[0].almacen;
-              localStorage.setItem('centro', response[0].centro)
-              localStorage.setItem('almacen', response[0].almacen)
+              localStorage.setItem('NameUser', response.data[0].nombre)
+              this.token = response.token
+              this.nameUser = response.data[0].nombre;
+              this.ptoExpedicion = response.data[0].centro;
+              this.almaceMM = response.data[0].almacen;
+              localStorage.setItem('centro', response.data[0].centro)
+              localStorage.setItem('almacen', response.data[0].almacen)
               localStorage.setItem('user', username)
               localStorage.setItem('isAuthenticated', 'true')
+              localStorage.setItem('token', response.token)
               
               return true
             } else {
@@ -50,9 +52,11 @@ export const useAuthStore = defineStore('auth', {
     
         logout() {
           this.user = null
+          this.token = null
           this.isAuthenticated = false
           
           // Limpiar localStorage
+          localStorage.removeItem('token')
           localStorage.removeItem('user')
           localStorage.removeItem('isAuthenticated')
         },
