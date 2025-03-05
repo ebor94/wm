@@ -74,6 +74,8 @@ const authStore = useAuthStore()
     { title: 'Gestion Entrega', action: 'gestion-entrega' },
     { title: 'Indicador De Despacho', action: 'indicator' },
     { title: 'Validar Etiqueta', action: 'info-etiqueta' },
+    { title: 'Consultar Despacho', action: 'consultar-despacho' },
+    { title: 'Ingreso De Mercancia', action: 'ingreso-mcia' },
     // { title: 'Legalizacion', action: 'legalizacion' },
   ]
   
