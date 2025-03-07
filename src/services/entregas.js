@@ -152,9 +152,6 @@ export const InfoWm = {
     }
 
 
-
-
-
 }
 
 
@@ -248,7 +245,7 @@ async getListMt(entrega){
     const token = localStorage.getItem('token'); // O donde almacenes tu token
     
     const response = await axios.get(
-      `http://localhost:3001/transporte/ingreso-mt/${entrega}/${localStorage.getItem('centro')}`,
+      `${domain}/transporte/ingreso-mt/${entrega}/${localStorage.getItem('centro')}`,
       {
         headers: {
           'accept': 'application/json',
@@ -285,7 +282,7 @@ async  getIngresoMaterialInfo( estado = 'L', entrega ,  centro = localStorage.ge
     // Hacer la petición GET con axios
     const response = await axios({
       method: 'GET',
-      url: 'http://localhost:3001/transporte/ingreso-mt-info/',
+      url: `${domain}/transporte/ingreso-mt-info/`,
       params,
       headers: {
         'accept': 'application/json',
@@ -336,7 +333,7 @@ async  enterPallet(VBELN, MATNR, CHARG, PALLET, CENTRO_ING, LGORT, UBICACION1, U
     };
     console.log(data);
 
-    const endpoint = `http://localhost:3001/transporte/ingreso-mt-reg/`;
+    const endpoint = `${domain}/transporte/ingreso-mt-reg/`;
     
     
     const response = await axios.post(endpoint, data, { 
