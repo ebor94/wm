@@ -1,12 +1,12 @@
 <template>
-  
+  <div>
   <Header title="404" ></Header>
     <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <!-- Logo Container -->
       <div class="mb-8">
         <img 
           src="../assets/logo.png" 
-          alt="LogiCIT" 
+          alt="PickApp" 
           class="h-16 mb-2"
         />
       </div>
@@ -53,6 +53,7 @@
         LogiCIT - Cerámica Italia ©2024
       </footer>
     </div>
+  </div>
   </template>
   
   <script setup>
@@ -62,7 +63,7 @@ import Header from '../components/Header.vue';
   const router = useRouter()
   
   const goToHome = () => {
-    router.push('/pickapp')
+    router.push('/')
   }
   
   const goBack = () => {
