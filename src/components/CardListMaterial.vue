@@ -35,7 +35,7 @@
               </div>
             </div>
             <!-- Cantidad -->
-            <div class="text-gray-700 text-sm border-t pt-2">
+            <div class="text-gray-700 text-sm border-t pt-2"  v-if=" material.cantestb !== 0 ||  material.cantestb !== undefined">
               <span class="font-medium">{{ material.cantcj }}</span> cajas / {{ material.cantestb }} estibas
             </div>
           </div>
