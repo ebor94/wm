@@ -102,6 +102,16 @@
             confirmText="Aceptar" :showConfirm="true" @confirm="handlePopupConfirm" @update="handlePopupUpdate" />
 
         <LoaderComponent v-if="isLoading" loadingText="cargando ..." />
+
+        <PopupForm
+      v-model="showOrderModal"
+      :title="titleModalOt"
+      api-url="http://localhost:3001/transporte/wm/lt12/"
+      :otNumber = "otNumber"
+      :almacenWm = "almacenWm"
+      @submit-success="handleSuccess"
+      @submit-error="handleError"
+    />
     </div>
 </template>
 <script setup>
@@ -113,6 +123,7 @@ import { useLoader } from '../composables/useLoader';
 import Header from '../components/Header.vue';
 import ScanEtiqu from '../components/ScanEtiqu.vue';
 import { InfoEntrega } from '../services/entregas';
+import PopupForm from '../components/PopupForm.vue';
 
 
 const isManualMode = ref(false);
@@ -135,8 +146,11 @@ const MtPosition = ref('')
 const meins = ref('')
 const mt = ref('')
 const infoPos = ref([])
-const goodQuantity = ref(0)
+const goodQuantity = ref('0')
 const goodQuantityInput = ref(null)
+const otNumber = ref('')
+const almacenWm = ref('')
+
 
 
 
@@ -146,7 +160,8 @@ const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
-
+const showOrderModal = ref(false)
+const titleModalOt = ref("Ingresar Orden y Ubicación")
 
 const resetFields = async () => {
     scanValue.value = '';
@@ -160,6 +175,7 @@ const vibrate = () => {
     }
 }
 
+
 const handleAccept = async () => {
     if (goodQuantity.value === 0) {
         showPopup.value = true;
@@ -169,15 +185,27 @@ const handleAccept = async () => {
         return
     }
     showLoader('Guardando información...')
+   
     try {
-        let response = await InfoEntrega.enterPallet(mt.value,  materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'),'','',MtPosition.value.toString(),goodQuantity.value,localStorage.getItem('user'),'1')
+        let response = await InfoEntrega.enterPallet(mt.value,  materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'),'','',MtPosition.value.toString(),goodQuantity.value.toString(),localStorage.getItem('user'),'1')
         console.log(response)
-        showPopup.value = true;
+        if (response.data.MENSAJE.includes("|")) {      
+            const partes = response.data.MENSAJE.split("|");         
+            otNumber.value = partes[1]; 
+            let title = partes[0].toString()
+            almacenWm.value =   partes[2].toString()
+           // console.log(title)
+            if (title == "PALLET YA LEGALIZADO EN ESTE CENTRO ") titleModalOt.value ="OT pendiente de confirmar" 
+
+            showOrderModal.value = true
+        }else {
+         showPopup.value = true;
         popupTitle.value = 'Información'
         popupMessage.value = response.data.MENSAJE || response.data.error
         popupType.value = 'success'
         resetFields()
         isOpen.value = false
+    }
     } catch (error) {
         showPopup.value = true;
         popupTitle.value = 'Alerta'
