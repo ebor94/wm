@@ -8,7 +8,7 @@
         <div class="mb-2">
           <label for="entrega" class="block text-sm font-medium mb-1">Número de Entrega</label>
           <div class="flex">
-            <input type="text" id="entrega" v-model="entrega" @keyup.enter="consultarEntrega"
+            <input type="text" id="entrega" value="70334093" ref="entregainput" v-model="entrega" @keyup.enter="consultarEntrega"
               placeholder="Ingrese número de entrega"
               class="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <button @click="consultarEntrega"
@@ -59,7 +59,7 @@ import { useLoader } from '../composables/useLoader';
 import CardListMaterial from '../components/CardListMaterial.vue';
 import BasePopup from '../components/BasePopup.vue';
 // Estado reactivo
-const entrega = ref('');
+
 const entregaInfo = ref(null);
 const entregaInfoAcum = ref(null);
 const loading = ref(false);
@@ -75,6 +75,7 @@ const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
+const entrega = ref(store.entregas[0]);
 
 const goToMenu = async () => {
   store.detalleEntregas = null;
@@ -99,17 +100,26 @@ const consultarEntrega = async () => {
     error.value = '';
     entregaInfo.value = null;
     store.detalleEntregas = null;
+    store.entregas[0] = entrega.value
     // Llamar al servicio para consultar la entrega
     const response = await InfoEntrega.getListMt(entrega.value);
     const responseAcum = await InfoEntrega.getIngresoMaterialInfo("L", entrega.value);
-    console.log(response);
-    // Actualizar el estado con la información recibida 0070334079
+    ;
+    // Actualizar el estado con la información recibida 70334093
     if (response.data.mensaje == "OK") {
       let responseEntergaDtalle = await infoDespachos.getEntregaStatus(entrega.value)
-      //console.log(responseEntergaDtalle.data.datos);
-      entregaInfoAcum.value = responseAcum.data;
-      entregaInfo.value = agregarAcumuladosPorPosnr(response.data.datos, entregaInfoAcum.value);
+      console.log(responseAcum.data);
+       if (responseAcum.data.error){
+        entregaInfo.value = response.data.datos
+        
+       }else{
+        entregaInfoAcum.value = responseAcum.data;
+      //console.log(entregaInfoAcum.value)
+        entregaInfo.value = agregarAcumuladosPorPosnr(response.data.datos, entregaInfoAcum.value);
 
+       }
+
+    
       entregaInfo.value.forEach(item => {
         const busquedaCjEstb = responseEntergaDtalle.data.datos.find(item2 =>
           item2.charg === item.charg &&
@@ -145,6 +155,7 @@ const consultarEntrega = async () => {
     popupTitle.value = 'Alerta'
     popupMessage.value = error.value
     popupType.value = 'error'
+    console.log(err)
   } finally {
     // Finalizar carga
     hideLoader();
@@ -160,6 +171,7 @@ const procesarSeleccion = (materialInfo) => {
 
 function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
   // Paso 1: Calcular las sumas acumuladas por Posnr del array de procesados
+  //console.log(inventarioArray, procesadosArray)
   const acumuladosPorPosnr = procesadosArray.reduce((acc, item) => {
     const posnr = item.Posnr;
     if (!acc[posnr]) {
@@ -186,9 +198,28 @@ function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
   return inventarioConAcumulados;
 }
 
-onMounted(() => {
+onMounted( async () => {
   // console.log('Componente montado');
   entregaInfo.value = store.detalleEntregas;
+
+ if(store.entregas.length) {
+  entrega.value = store.entregas[0]
+  await consultarEntrega()
+ }
+ 
+
+// Versión corregida con validaciones adecuadas
+/* if (entregaInfo.value && 
+    Array.isArray(entregaInfo.value) && 
+    entregaInfo.value.length > 0 && 
+    entregaInfo.value[0] && 
+    entregaInfo.value[0].vbeln !== undefined) {
+
+  console.log(entregaInfo.value[0].vbeln);
+  //entrega.value = entregaInfo.value[0].vbeln
+ 
+} */
+  
 });
 
 </script>
