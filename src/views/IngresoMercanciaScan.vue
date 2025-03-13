@@ -106,7 +106,7 @@
         <PopupForm
       v-model="showOrderModal"
       :title="titleModalOt"
-      api-url="http://localhost:3001/transporte/wm/lt12/"
+      api-url="https://lilix.ceramicaitalia.com:3001/transporte/wm/lt12/"
       :otNumber = "otNumber"
       :almacenWm = "almacenWm"
       @submit-success="handleSuccess"
