@@ -13,7 +13,7 @@ export const infoDespachos = {
 
   async getEntregaStatus(entrega) {
     //return axios.get(`${domain}/transporte/detalleEntrega/${entrega}`, {
-      return axios.get(`http://localhost:3001/transporte/detalleEntrega/${entrega}`, {
+      return axios.get(`${domain}/transporte/detalleEntrega/${entrega}`, {
       
       headers: headers,
     });
@@ -43,8 +43,11 @@ export const InfoWm = {
     let usuario           = 'x';
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '2' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let bandera           = '2' ;
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;  
+    console.log(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})  
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
   },
 
   async RegistryPicking(entrega,posicion,material,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,TPLECTURA){
@@ -80,8 +83,11 @@ export const InfoWm = {
     let usuario           = 'x';
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '2' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let bandera           = '2' ;
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
+
   },
 
   async MoveMaterial(material,lote,pallet,cantidad, ubicacionOrigen, ubicacionDestino){    
@@ -91,7 +97,9 @@ export const InfoWm = {
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '1' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
   },
   async SerachLocationStockAvailable(ubicacionOrigen){    
     let ubicacionDestino  = 'x';
@@ -103,8 +111,11 @@ export const InfoWm = {
     let pallet            = 'x';
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '6' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let bandera           = '6' ;
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
+
   },
   async ClearLocationStockAvailable(ubicacionOrigen,ubicacionDestino){    
     let cantidad          = 'x';
@@ -116,7 +127,10 @@ export const InfoWm = {
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
     let bandera           = '7' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
+
   },
   async GetInfoMaterialAvailable(material){    
     let ubicacionOrigen   = 'x'
@@ -129,8 +143,12 @@ export const InfoWm = {
     let pallet            = 'x';
     let centro            = localStorage.getItem('centro') ;
     let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '10' ;    
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}`,{headers: headers})
+    let bandera           = '10' ;  
+    let centrodestino     = localStorage.getItem('centro') ;
+    let almacendestino    = localStorage.getItem('almacen') ;
+    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
+  
+   
   },
   async GetOtPending(user){
     let data = {
