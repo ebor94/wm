@@ -161,6 +161,7 @@ const divideEtiquetas = (codigo) => {
 async function GetInfoMaterialAviable(material, lote, pallet) {
   try {
     const infoPallet = await InfoWm.GetInfoLocationMaterialBach(material, lote, pallet);
+    console.log(infoPallet)
     ubicaciones.value = infoPallet.data.data.datos
   } catch (error) {
     console.log(error)
