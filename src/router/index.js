@@ -94,6 +94,11 @@ const router = createRouter({
         component: () => import('../views/IngresoMercanciaScan.vue')
       },
       {
+        path: '/traslado-almacenes/',
+        name: 'ingreso-mcia-scan',
+        component: () => import('../views/TrasladosAlmView.vue')
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: NotFoundView
