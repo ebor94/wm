@@ -32,145 +32,225 @@ export const infoDespachos = {
 };
 
 export const InfoWm = {
-   
-  async GetInfoPallet(pallet){
-    let ubicacionOrigen   = 'x'
-    let ubicacionDestino  = 'x';
-    let cantidad          = 'x';
-    let material          = 'x';
-    let lote              = 'x';
-    let loteDestino       = 'x';
-    let usuario           = 'x';
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '2' ;
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;  
-    console.log(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})  
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
-  },
-
-  async RegistryPicking(entrega,posicion,material,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,TPLECTURA){
-
-    return axios.post(
-      `${domain}/transporte/Registraalistamiento`,
-      { "entrega"   : entrega,
-        "posicion"  : posicion,
-        "material"  : material,
-        "lote"      : lote,
-        "consestib" : consestib,
-        "cantbuena" : cantbuena,
-        "cantrotura": cantrotura,
-        "UMBASE"    : UMBASE,
-        "usuario"   : usuario,
-        "bandera"   : bandera,
-        "IDX"       : IDX,
-        "POSOT"     : POSOT,
-        "OT"        : OT,
-        "TPLECTURA" : TPLECTURA
-       },
+  async GetInfoPallet(pallet) {
+    let ubicacionOrigen = "x";
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let material = "x";
+    let lote = "x";
+    let loteDestino = "x";
+    let usuario = "x";
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "2";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    console.log(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
       { headers: headers }
     );
-
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
   },
 
-  async GetInfoLocationMaterialBach(material,lote,pallet){
-    let ubicacionOrigen   = 'x'
-    let ubicacionDestino  = 'x';
-    let cantidad          = 'x';
-    let codsap            = material.slice(-6)
-    let loteDestino       = 'x';
-    let usuario           = 'x';
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '2' ;
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
-
+  async RegistryPicking(
+    entrega,
+    posicion,
+    material,
+    lote,
+    consestib,
+    cantbuena,
+    cantrotura,
+    UMBASE,
+    usuario,
+    bandera,
+    IDX,
+    POSOT,
+    OT,
+    TPLECTURA
+  ) {
+    return axios.post(
+      `${domain}/transporte/Registraalistamiento`,
+      {
+        entrega: entrega,
+        posicion: posicion,
+        material: material,
+        lote: lote,
+        consestib: consestib,
+        cantbuena: cantbuena,
+        cantrotura: cantrotura,
+        UMBASE: UMBASE,
+        usuario: usuario,
+        bandera: bandera,
+        IDX: IDX,
+        POSOT: POSOT,
+        OT: OT,
+        TPLECTURA: TPLECTURA,
+      },
+      { headers: headers }
+    );
   },
 
-  async MoveMaterial(material,lote,pallet,cantidad, ubicacionOrigen, ubicacionDestino){    
-    let codsap            = material.slice(-6)
-    let loteDestino       = 'x';
-    let usuario           = localStorage.getItem('user');
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '1' ;    
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
+  async GetInfoLocationMaterialBach(material, lote, pallet) {
+    let ubicacionOrigen = "x";
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let codsap = material.slice(-6);
+    let loteDestino = "x";
+    let usuario = "x";
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "2";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
   },
-  async SerachLocationStockAvailable(ubicacionOrigen){    
-    let ubicacionDestino  = 'x';
-    let cantidad          = 'x';
-    let codsap            = 'x';
-    let loteDestino       = 'x';
-    let lote              = 'x';
-    let usuario           = 'x';
-    let pallet            = 'x';
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '6' ;
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
 
+  async MoveMaterial(
+    material,
+    lote,
+    pallet,
+    cantidad,
+    ubicacionOrigen,
+    ubicacionDestino
+  ) {
+    let codsap = material.slice(-6);
+    let loteDestino = "x";
+    let usuario = localStorage.getItem("user");
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "1";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
   },
-  async ClearLocationStockAvailable(ubicacionOrigen,ubicacionDestino){    
-    let cantidad          = 'x';
-    let codsap            = 'x';
-    let loteDestino       = 'x';
-    let lote              = 'x';
-    let usuario           = 'x';
-    let pallet            = 'x';
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '7' ;    
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
 
+  async MoveMaterialStores(
+    material,
+    lote,
+    pallet,
+    cantidad,
+    ubicacionOrigen,
+    ubicacionDestino,
+    centroOrigen,
+    centroDestino,
+    almacenOrigen,
+    almacenDestino
+  ) {
+    let codsap = material.slice(-6);
+    let loteDestino = "x";
+    let usuario = localStorage.getItem("user");
+    let centro = centroOrigen;
+    let almacen = almacenOrigen;
+    let bandera = "11";
+    let centrodestino = centroDestino;
+    //let almacendestino = almacenDestino;
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacenDestino}/${centrodestino}`,
+      { headers: headers }
+    );
   },
-  async GetInfoMaterialAvailable(material){    
-    let ubicacionOrigen   = 'x'
-    let ubicacionDestino  = 'x';
-    let cantidad          = 'x';
-    let codsap            = material;
-    let loteDestino       = 'x';
-    let lote              = 'x';
-    let usuario           = 'x';
-    let pallet            = 'x';
-    let centro            = localStorage.getItem('centro') ;
-    let almacen           = localStorage.getItem('almacen') ;
-    let bandera           = '10' ;  
-    let centrodestino     = localStorage.getItem('centro') ;
-    let almacendestino    = localStorage.getItem('almacen') ;
-    return axios.get(`${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,{headers: headers})
-  
-   
+  async SerachLocationStockAvailable(ubicacionOrigen) {
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let codsap = "x";
+    let loteDestino = "x";
+    let lote = "x";
+    let usuario = "x";
+    let pallet = "x";
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "6";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
   },
-  async GetOtPending(user){
+  async ClearLocationStockAvailable(ubicacionOrigen, ubicacionDestino) {
+    let cantidad = "x";
+    let codsap = "x";
+    let loteDestino = "x";
+    let lote = "x";
+    let usuario = "x";
+    let pallet = "x";
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "7";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
+  },
+  async GetInfoMaterialAvailable(material) {
+    let ubicacionOrigen = "x";
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let codsap = material;
+    let loteDestino = "x";
+    let lote = "x";
+    let usuario = "x";
+    let pallet = "x";
+    let centro = localStorage.getItem("centro");
+    let almacen = localStorage.getItem("almacen");
+    let bandera = "10";
+    let centrodestino = localStorage.getItem("centro");
+    let almacendestino = localStorage.getItem("almacen");
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
+  },
+  async GetOtPending(user) {
     let data = {
-      "alacenwm": "110",
-      "tipoAlmacen": "920"
-  }
+      alacenwm: "110",
+      tipoAlmacen: "920",
+    };
 
-   let response = await axios.post(`${domain}/transporte/lt22`,data,{headers: headers})    
-      response.data.forEach(async(order) => {
-      let userName = await axios.get(`${domain}/corporativo/empleado/${order.usuario}`)
-      order.username = userName.data.data[0].NombreEmpleado
-      })
-      
-    return response 
-    },
+    let response = await axios.post(`${domain}/transporte/lt22`, data, {
+      headers: headers,
+    });
+    response.data.forEach(async (order) => {
+      let userName = await axios.get(
+        `${domain}/corporativo/empleado/${order.usuario}`
+      );
+      order.username = userName.data.data[0].NombreEmpleado;
+    });
 
-    async GetListOtOrder(entrega){
+    return response;
+  },
 
-    }
+  async GetListOtOrder(entrega) {},
 
+  async GetInfoStores(centro, almacenmm = "", almacenWm = "") {
+    const url = `${domain}/transporte/wm/infoalmacen`;
+    const token = localStorage.getItem("token");
+    const headers = {
+      accept: "application/json",
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
 
-}
+    const data = {
+      centro: centro,
+      almacenmm: almacenmm,
+      almacenWm: almacenWm,
+    };
+
+    return axios.post(url, data, { headers });
+  },
+};
 
 
 export const InfoEntrega = {
