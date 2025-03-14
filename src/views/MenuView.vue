@@ -57,6 +57,7 @@ import Header from '../components/Header.vue';
 
 
 
+
 const authStore = useAuthStore()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
@@ -74,7 +75,8 @@ const authStore = useAuthStore()
     { title: 'Gestion Entrega', action: 'gestion-entrega' },
     { title: 'Indicador De Despacho', action: 'indicator' },
     { title: 'Validar Etiqueta', action: 'info-etiqueta' },
-    { title: 'Consultar Despacho', action: 'consultar-despacho' },
+    {title: 'Traslado entre Almacenes', action:'traslado-almacenes'},
+   // { title: 'Consultar Despacho', action: 'consultar-despacho' },
     { title: 'Ingreso De Mercancia', action: 'ingreso-mcia' },
     // { title: 'Legalizacion', action: 'legalizacion' },
   ]
