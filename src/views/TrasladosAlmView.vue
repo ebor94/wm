@@ -200,10 +200,10 @@ const resetForm = () => {
   formData.value.cantidadBuena = '';
   formData.value.centroOrigen = localStorage.getItem('centro') || '';
  formData.value.almacenOrigen = localStorage.getItem('almacen') || '';
-  formData.value.ubicacionOrigen = '';
+  //formData.value.ubicacionOrigen = '';
   formData.value.centroDestino = localStorage.getItem('almacen') || '';
   formData.value.almacenDestino = '';
-  formData.value.ubicacionDestino = '';
+  //formData.value.ubicacionDestino = '';
   formData.value.material = '';
   formData.value.lote = '';
   formData.value.consecutivo = '';
