@@ -198,10 +198,10 @@ const ubicacionDestinoRef = ref('');
 const resetForm = () => {
   formData.value.lectura = '';
   formData.value.cantidadBuena = '';
- // formData.value.centroOrigen = '';
-  //formData.value.almacenOrigen = '';
+  formData.value.centroOrigen = localStorage.getItem('centro') || '';
+ formData.value.almacenOrigen = localStorage.getItem('almacen') || '';
   formData.value.ubicacionOrigen = '';
-  formData.value.centroDestino = '';
+  formData.value.centroDestino = localStorage.getItem('almacen') || '';
   formData.value.almacenDestino = '';
   formData.value.ubicacionDestino = '';
   formData.value.material = '';
