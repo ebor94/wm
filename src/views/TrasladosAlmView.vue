@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <!-- Header -->
-    <Header title=".:. Traslado .:." ></Header>
+    <Header title=".:. Traslado .:."></Header>
 
 
     <!-- Main Content -->
@@ -23,28 +23,22 @@
             class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
         </div>
         <div class="grid grid-cols-2 gap-4">
-             <!-- Centro origen -->
-             <div>
-          <label class="text-gray-300 text-sm mb-1 block">Centro origen</label>
-          <input
-          v-model="formData.centroOrigen" 
-          ref="centroOrigenRef"
-          type="text" placeholder="Centro origen"
-            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
-        </div>
+          <!-- Centro origen -->
+          <div>
+            <label class="text-gray-300 text-sm mb-1 block">Centro origen</label>
+            <input v-model="formData.centroOrigen" ref="centroOrigenRef" type="text" placeholder="Centro origen"
+              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
+          </div>
           <!-- Almacen origen -->
           <div>
-          <label class="text-gray-300 text-sm mb-1 block">Almacen origen</label>
-          <input
-          v-model="formData.almacenOrigen" 
-          ref="almacenOrigenRef"
-          type="text" placeholder="Almacen origen"
-            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
+            <label class="text-gray-300 text-sm mb-1 block">Almacen origen</label>
+            <input v-model="formData.almacenOrigen" ref="almacenOrigenRef" type="text" placeholder="Almacen origen"
+              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
+          </div>
         </div>
-      </div>
 
 
-        
+
         <!-- Ubicación Origen -->
         <div>
           <label class="text-gray-300 text-sm mb-1 block">Ubicación Origen</label>
@@ -58,43 +52,32 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-           <!-- Centro Destino -->
-        <div>
-          <label class="text-gray-300 text-sm mb-1 block">Centro Destino</label>
-          <input
-          v-model="formData.centroDestino" 
-          ref="centroDestinoRef"
-          type="text" placeholder="Centro Destino"
-            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
-        </div>
+          <!-- Centro Destino -->
+          <div>
+            <label class="text-gray-300 text-sm mb-1 block">Centro Destino</label>
+            <input v-model="formData.centroDestino" ref="centroDestinoRef" type="text" placeholder="Centro Destino"
+              class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
+          </div>
 
           <!-- Almacen Destino -->
           <div>
-          <label class="text-gray-300 text-sm mb-1 block">Almacen Destino</label>
-          <select 
-          v-model="formData.almacenDestino"
-          class="w-full bg-white text-gray-800 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-        >
-          <option value="" disabled>Seleccione Almacen Destino</option>
-          <option 
-            v-for="almacen in almacenesDestino" 
-            :key="almacen.id" 
-            :value="almacen.id"
-          >
-            {{ almacen.id }} ==> {{ almacen.warehouseNumber }}
-          </option>
-        </select>
+            <label class="text-gray-300 text-sm mb-1 block">Almacen Destino</label>
+            <select v-model="formData.almacenDestino"
+              class="w-full bg-white text-gray-800 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-italia-red focus:border-italia-red">
+              <option value="" disabled>Seleccione Almacen Destino</option>
+              <option v-for="almacen in almacenesDestino" :key="almacen.id" :value="almacen.id">
+                {{ almacen.id }} ==> {{ almacen.warehouseNumber }}
+              </option>
+            </select>
+          </div>
         </div>
-      </div>
 
 
         <!-- Ubicación Destino -->
         <div>
           <label class="text-gray-300 text-sm mb-1 block">Ubicación Destino</label>
-          <input
-          v-model="formData.ubicacionDestino" 
-          ref="ubicacionDestinoRef"
-          type="text" placeholder="Ubicación Destino"
+          <input v-model="formData.ubicacionDestino" ref="ubicacionDestinoRef" type="text"
+            placeholder="Ubicación Destino"
             class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
         </div>
 
@@ -134,17 +117,8 @@
         Ir menú
       </button>
     </div>
-    <BasePopup
-     v-model="showPopup"
-     :title="popupTitle" 
-     :message="popupMessage" 
-     :type=popupType 
-     :action="popupAction" 
-     confirmText="Aceptar"
-     :showConfirm="true" 
-     @confirm="handlePopupConfirm"
-     @update="handlePopupUpdate"
-      />
+    <BasePopup v-model="showPopup" :title="popupTitle" :message="popupMessage" :type=popupType :action="popupAction"
+      confirmText="Aceptar" :showConfirm="true" @confirm="handlePopupConfirm" @update="handlePopupUpdate" />
     <LoaderComponent v-if="isLoading" loadingText="cargando ..." />
     <!-- Footer -->
     <footer class="bg-italia-red text-white p-2 text-center text-sm">
@@ -157,6 +131,7 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { InfoWm } from '../services/entregas';
+import { infoEstiba } from '../services/product';
 import { useLoader } from '../composables/useLoader';
 import BasePopup from '../components/BasePopup.vue';
 import Header from '../components/Header.vue';
@@ -174,34 +149,36 @@ const popupAction = ref('normal')
 const formData = ref({
   lectura: '',
   cantidadBuena: '',
-  centroOrigen:'',
-  almacenOrigen:'',
-  ubicacionOrigen:'',
-  centroDestino:'',
-  almacenDestino:'',
-  ubicacionDestino:'',
+  centroOrigen: '',
+  almacenOrigen: '',
+  ubicacionOrigen: '',
+  centroDestino: '',
+  almacenDestino: '',
+  ubicacionDestino: '',
   material: '',
   lote: '',
   consecutivo: ''
 })
 const cantidadBuenaInput = ref(null)
 const ubicacionDestino = ref('')
-const almacenesDestino  = ref([])
+const almacenesDestino = ref([])
 const ubicaciones = ref([])
 
-const centroOrigenRef = ref(localStorage.getItem('centro') ||  '');
+const centroOrigenRef = ref(localStorage.getItem('centro') || '');
 const almacenOrigenRef = ref(localStorage.getItem('almacen') || '');
-const centroDestinoRef = ref(localStorage.getItem('centro') ||  '');
+const centroDestinoRef = ref(localStorage.getItem('centro') || '');
 const almacenDestinoRef = ref(almacenesDestino.value);
 const ubicacionDestinoRef = ref('');
 
 const resetForm = () => {
   formData.value.lectura = '';
   formData.value.cantidadBuena = '';
-  formData.value.centroOrigen = localStorage.getItem('centro') || '';
- formData.value.almacenOrigen = localStorage.getItem('almacen') || '';
+  formData.value.centroOrigen =  '';
+  formData.value.almacenOrigen = '';
+  centroOrigenRef.value         ='';
+  almacenOrigenRef.value        = ''
   //formData.value.ubicacionOrigen = '';
-  formData.value.centroDestino = localStorage.getItem('almacen') || '';
+  formData.value.centroDestino = localStorage.getItem('centro') || '';
   formData.value.almacenDestino = '';
   //formData.value.ubicacionDestino = '';
   formData.value.material = '';
@@ -214,12 +191,13 @@ const handleChangeScan = async (event) => {
   showLoader();
   await GetPalletQuantity(formData.value.consecutivo);
   await GetInfoMaterialAviable(formData.value.material, formData.value.lote, formData.value.consecutivo);
+  await infoPallet();
   await GetInfoStores(formData.value.centroDestino).then(stores => {
-   if (stores) {
-    almacenesDestino.value = stores
-       //console.log(almacenesDestino);
-   }
- });
+    if (stores) {
+      almacenesDestino.value = stores
+      //console.log(almacenesDestino);
+    }
+  });
   hideLoader();
 
 }
@@ -236,25 +214,59 @@ const divideEtiquetas = (codigo) => {
 async function GetInfoMaterialAviable(material, lote, pallet) {
   try {
     const infoPallet = await InfoWm.GetInfoLocationMaterialBach(material, lote, pallet);
-    console.log(infoPallet)
+    //console.log(infoPallet)
     ubicaciones.value = infoPallet.data.data.datos
   } catch (error) {
     console.log(error)
   }
 
 }
- 
+
+const infoPallet = async () => {
+  try {
+    const infoEtoq = await infoEstiba.getInfoEtiquetaFull(formData.value.consecutivo);
+
+    //console.log(infoEtoq.data.data.body)
+    const filteredBody = infoEtoq.data.data.body.filter(item => item.estado === 'L')     
+    let palletLegal = obtenerLgortMasReciente(filteredBody)
+    centroOrigenRef.value         = palletLegal.werks == "1000" ? "1100" : palletLegal.werks
+    almacenOrigenRef.value        = palletLegal.lgort
+    formData.value.almacenOrigen  = palletLegal.lgort
+    formData.value.centroOrigen   = palletLegal.werks == "1000" ? "1100" : palletLegal.werks
+    console.log(palletLegal)  
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+function obtenerLgortMasReciente(datos) {
+  // Si no hay datos, retornar null
+  if (!datos || datos.length === 0) return null;
+  
+  // Usar sort para ordenar los datos por fecha y hora (de más reciente a más antiguo)
+  const datosOrdenados = [...datos].sort((a, b) => {
+    const fechaHoraA = new Date(`${a.fecha}T${a.hora}`);
+    const fechaHoraB = new Date(`${b.fecha}T${b.hora}`);
+    
+    // Ordenar de manera descendente (más reciente primero)
+    return fechaHoraB - fechaHoraA;
+  });
+  
+  // El primer elemento después de ordenar será el más reciente
+  return datosOrdenados[0];
+}
+
 async function GetInfoStores(centro, onSuccess = null, onError = null) {
   try {
     // Llamar a la función existente para obtener info de almacenes
     const response = await InfoWm.GetInfoStores(centro);
-    
+
     // Validar la respuesta
     const validation = validateWarehouseResponse(response);
-    
+
     if (validation.isValid) {
-      console.log(`Se encontraron ${validation.count} almacenes para el centro ${centro}`);
-      
+      // console.log(`Se encontraron ${validation.count} almacenes para el centro ${centro}`);
+
       // Procesar los datos para un formato más útil
       const processedStores = validation.warehouses.map(store => {
         return {
@@ -264,33 +276,33 @@ async function GetInfoStores(centro, onSuccess = null, onError = null) {
           // Puedes incluir otros campos según necesites
         };
       });
-      
+
       // Ejecutar callback de éxito si se proporcionó
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess(processedStores);
       }
-      
+
       return processedStores;
     } else {
       const errorMsg = `Error al validar la información de almacenes: ${validation.message}`;
       console.error(errorMsg);
-      
+
       // Ejecutar callback de error si se proporcionó
       if (onError && typeof onError === 'function') {
         onError(new Error(errorMsg));
       }
-      
+
       return null;
     }
   } catch (error) {
     const errorMsg = error.response?.data?.message || error.message || 'Error desconocido';
     console.error('Error en GetInfoStores:', errorMsg);
-    
+
     // Ejecutar callback de error si se proporcionó
     if (onError && typeof onError === 'function') {
       onError(error);
     }
-    
+
     return null;
   }
 }
@@ -299,33 +311,33 @@ function validateWarehouseResponse(response) {
   if (!response || !response.data) {
     return { isValid: false, message: 'Respuesta inválida: no hay datos' };
   }
-  
+
   // Check if success property is true
   if (response.data.success !== true) {
     return { isValid: false, message: 'Respuesta inválida: success no es true' };
   }
-  
+
   // Check if data array exists and has items
   if (!Array.isArray(response.data.data) || response.data.data.length === 0) {
     return { isValid: false, message: 'Respuesta inválida: no hay almacenes en la respuesta' };
   }
-  
+
   // Validate each warehouse entry has required fields
   const requiredFields = ['mandt', 'werks', 'lgort', 'lgnum'];
   for (const warehouse of response.data.data) {
     for (const field of requiredFields) {
       if (typeof warehouse[field] === 'undefined') {
-        return { 
-          isValid: false, 
-          message: `Respuesta inválida: falta el campo requerido '${field}' en uno de los almacenes` 
+        return {
+          isValid: false,
+          message: `Respuesta inválida: falta el campo requerido '${field}' en uno de los almacenes`
         };
       }
     }
   }
-  
-  return { 
-    isValid: true, 
-    message: 'Respuesta válida', 
+
+  return {
+    isValid: true,
+    message: 'Respuesta válida',
     warehouses: response.data.data,
     count: response.data.data.length
   };
@@ -338,7 +350,7 @@ async function GetPalletQuantity(pallet) {
   } else {
     try {
       const infoPallet = await InfoWm.GetInfoPallet(pallet);
-      console.log(infoPallet.data.data)
+      //console.log(infoPallet.data.data)
       if (infoPallet.data.success) {
         let cantidad = infoPallet.data.data.mensaje
         let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
@@ -353,17 +365,17 @@ async function GetPalletQuantity(pallet) {
 
 }
 // Funciones
-const handleAccept = async  () => {
+const handleAccept = async () => {
   console.log('Procesando traslado:', formData.value)
   showLoader();
   try {
     //(material,lote,pallet,cantidad, ubicacionOrigen, ubicacionDestino, centroOrigen, centroDestino, almacenOrigen, almacenDestino)
-    const response = await InfoWm.MoveMaterialStores(formData.value.material,formData.value.lote,formData.value.consecutivo,formData.value.cantidadBuena, formData.value.ubicacionOrigen, formData.value.ubicacionDestino, formData.value.centroOrigen, formData.value.centroDestino, formData.value.almacenOrigen, formData.value.almacenDestino );
+    const response = await InfoWm.MoveMaterialStores(formData.value.material, formData.value.lote, formData.value.consecutivo, formData.value.cantidadBuena, formData.value.ubicacionOrigen, formData.value.ubicacionDestino, formData.value.centroOrigen, formData.value.centroDestino, formData.value.almacenOrigen, formData.value.almacenDestino);
     hideLoader();
-    response.status == 200 ? popupType.value = 'success'  : popupType.value = 'info'     
+    response.status == 200 ? popupType.value = 'success' : popupType.value = 'info'
     popupTitle.value = 'Resultado';
     popupMessage.value = response.data.data.mensaje
-    showPopup.value = true;    
+    showPopup.value = true;
     popupAction.value = 'normal'
     resetForm();
   } catch (error) {
@@ -371,40 +383,40 @@ const handleAccept = async  () => {
     popupTitle.value = 'Error Catch';
     popupMessage.value = error
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'error'
     popupAction.value = 'normal'
 
   }
-  
-  
+
+
   // Aquí implementar la lógica de traslado
 }
 
 const handleSubmit = () => {
-  if(formData.value.cantidadBuena == 0 || formData.value.cantidadBuena.length == 0 ||
-   formData.value.consecutivo == '' || formData.value.consecutivo.length == 0 ||
-   formData.value.lectura == '' || formData.value.consecutivo.lectura == 0 ||
-   formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
-   formData.value.material == '' || formData.value.material == 0 ||
-   formData.value.ubicacionDestino == '' || formData.value.ubicacionDestino == 0 ||
-   formData.value.ubicacionOrigen == '' || formData.value.ubicacionOrigen == 0){
+  if (formData.value.cantidadBuena == 0 || formData.value.cantidadBuena.length == 0 ||
+    formData.value.consecutivo == '' || formData.value.consecutivo.length == 0 ||
+    formData.value.lectura == '' || formData.value.consecutivo.lectura == 0 ||
+    formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
+    formData.value.material == '' || formData.value.material == 0 ||
+    formData.value.ubicacionDestino == '' || formData.value.ubicacionDestino == 0 ||
+    formData.value.ubicacionOrigen == '' || formData.value.ubicacionOrigen == 0) {
 
     popupTitle.value = 'Validacion';
     popupMessage.value = "campos incompletos"
     showPopup.value = true;
-    popupType.value = 'error' 
+    popupType.value = 'error'
     popupAction.value = 'normal'
 
 
-  }else{
+  } else {
     handleAccept()
   }
 
-  
+
 }
 
 const goToMenu = () => {
-   localStorage.removeItem('ubicacionDestino')
+  localStorage.removeItem('ubicacionDestino')
   router.push('/menu')
 }
 
@@ -412,15 +424,15 @@ const goToMenu = () => {
 onMounted(async () => {
   showLoader();
 
-  centroOrigenRef.value = localStorage.getItem('centro');
-  almacenOrigenRef.value = localStorage.getItem('almacen');
+  // centroOrigenRef.value = localStorage.getItem('centro');
+  // almacenOrigenRef.value = localStorage.getItem('almacen');
   centroDestinoRef.value = localStorage.getItem('centro');
-  formData.value.almacenOrigen = localStorage.getItem('almacen')
-  formData.value.centroOrigen = localStorage.getItem('centro');
+  //formData.value.almacenOrigen = localStorage.getItem('almacen')
+  //formData.value.centroOrigen = localStorage.getItem('centro');
   formData.value.centroDestino = localStorage.getItem('centro');
-  
- hideLoader();
- // formData.value.ubicacionDestino = localStorage.getItem('ubicacionDestino') || ''
+
+  hideLoader();
+  // formData.value.ubicacionDestino = localStorage.getItem('ubicacionDestino') || ''
   //ubicacionDestino.value = localStorage.getItem('ubicacionDestino') || ''
 })
 </script>

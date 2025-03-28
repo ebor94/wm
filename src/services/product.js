@@ -11,6 +11,12 @@ export const infoEstiba = {
           { headers: headers }
         );
       },
+      async getInfoEtiquetaFull(pallet) {
+        return axios.get(
+          `${domain}/producto/etiqueta-info/${pallet}`,
+          { headers: headers }
+        );
+      },
 
 
 }

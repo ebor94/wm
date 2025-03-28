@@ -45,10 +45,10 @@ export const InfoWm = {
     let bandera = "2";
     let centrodestino = localStorage.getItem("centro");
     let almacendestino = localStorage.getItem("almacen");
-    console.log(
-      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
-      { headers: headers }
-    );
+    // console.log(
+    //   `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+    //   { headers: headers }
+    // );
     return axios.get(
       `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${material}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
       { headers: headers }
