@@ -10,9 +10,12 @@
       <!-- Contenido Principal -->
       <main class="flex-1 bg-gray-800 p-4 flex flex-col">
         <!-- Nombre de Usuario y Mensaje -->
-        <div class="bg-gray-300 rounded-lg p-4 mb-4 text-center">
+        <div class="bg-gray-300 rounded-lg p-3 mb-2 text-center">
           <div class="text-gray-700 font-bold">{{ authStore.nameUser || 'Usuario' }}</div>
-          <div class="text-gray-600">Por favor seleccione</div>
+          <div class="text-gray-700 font-bold">{{ authStore.almaceMM }}</div>
+          <div class="text-gray-600">Por favor seleccione</div> <div class="mt-auto flex justify-center p-4">
+          
+        </div>
         </div>
   
         <!-- Grid de Botones -->
@@ -35,13 +38,29 @@
           >
             <span class="material-icons">logout</span>
             <span>Terminar Sesión</span>
+          </button>          
+        </div>
+        <div class="flex justify-center">
+          <button 
+            @click="changeStore"
+            class="bg-white rounded-full"
+          >
+            <span class="tiny material-icons">settings_applications</span>
+           
           </button>
+          
         </div>
       </main>
+      <TrasladoModal
+        :isOpen="isModalOpen" 
+        @close="closeModal"
+        @seleccionarAlmacen="handleSeleccionAlmacen"
+       />
   
       <!-- Footer -->
       <footer class="bg-italia-red text-white p-2 text-center">
         Cerámica Italia ©2024
+        
       </footer>
     </div>
   </template>
@@ -53,12 +72,10 @@
   import { useRouter } from 'vue-router'
   import { useLoader } from '../composables/useLoader' 
   import { useAuthStore } from '../store/auth';
+  import TrasladoModal from '../components/TrasladoModal.vue'
 import Header from '../components/Header.vue';
 
-
-
-
-const authStore = useAuthStore()
+ const authStore = useAuthStore()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
   const storeDespachos = UseDespachoStore()
@@ -96,7 +113,25 @@ const authStore = useAuthStore()
 
  
   }
-  
+
+  const isModalOpen = ref(false)
+const almacenActual = ref(localStorage.getItem('almacen') || '')
+
+const changeStore = () => {
+  isModalOpen.value = true
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+}
+
+const handleSeleccionAlmacen = (almacenId) => {
+  console.log(`Almacén seleccionado: ${almacenId}`)
+  localStorage.setItem('almacen', almacenId)
+  authStore.almaceMM = almacenId
+  almacenActual.value = almacenId
+  // Lógica adicional con el almacén seleccionado
+}
   // Manejo de cierre de sesión
   const handleLogout =   () => {
     // Aquí implementaremos la lógica de cierre de sesión
