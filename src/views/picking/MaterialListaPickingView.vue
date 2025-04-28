@@ -99,7 +99,7 @@ import { infoDespachos, InfoEntrega } from '../../services/entregas'
 import { useLoader } from '../../composables/useLoader';
 import BasePopup from '../../components/BasePopup.vue';
 import Header from '../../components/Header.vue';
-import { log } from 'console';
+
 
 
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
