@@ -99,6 +99,7 @@ import { infoDespachos, InfoEntrega } from '../../services/entregas'
 import { useLoader } from '../../composables/useLoader';
 import BasePopup from '../../components/BasePopup.vue';
 import Header from '../../components/Header.vue';
+import { log } from 'console';
 
 
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
@@ -166,22 +167,26 @@ const handleTerminarEntrega = async () => {
   }
 
   if (actions.value == 'cargue') {
+    console.log("gestion")
     try {
       showLoader()
       let gestion = await InfoEntrega.getGestion(entre.value);
+      console.log("gestion", gestion)
       let gestionData;
       let horaFull;
       gestionData = gestion.data.data;
       horaFull = gestionData.find(detalle => detalle.DescAccion === 'Hora Fin Cargue')?.Valor;
-      codaccion.value = "00204"
+      codaccion.value = "00204"     
       if (horaFull === "Pendiente de Registro") {
         try {
+          console.log("registrando hora fin cargue")
           let registroFechaHora = await InfoEntrega.RegisterAccionFechahora(entre.value, codaccion.value);
+          console.log("registrando hora fin cargue", registroFechaHora)
           if (registroFechaHora.status == 200) {
             gestionData = registroFechaHora.data.data;
             console.log("Registrando hora fin alistamiento", gestionData)
           }
-          hideLoader()
+          
           popupTitle.value = 'Resultado';
           popupMessage.value = `Cargue Finalizado Con Exito`
           showPopup.value = true;
@@ -189,23 +194,27 @@ const handleTerminarEntrega = async () => {
           popupAction.value = 'normal'
 
         } catch (error) {
-          hideLoader()
+        
           popupTitle.value = 'Error';
           popupMessage.value = `error al registrar hora fin de cargue`
           showPopup.value = true;
           popupType.value = 'error'
           popupAction.value = 'normal'
 
+        }finally {
+          hideLoader()
         }
       }
     } catch (error) {
-      hideLoader()
+     
       popupTitle.value = 'Error';
       popupMessage.value = `error al obtener la gestion`
       showPopup.value = true;
       popupType.value = 'error'
       popupAction.value = 'normal'
 
+    }finally {
+      hideLoader()
     }
 }
 }
