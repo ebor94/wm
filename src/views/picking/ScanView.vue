@@ -218,12 +218,14 @@ const palletMAnual = ref(0)
 const isManualMode = ref(false) 
 
 
+
 // Agregar estados para el popup
 const showPopup = ref(false);
 const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
+
 
 const handleAccept = async  () => {
   // Validar y procesar la lectura
@@ -285,7 +287,7 @@ const RegistrarPicking = async () =>{
 
   let mensaje = regPicking.data.data[0].mensaje;
   if (mensaje == "RESGISTRO EXITOSO"){
-    hideLoader()
+    
     acumulado.value = Number(regPicking.data.data[0].acumulado) + acumulado.value ;
     nuevoAcumulado.value = acumulado.value;
     idRegistro.value = regPicking.data.data[0].id;
@@ -295,6 +297,7 @@ const RegistrarPicking = async () =>{
     popupType.value = 'success' ;
     popupAction.value = 'normal';
     acumulado.value = 0;
+    hideLoader()
 
   }else if(mensaje == "UP"){
     hideLoader()
@@ -474,6 +477,7 @@ const getAcumulado = async (entrega, posOt, ot) => {
 
 const handlePopupConfirm = () => {
   showPopup.value = false
+  router.back()
 
 }
 const handlePopupUpdate = async () => {
@@ -581,6 +585,9 @@ onMounted(async () => {
 
       }
     }
+   
+ 
+
 
   } catch (error) {
     console.error('Error al cargar los materiales:', error)
