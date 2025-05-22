@@ -28,7 +28,13 @@ export const infoDespachos = {
     return axios.get(`${domain}/transporte/indicadorDespacho/${ptoExpedicion}`, {
       headers: headers,
     });
-  }
+  },
+   async facturaEntrega(entrega, categoriaDocumento){
+    return axios.get(`${domain}/transporte/wm/facturar/?entrega=${entrega}&categoriaDocumento=${categoriaDocumento}`, {
+      headers: headers,
+    });
+   }
+
 };
 
 export const InfoWm = {
