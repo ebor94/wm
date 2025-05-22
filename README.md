@@ -13,6 +13,7 @@ Aplicación web para la gestión de logística de los tecnicos de montacarga y a
 - Monitoreo de conexión en tiempo real
 - Indicador de Despacho
 - Consulta de Etiquetas
+- Factura entregas contabilizadas
 
 ## Tecnologías Utilizadas
 
