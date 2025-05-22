@@ -56,10 +56,16 @@
               </button>
               <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'OK'">
                 <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="contabilizar(orden.entrega)">
-                Contabilizar Entrega
-              </button>
+                  @click="contabilizar(orden.entrega)">
+                  Contabilizar Entrega
+                </button>
               </div> 
+               <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'ENTREGA CONTABILIZADA'">
+                <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
+                  @click="facturar(orden.entrega)">
+                  Facturar Entrega
+                </button>
+              </div>
             </div>
             <div v-else>
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
@@ -203,7 +209,7 @@ import { ref, onMounted, computed  } from 'vue'
 import { UseDespachoStore } from '../store/despachos'
 import { useRouter } from 'vue-router'
 import { useLoader } from '../composables/useLoader'
-import { InfoEntrega } from '../services/entregas';
+import { infoDespachos, InfoEntrega } from '../services/entregas';
 import Header from '../components/Header.vue';
 
 const router = useRouter()
@@ -241,9 +247,33 @@ const closeNovedades = () => {
 const contabilizar = async (entrega) => {
   try {
     showLoader()
-    let response  = await InfoEntrega.Contabilizar(entrega)
+   let response  = await InfoEntrega.Contabilizar(entrega)
+    console.log(response.data)
     popupTitle.value = 'Resultado';
-    popupMessage.value = response.data.data.mensaje2
+    popupMessage.value = response.data
+    showPopup.value = true;
+    popupType.value = 'error' 
+    popupAction.value = 'normal'
+    hideLoader()
+  } catch (error) {
+    popupTitle.value = 'Error Catch';
+    popupMessage.value = error
+    showPopup.value = true;
+    popupType.value = 'error' 
+    popupAction.value = 'normal'
+    
+  }
+  
+
+}
+
+const facturar = async (entrega) => {
+  try {
+    showLoader()
+    let response  = await infoDespachos.facturaEntrega(entrega, 'J')    
+    console.log('facturar', response.data)
+    popupTitle.value = 'Resultado';
+    popupMessage.value = response.data.message
     showPopup.value = true;
     popupType.value = 'error' 
     popupAction.value = 'normal'
