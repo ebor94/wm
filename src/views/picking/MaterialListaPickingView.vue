@@ -118,6 +118,7 @@ const totalPallets = ref(0);
 const actions = ref('');
 const codaccion = ref('');
 const textButtonAction = ref('')
+const acumuladosCache = ref({})
 
 const handleTerminarEntrega = async () => {
   // Implementar lógica para terminar entrega
@@ -256,11 +257,44 @@ const getDetallesEntrega = async (numeroEntrega) => {
 }
 
 const getAcumulado = async (entrega, posOt, ot) => {
-  const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
-  //console.log(responseDespachos)
-  hideLoader()
-  return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
+  const cacheKey = `${entrega}-${posOt}-${ot}`
+  
+  // Si ya está en cache, devolver inmediatamente
+  if (acumuladosCache.value[cacheKey] !== undefined) {
+    hideLoader()
+    return acumuladosCache.value[cacheKey]
+  }
+  
+  try {
+    const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
+    const acumulado = responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
+    
+    // Guardar en cache REACTIVO
+    acumuladosCache.value = {
+      ...acumuladosCache.value,
+      [cacheKey]: acumulado
+    }
+    hideLoader()
+    return acumulado
+  } catch (error) {
+    console.error('Error obteniendo acumulado:', error)
+    acumuladosCache.value = {
+      ...acumuladosCache.value,
+      [cacheKey]: 0
+    }
+    hideLoader()
+    return 0
+  }
+  // ❗ NO llamar hideLoader() aquí - se llamará al final de toda la carga
+  
+}
 
+// 3. Agregar función computed para acceso reactivo
+const getAcumuladoComputed = (entrega, posOt, ot) => {
+  return computed(() => {
+    const cacheKey = `${entrega}-${posOt}-${ot}`
+    return acumuladosCache.value[cacheKey]
+  })
 }
 const getGestionEntrega = async (entrega) => {
   const gestion = await InfoEntrega.getGestion(entrega);
