@@ -229,31 +229,44 @@ const handleMaterialClick = (entrega, posOt, totalpos, ot) => {
   showLoader()
   router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}/${ot}`)
 }
+// ✅ DESPUÉS (versión optimizada - carga en paralelo)
 const getDetallesEntrega = async (numeroEntrega) => {
-  showLoader()
+  try {
+    const detalleEntrega = store.detalleEntregas.find(detalle =>
+      detalle.entrega === numeroEntrega
+    )
 
-  const detalleEntrega = store.detalleEntregas.find(detalle =>
-    detalle.entrega === numeroEntrega
-  )
+    // Validación más clara
+    if (!detalleEntrega?.datos?.length) {
+      throw new Error(`Sin datos para la entrega ${numeroEntrega}`)
+    }
 
-  let data = detalleEntrega.datos
-
-  if (data.length > 0) {
     entregaDetalles.value = detalleEntrega.datos
-    // Cargar los acumulados para cada material
-    for (const material of entregaDetalles.value) {
+    
+    // 🚀 RÁPIDO: Cargar todos los acumulados EN PARALELO
+    const acumuladosPromises = entregaDetalles.value.map(async (material) => {
       const acumulado = await getAcumulado(material.vbeln, material.tapos, material.tanum)
       material.acumulado = Number(acumulado)
-      totalPallets.value = totalPallets.value + Number(material.cantestb)
-    }
-  } else {
-    hideLoader()
-    popupTitle.value = 'Sin datos';
-    popupMessage.value = `sin datos para la entrega ${numeroEntrega}`
-    showPopup.value = true;
+      return Number(material.cantestb) // Retornar estibas para calcular total
+    })
+
+    // Esperar que TODOS terminen al mismo tiempo
+    const estibas = await Promise.all(acumuladosPromises)
+    
+    // Calcular total de pallets de una vez
+    totalPallets.value = estibas.reduce((sum, estiba) => sum + estiba, 0)
+
+  } catch (error) {
+    console.error('Error en getDetallesEntrega:', error)
+    
+    // Mostrar error más elegante
+    popupTitle.value = 'Sin datos'
+    popupMessage.value = error.message
+    showPopup.value = true
     popupType.value = 'error'
     popupAction.value = 'normal'
   }
+  // ❗ NO llamar hideLoader() aquí - se llamará en onMounted
 }
 
 const getAcumulado = async (entrega, posOt, ot) => {
@@ -261,7 +274,7 @@ const getAcumulado = async (entrega, posOt, ot) => {
   
   // Si ya está en cache, devolver inmediatamente
   if (acumuladosCache.value[cacheKey] !== undefined) {
-    hideLoader()
+    
     return acumuladosCache.value[cacheKey]
   }
   
@@ -274,7 +287,7 @@ const getAcumulado = async (entrega, posOt, ot) => {
       ...acumuladosCache.value,
       [cacheKey]: acumulado
     }
-    hideLoader()
+    
     return acumulado
   } catch (error) {
     console.error('Error obteniendo acumulado:', error)
@@ -282,7 +295,7 @@ const getAcumulado = async (entrega, posOt, ot) => {
       ...acumuladosCache.value,
       [cacheKey]: 0
     }
-    hideLoader()
+   
     return 0
   }
   // ❗ NO llamar hideLoader() aquí - se llamará al final de toda la carga
@@ -334,20 +347,27 @@ const getGestionEntrega = async (entrega) => {
 
 }
 
+// ✅ OnMounted optimizado
 onMounted(async () => {
   try {
-
+    showLoader("Cargando datos...") // Un solo loader para todo
+    
     entre.value = route.params.entrega
     actions.value = route.params.action
-    getDetallesEntrega(entre.value)
-    console.log('Número de entrega:', entre.value)
-    getGestionEntrega(entre.value)
-  
 
-    console.log(actions.value)
+    // Ejecutar las dos funciones principales
+    await getDetallesEntrega(entre.value)
+    await getGestionEntrega(entre.value)
+
   } catch (error) {
-    console.error('Error al cargar los materiales:', error)
-    hideLoader()
+    console.error('Error en onMounted:', error)
+    popupTitle.value = 'Error de carga'
+    popupMessage.value = 'Error al cargar los datos iniciales'
+    showPopup.value = true
+    popupType.value = 'error'
+    popupAction.value = 'normal'
+  } finally {
+    hideLoader() // Un solo hideLoader al final
   }
 })
 </script>
