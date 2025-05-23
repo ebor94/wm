@@ -17,9 +17,7 @@
 
       <!-- Lista de Despachos -->
       <div class="space-y-4">
-        <div v-for="despacho in filtrarDespachosCargue(store.despachos)" :key="despacho.Despacho_no || 'null'"
-          class="space-y-2">
-
+        <div v-for="despacho in despachosFiltrados" :key="despacho.Despacho_no || 'null'" class="space-y-2">       
           <!-- Botón Collapse -->
           <button :class="[isOverweight(despacho) ? 'w-full bg-purple-700 rounded-full p-3 text-white text-left flex items-center gap-2' : 'w-full bg-white rounded-full p-3 text-left flex items-center gap-2']"
         @click="toggleDespacho(despacho.Despacho_no)">
@@ -286,7 +284,7 @@ const facturar = async (entrega) => {
     await actualizarEstadoEntrega(entrega)
     
     popupTitle.value = 'Resultado'
-    popupMessage.value = response.data
+    popupMessage.value = response.data.data[0].nofactura || response.data.data[0].mensaje
     showPopup.value = true
     popupType.value = 'success' // Cambiar a success si es exitoso
     popupAction.value = 'normal'
@@ -381,11 +379,7 @@ const toggleDespacho = (id) => {
   }
 }
 
-const filtrarDespachosCargue = (despachos) => {
-  return despachos.filter(despacho =>
-    despacho.ordenes.some(orden => orden.accion === "Alistar")
-  )
-}
+const despachosFiltrados = computed(() => store.despachosParaCargue("Alistar"))
 
 /* const getEstadoEntrega = (entrega) => {
   try {
