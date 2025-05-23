@@ -69,16 +69,30 @@ export const UseDespachoStore = defineStore('despacho', {
         // Método para obtener el estado de una entrega
         getEntregaStatus(entrega) {
             return this.detalleEntregas.find(detalle => detalle.entrega === entrega)
-        }
+        },
+      resetStore() {
+            this.despachos = []
+            this.entregas = []
+            this.loading = false
+            this.error = null
+            this.consEstibaManual = 100
+            this.detalleEntregas = []
+        },
     },
 
 
       getters: {
         // Obtener despachos filtrados para cargue
         despachosParaCargue: (state) => {
-            return state.despachos.filter(despacho =>
-                despacho.ordenes.some(orden => orden.accion === "Alistar")
-            )
+                return (accion) => {
+                return state.despachos.filter(despacho => 
+                    despacho.ordenes.some(orden => orden.accion === accion)
+                ).map(despacho => ({
+                    ...despacho,
+                    // Filtrar solo las órdenes de la acción específica
+                    ordenes: despacho.ordenes.filter(orden => orden.accion === accion)
+                }))
+            }
         },
         
         // Obtener estado de entrega por ID
