@@ -38,10 +38,10 @@
               {{ orden.estadoEntrega == 1 ? '✅' : '❌' }}/{{ orden.entrega }} / {{ orden.cte == null ? 'Asignado a Otro Tecnico' : orden.cte}}/ Peso : {{ deliveryWeights[orden.entrega] || 'Cargando Peso...' }} Ton
             </label>
             <div v-if="orden.cte !== null">
-              <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                @click="handleListMaterial(orden.entrega)">
-                {{ getEstadoEntrega(orden.entrega)?.mensaje || 'Sin estado' }}
-              </button>
+            <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
+              @click="handleListMaterial(orden.entrega)">
+              {{ getEstadoEntrega(orden.entrega).value?.mensaje || 'Sin estado' }}
+            </button>
               <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                 @click="handleGestionEntrega(orden.entrega)">
                 Gestion Entrega
@@ -54,13 +54,14 @@
                 @click="showNovedades(orden.entrega)">
                 Ver Novedades
               </button>
-              <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'OK'">
-                <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
-                  @click="contabilizar(orden.entrega)">
-                  Contabilizar Entrega
-                </button>
-              </div> 
-               <div v-if ="getEstadoEntrega(orden.entrega)?.mensaje == 'ENTREGA CONTABILIZADA'">
+            <div v-if="getEstadoEntrega(orden.entrega).value?.mensaje === 'OK'">
+              <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
+                @click="contabilizar(orden.entrega)">
+                Contabilizar Entrega
+              </button>
+            </div>  
+              <!-- Botón de facturar con estado reactivo -->
+              <div v-if="getEstadoEntrega(orden.entrega).value?.mensaje === 'ENTREGA CONTABILIZADA'">
                 <button class="w-full text-center text-blue-500 border-t border-gray-200 pt-2"
                   @click="facturar(orden.entrega)">
                   Facturar Entrega
@@ -246,53 +247,60 @@ const closeNovedades = () => {
 
 const contabilizar = async (entrega) => {
   try {
-    showLoader()
-   let response  = await InfoEntrega.Contabilizar(entrega)
+    // Solo usar showLoader, no isLoading.value = true
+    showLoader("Contabilizando....")
+    
+    let response = await InfoEntrega.Contabilizar(entrega)
     console.log(response.data)
-    popupTitle.value = 'Resultado';
-    popupMessage.value = response.data
-    showPopup.value = true;
-    popupType.value = 'error' 
-    popupAction.value = 'normal' 
-  } catch (error) {
-    popupTitle.value = 'Error Catch';
-    popupMessage.value = error
-    showPopup.value = true;
-    popupType.value = 'error' 
+    
+    // Actualizar el estado en el store después de contabilizar
+    await actualizarEstadoEntrega(entrega)
+    
+    popupTitle.value = 'Resultado'
+    popupMessage.value = response.data.data.mensaje2
+    showPopup.value = true
+    popupType.value = 'success' // Cambiar a success si es exitoso
     popupAction.value = 'normal'
     
-  }finally {
-    getEstadoEntrega(entrega)
+  } catch (error) {
+    console.error('Error en contabilizar:', error)
+    popupTitle.value = 'Error'
+    popupMessage.value = error.message || 'Error al contabilizar'
+    showPopup.value = true
+    popupType.value = 'error'
+    popupAction.value = 'normal'
+  } finally {
     hideLoader()
   }
-  
-
 }
 
 const facturar = async (entrega) => {
   try {
-    showLoader()
-    let response  = await infoDespachos.facturaEntrega(entrega, 'J')    
+    // Solo usar showLoader, no isLoading.value = true
+    showLoader("Facturando....")
+    
+    let response = await infoDespachos.facturaEntrega(entrega, 'J')
     console.log('facturar', response.data)
-    popupTitle.value = 'Resultado';
-    popupMessage.value = response.data.message
-    showPopup.value = true;
-    popupType.value = 'error' 
-    popupAction.value = 'normal'
-   
-  } catch (error) {
-    popupTitle.value = 'Error Catch';
-    popupMessage.value = error
-    showPopup.value = true;
-    popupType.value = 'error' 
+    
+    // Actualizar el estado en el store después de facturar
+    await actualizarEstadoEntrega(entrega)
+    
+    popupTitle.value = 'Resultado'
+    popupMessage.value = response.data
+    showPopup.value = true
+    popupType.value = 'success' // Cambiar a success si es exitoso
     popupAction.value = 'normal'
     
-  }finally {
-    getEstadoEntrega(entrega)
+  } catch (error) {
+    console.error('Error en facturar:', error)
+    popupTitle.value = 'Error'
+    popupMessage.value = error.message || 'Error al facturar'
+    showPopup.value = true
+    popupType.value = 'error'
+    popupAction.value = 'normal'
+  } finally {
     hideLoader()
   }
-  
-
 }
 
 const isOverweight = (despacho) => {
@@ -379,7 +387,7 @@ const filtrarDespachosCargue = (despachos) => {
   )
 }
 
-const getEstadoEntrega = (entrega) => {
+/* const getEstadoEntrega = (entrega) => {
   try {
     return store.detalleEntregas.find(detalle => detalle.entrega === entrega)
   } catch (error) {
@@ -388,6 +396,25 @@ const getEstadoEntrega = (entrega) => {
     hideLoader();
   }
 
+} */
+
+// Función mejorada getEstadoEntrega con reactivity
+const getEstadoEntrega = (entrega) => {
+  return computed(() => {
+    return store.detalleEntregas.find(detalle => detalle.entrega === entrega)
+  })
+}
+
+const actualizarEstadoEntrega = async (entrega) => {
+  try {
+    // Usar el método del store directamente
+    await store.updateEntregaStatus(entrega)
+    console.log('Estado actualizado correctamente para entrega:', entrega)
+  } catch (error) {
+    console.error('Error al actualizar estado:', error)
+    // Fallback: recargar todos los detalles
+    await store.getEntregasDetails()
+  }
 }
 
 const handleListMaterial = (id) => {
@@ -409,19 +436,35 @@ const goToMenu = () => {
 }
 
 onMounted(async () => {
-
   try {
-    await store.getEntregas()
-    // Cargar pesos para todas las entregas
-    for (const despacho of store.despachos) {
-      for (const orden of despacho.ordenes) {
-        await GetweightDelivery(orden.entrega)
-      }
+    showLoader("Cargando datos...")
+    
+    // Usar los métodos del store
+    if (store.despachos.length === 0) {
+      await store.fetchDespachos()
     }
+    
+    if (store.detalleEntregas.length === 0) {
+      await store.getEntregas()
+    }
+    
+    // Cargar pesos en paralelo
+    const pesosPromises = store.despachos.flatMap(despacho => 
+      despacho.ordenes.map(orden => GetweightDelivery(orden.entrega))
+    )
+    
+    await Promise.all(pesosPromises)
+    
   } catch (error) {
     console.error('Error:', error)
+    popupTitle.value = 'Error'
+    popupMessage.value = 'Error al cargar los datos'
+    showPopup.value = true
+    popupType.value = 'error'
+    popupAction.value = 'normal'
+  } finally {
+    hideLoader()
   }
-
 })
 //aca debe hacer el onmounted cuando cargue el componente traer los de talles de la entregas  y preguntar si  el store de despachos exite ,sino volver a generarlo cuando se recargue la pagina
 </script>
