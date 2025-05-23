@@ -76,6 +76,7 @@
 import Header from '../components/Header.vue';
 
  const authStore = useAuthStore()
+ const despachosStore = UseDespachoStore()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
   const storeDespachos = UseDespachoStore()
@@ -136,6 +137,7 @@ const handleSeleccionAlmacen = (almacenId) => {
   const handleLogout =   () => {
     // Aquí implementaremos la lógica de cierre de sesión
     authStore.logout()
+    despachosStore.resetStore()
     router.push('/')
   }
 
