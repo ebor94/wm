@@ -253,8 +253,7 @@ const contabilizar = async (entrega) => {
     popupMessage.value = response.data
     showPopup.value = true;
     popupType.value = 'error' 
-    popupAction.value = 'normal'
-    hideLoader()
+    popupAction.value = 'normal' 
   } catch (error) {
     popupTitle.value = 'Error Catch';
     popupMessage.value = error
@@ -262,6 +261,9 @@ const contabilizar = async (entrega) => {
     popupType.value = 'error' 
     popupAction.value = 'normal'
     
+  }finally {
+    getEstadoEntrega(entrega)
+    hideLoader()
   }
   
 
@@ -277,7 +279,7 @@ const facturar = async (entrega) => {
     showPopup.value = true;
     popupType.value = 'error' 
     popupAction.value = 'normal'
-    hideLoader()
+   
   } catch (error) {
     popupTitle.value = 'Error Catch';
     popupMessage.value = error
@@ -285,6 +287,9 @@ const facturar = async (entrega) => {
     popupType.value = 'error' 
     popupAction.value = 'normal'
     
+  }finally {
+    getEstadoEntrega(entrega)
+    hideLoader()
   }
   
 
