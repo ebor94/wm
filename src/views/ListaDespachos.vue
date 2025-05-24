@@ -275,7 +275,7 @@ const facturar = async (entrega) => {
     let response  = await infoDespachos.facturaEntrega(entrega, 'J')    
     console.log('facturar', response.data)
     popupTitle.value = 'Resultado';
-    popupMessage.value = response.data.message
+    popupMessage.value = response.data.data[0].message
     showPopup.value = true;
     popupType.value = 'error' 
     popupAction.value = 'normal'
