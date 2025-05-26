@@ -17,6 +17,24 @@ export const infoEstiba = {
           { headers: headers }
         );
       },
+    async freePicking(pallet) {
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let codsap = "x";
+    let loteDestino = "x";
+    let lote = "x";
+    let usuario = "x";
+    let pallet = pallet;
+    let centro =  "x";
+    let almacen =  "x";
+    let bandera = "13";
+    let centrodestino =  "x";
+    let almacendestino =  "x";
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
+  },
 
 
 }
