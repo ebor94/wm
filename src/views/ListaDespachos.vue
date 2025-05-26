@@ -279,6 +279,7 @@ const facturar = async (entrega) => {
     
     let response = await infoDespachos.facturaEntrega(entrega, 'J')
     console.log('facturar', response.data)
+<<<<<<< HEAD
     
     // Actualizar el estado en el store después de facturar
     await actualizarEstadoEntrega(entrega)
@@ -287,6 +288,19 @@ const facturar = async (entrega) => {
     popupMessage.value = response.data.data[0].nofactura || response.data.data[0].mensaje
     showPopup.value = true
     popupType.value = 'success' // Cambiar a success si es exitoso
+=======
+    popupTitle.value = 'Resultado';
+    popupMessage.value = response.data.data[0].message
+    showPopup.value = true;
+    popupType.value = 'error' 
+    popupAction.value = 'normal'
+   
+  } catch (error) {
+    popupTitle.value = 'Error Catch';
+    popupMessage.value = error
+    showPopup.value = true;
+    popupType.value = 'error' 
+>>>>>>> 58f1bfdad8f691e5132bc98682e717dbd9810206
     popupAction.value = 'normal'
     
   } catch (error) {

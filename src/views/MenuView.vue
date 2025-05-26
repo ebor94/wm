@@ -94,6 +94,7 @@ import Header from '../components/Header.vue';
     { title: 'Indicador De Despacho', action: 'indicator' },
     { title: 'Validar Etiqueta', action: 'info-etiqueta' },
     {title: 'Traslado entre Almacenes', action:'traslado-almacenes'},
+    {title: 'Liberar Picking', action:'freepicking'},
    // { title: 'Consultar Despacho', action: 'consultar-despacho' },
     { title: 'Ingreso De Mercancia', action: 'ingreso-mcia' },
     // { title: 'Legalizacion', action: 'legalizacion' },

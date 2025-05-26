@@ -17,14 +17,14 @@ export const infoEstiba = {
           { headers: headers }
         );
       },
-    async freePicking(pallet) {
+    async freePicking(estiba) {
     let ubicacionDestino = "x";
     let cantidad = "x";
     let codsap = "x";
     let loteDestino = "x";
     let lote = "x";
     let usuario = "x";
-    let pallet = pallet;
+    let pallet = estiba;
     let centro =  "x";
     let almacen =  "x";
     let bandera = "13";
