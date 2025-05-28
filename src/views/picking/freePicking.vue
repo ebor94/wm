@@ -212,9 +212,22 @@ const handleSendTokenToWebhook = async (data) => {
 }
 
 // Cuando el token se valida completamente
-const handleTokenValidated = (data) => {
+const handleTokenValidated = async  (data) => {
     console.log('🟢 Token validado exitosamente:', data)
-   const response = infoEstiba.freePicking(palletNumber.value)
+   const response = await infoEstiba.freePicking(palletNumber.value, localStorage.getItem('almacen'))
+    if (response.status !== 200) {
+        showBasePopup.value = true;  // Cambio aquí: usar showBasePopup
+        popupTitle.value = 'Alerta'
+        popupMessage.value = response.data.message || 'Error al liberar picking'
+        popupType.value = 'error'
+        return
+    }
+    
+    // Mostrar mensaje de éxito
+    showBasePopup.value = true;  // Cambio aquí: usar showBasePopup
+    popupTitle.value = 'Éxito'
+    popupMessage.value = 'Picking liberado exitosamente'
+    popupType.value = 'success'
    console.log('🟢 Respuesta de liberar picking:', response)
 
 }
