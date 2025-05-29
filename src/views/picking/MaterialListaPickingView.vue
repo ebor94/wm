@@ -1,78 +1,127 @@
 <template>
   <div class="min-h-screen flex flex-col bg-gray-100">
     <!-- Header -->
-    <Header title="Lista materiales" ></Header>
+    <Header title="Lista materiales" />
+    
+    <!-- Header con estadísticas usando el composable -->
     <header class="bg-gray-200 p-4 shadow-md">
-      <h1 class="text-gray-800 text-lg font-bold text-center">
-        {{actions}}
-      </h1>
+      <h1 class="text-gray-800 text-lg font-bold text-center">{{ actions }}</h1>
+      <div class="text-gray-600 text-sm text-center">
+        <span class="font-medium">Entrega: {{ entre }}</span>
+        </div>
       <div class="text-gray-800 text-lg font-bold text-center">
-        <span class="font-medium"> {{ horaInicioAlistamiento }}</span>
+        <span class="font-medium">Total Estibas: {{ totalPallets }}</span>
       </div>
-      <div class="text-gray-800 text-lg font-bold text-center">
-        <span class="font-medium"> Total Estibas : {{ totalPallets }}</span>
+      
+      <!-- ✅ NUEVO: Estadísticas usando composable -->
+      <div class="bg-white rounded-lg p-3 mt-2">
+        <div class="grid grid-cols-4 gap-2 text-center">
+          <div class="text-green-600">
+            <div class="font-bold">{{ estadisticas.completados }}</div>
+            <div class="text-xs">Completados</div>
+          </div>
+          <div class="text-yellow-600">
+            <div class="font-bold">{{ estadisticas.enProgreso }}</div>
+            <div class="text-xs">En progreso</div>
+          </div>
+          <div class="text-red-600">
+            <div class="font-bold">{{ estadisticas.pendientes }}</div>
+            <div class="text-xs">Pendientes</div>
+          </div>
+          <div class="text-blue-600">
+            <div class="font-bold">{{ estadisticas.porcentajeCompletado }}%</div>
+            <div class="text-xs">Progreso</div>
+          </div>
+        </div>
       </div>
-
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4  bg-gray-800">
-      <!-- Peso Total -->
-      <!-- <div class="mb-4 bg-white p-3 rounded-lg shadow-sm">
-        <span class="text-gray-800 font-semibold">Peso: </span>
-        <span class="text-gray-700">1.20 Ton.</span>
-      </div> -->
-
-      <!-- Material Card -->
+    <main class="flex-1 p-4 bg-gray-800">
+      <!-- Material Cards -->
       <div v-for="material in entregaDetalles" :key="material.tapos"
-        class="bg-white rounded-lg shadow-lg overflow-hidden"
+        class="bg-white rounded-lg shadow-lg overflow-hidden mb-4"
         @click="handleMaterialClick(entre, material.tapos, material.nsola, material.tanum)">
-        <!-- Código de producto -->
-        <div
-          :class="[material.acumulado === material.nsola ? 'bg-green-600' : 'bg-red-600', 'text-white p-2 font-bold']">
+        
+        <!-- ✅ Header usando composable -->
+        <div :class="[
+          getColorByStatus(getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value, material.nsola),
+          'text-white p-2 font-bold transition-colors duration-200'
+        ]">
           {{ material.vlpla }}
         </div>
 
         <!-- Detalles del producto -->
         <div class="p-4 space-y-3">
-          <!-- Nombre del producto -->
-          <div class="text-gray-800 font-semibold">
-            {{ material.matnr }}
-          </div>
-          <div class="text-gray-800 font-semibold">
-            {{ material.maktx }}
-          </div>
-
-          <!-- Lote -->
+          <div class="text-gray-800 font-semibold">{{ material.matnr }}</div>
+          <div class="text-gray-800 font-semibold">{{ material.maktx }}</div>
           <div class="text-gray-700 text-sm">
             <span class="font-medium">Lote:</span> {{ material.charg }}
           </div>
 
-          <!-- Medidas -->
+          <!-- ✅ Progreso usando composables -->
           <div class="grid grid-cols-2 gap-4 text-sm">
-            <div class="text-gray-700" v-if="material.acumulado !== undefined">
-              {{ material.acumulado }} / {{ material.nsola }}
-            </div>
-            <div v-else class="text-gray-700">
-              Cargando...
+            <div class="text-gray-700">
+              <template v-if="getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value !== undefined">
+                {{ getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value }} / {{ material.nsola }}
+              </template>
+              <template v-else>
+                <div class="flex items-center space-x-2">
+                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-italia-red"></div>
+                  <span>Cargando...</span>
+                </div>
+              </template>
             </div>
             <div class="text-gray-700">
               <span class="font-medium">OT:</span> {{ material.tanum }}
             </div>
           </div>
 
-          <!-- Cantidad -->
+          <!-- ✅ Barra de progreso con color dinámico usando Tailwind -->
+          <div class="bg-gray-50 p-2 rounded mt-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium">Progreso:</span>
+              <span class="text-sm font-medium" 
+                    :class="getProgressTextColor(getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value, material.nsola)">
+                {{ getProgressText(getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value, material.nsola) }}
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+              <div 
+                :class="[
+                  'h-2 rounded-full transition-all duration-500',
+                  getProgressBarColor(getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value, material.nsola)
+                ]"
+                :style="getProgressBarStyle(getAcumuladoComputed(material.vbeln, material.tapos, material.tanum).value, material.nsola)"
+              ></div>
+            </div>
+          </div>
+
           <div class="text-gray-700 text-sm border-t pt-2">
             <span class="font-medium">{{ material.cantcj }}</span> cajas / {{ material.cantestb }} estibas
           </div>
         </div>
       </div>
+
+      <!-- Estado vacío -->
+      <div v-if="entregaDetalles.length === 0 && !isLoading" 
+           class="flex flex-col items-center justify-center py-12 text-gray-500">
+        <div class="text-6xl mb-4">📦</div>
+        <h3 class="text-lg font-medium mb-2">No hay materiales</h3>
+        <p class="text-sm text-center">No se encontraron materiales para esta entrega</p>
+      </div>
     </main>
 
-    <!-- Bottom Buttons -->
-    <div class="p-4 grid grid-cols-2 gap-4  bg-gray-300">
+    <!-- ✅ Botones con validación usando composable -->
+    <div class="p-4 grid grid-cols-2 gap-4 bg-gray-300">
       <button @click="handleTerminarEntrega"
-        class="bg-italia-red text-white py-3 px-6 rounded-full font-medium shadow-md hover:bg-red-700 active:bg-red-800">
+        :disabled="!puedeTerminar && actions === 'alistar'"
+        :class="[
+          puedeTerminar || actions !== 'alistar' 
+            ? 'bg-italia-red hover:bg-red-700' 
+            : 'bg-gray-400 cursor-not-allowed',
+          'text-white py-3 px-6 rounded-full font-medium shadow-md transition-colors'
+        ]">
         {{ textButtonAction }}
       </button>
       <button @click="goToMenu"
@@ -80,8 +129,9 @@
         Volver
       </button>
     </div>
+
     <LoaderComponent v-if="isLoading" loading-text="Cargando..." />
-    <BasePopup v-model="showPopup" :title="popupTitle" :message="popupMessage" :type=popupType :action="popupAction"
+    <BasePopup v-model="showPopup" :title="popupTitle" :message="popupMessage" :type="popupType" :action="popupAction"
       confirmText="Aceptar" :showConfirm="true" @confirm="handlePopupConfirm" @update="handlePopupUpdate" />
 
     <!-- Footer -->
@@ -93,226 +143,232 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { ref, onMounted } from 'vue'
-import { UseDespachoStore } from '../../store/despachos';
-import { infoDespachos, InfoEntrega } from '../../services/entregas'
-import { useLoader } from '../../composables/useLoader';
-import BasePopup from '../../components/BasePopup.vue';
-import Header from '../../components/Header.vue';
+import { ref, onMounted, computed, watch } from 'vue'
+import { UseDespachoStore } from '../../store/despachos'
+import { InfoEntrega } from '../../services/entregas'
+import { useLoader } from '../../composables/useLoader'
+import { useAcumulados } from '../../composables/useAcumulados'
+import { useProgressUtils } from '../../composables/useProgressUtils'
+import BasePopup from '../../components/BasePopup.vue'
+import Header from '../../components/Header.vue'
 
-
-
+// ✅ Usar composables
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
+const { 
+  getAcumulado, 
+  getAcumuladoComputed, 
+  precargarAcumulados,
+  acumuladosCache 
+} = useAcumulados()
+
+const { 
+  getColorByStatus, 
+  getProgressText, 
+  getProgressTextColor,
+  getProgressPercentage,
+  getProgressBarColor,
+  getProgressBarStyle,
+  calcularEstadisticas,
+  puedeTerminarEntrega 
+} = useProgressUtils()
+
 const router = useRouter()
 const route = useRoute()
 const store = UseDespachoStore()
+
+// Variables reactivas
 const entre = ref('')
 const entregaDetalles = ref([])
 const horaInicioAlistamiento = ref('')
-const showPopup = ref(false);
-const popupTitle = ref('');
-const popupMessage = ref('');
-const popupType = ref('');
-const popupAction = ref('normal');
-const totalPallets = ref(0);
-const actions = ref('');
-const codaccion = ref('');
+const showPopup = ref(false)
+const popupTitle = ref('')
+const popupMessage = ref('')
+const popupType = ref('')
+const popupAction = ref('normal')
+const totalPallets = ref(0)
+const actions = ref('')
+const codaccion = ref('')
 const textButtonAction = ref('')
 
-const handleTerminarEntrega = async () => {
-  // Implementar lógica para terminar entrega
-  if (actions.value == 'alistar') {
-    try {
-      showLoader()
-      const finishOrder = await InfoEntrega.finishOrder(entre.value, "");
-      if (finishOrder.status == 200) {
-        switch (finishOrder.data[0].message) {
-          case 'NO EXISTE INFORMACION DE ALISTAMIENTO':
-            hideLoader()
-            popupTitle.value = 'Estado De Registro';
-            popupMessage.value = "NO EXISTE INFORMACION DE ALISTAMIENTO"
-            showPopup.value = true;
-            popupType.value = 'info'
-            popupAction.value = 'normal'
-            break
-          case 'OK':
-            hideLoader()
-            popupTitle.value = 'Estado De Registro';
-            popupMessage.value = "CONFIRMACION EXITOSA"
-            showPopup.value = true;
-            popupType.value = 'success'
-            popupAction.value = 'normal'
-            break
+// ✅ Computed usando composables
+const estadisticas = calcularEstadisticas(entregaDetalles, getAcumuladoComputed)
+const puedeTerminar = puedeTerminarEntrega(entregaDetalles, getAcumuladoComputed, actions)
 
-          default:
-            hideLoader()
-            popupTitle.value = 'Estado De Registro';
-            popupMessage.value = finishOrder.data[0].message
-            showPopup.value = true;
-            popupType.value = 'warning'
-            popupAction.value = 'normal'
-        }
+// ✅ Watcher para actualizar total de pallets
+watch(() => acumuladosCache.value, () => {
+  totalPallets.value = entregaDetalles.value.reduce((total, material) => {
+    return total + Number(material.cantestb)
+  }, 0)
+}, { deep: true })
 
-      }
-      hideLoader()
-    } catch (error) {
-      hideLoader()
-      popupTitle.value = 'ERROR catch';
-      popupMessage.value = error
-      showPopup.value = true;
-      popupType.value = 'error'
-      popupAction.value = 'normal'
+// ✅ Función optimizada para cargar detalles
+const getDetallesEntrega = async (numeroEntrega) => {
+  try {
+    const detalleEntrega = store.detalleEntregas.find(detalle =>
+      detalle.entrega === numeroEntrega
+    )
+
+    if (!detalleEntrega?.datos?.length) {
+      throw new Error(`Sin datos para la entrega ${numeroEntrega}`)
     }
 
+    entregaDetalles.value = detalleEntrega.datos
+    
+    // 🚀 Usar composable para cargar en paralelo
+    const materialesParaCargar = entregaDetalles.value.map(material => ({
+      entrega: material.vbeln,
+      posOt: material.tapos,
+      ot: material.tanum
+    }))
+
+    await precargarAcumulados(materialesParaCargar)
+    
+    // Calcular total de pallets
+    totalPallets.value = entregaDetalles.value.reduce((total, material) => {
+      return total + Number(material.cantestb)
+    }, 0)
+
+  } catch (error) {
+    console.error('Error en getDetallesEntrega:', error)
+    mostrarPopup('Sin datos', error.message, 'error')
   }
+}
 
-  if (actions.value == 'cargue') {
-    console.log("gestion")
-    try {
-      showLoader()
-      let gestion = await InfoEntrega.getGestion(entre.value);
-      console.log("gestion", gestion)
-      let gestionData;
-      let horaFull;
-      gestionData = gestion.data.data;
-      horaFull = gestionData.find(detalle => detalle.DescAccion === 'Hora Fin Cargue')?.Valor;
-      codaccion.value = "00204"     
-      if (horaFull === "Pendiente de Registro") {
-        try {
-          console.log("registrando hora fin cargue")
-          let registroFechaHora = await InfoEntrega.RegisterAccionFechahora(entre.value, codaccion.value);
-          console.log("registrando hora fin cargue", registroFechaHora)
-          if (registroFechaHora.status == 200) {
-            gestionData = registroFechaHora.data.data;
-            console.log("Registrando hora fin alistamiento", gestionData)
-          }
-          
-          popupTitle.value = 'Resultado';
-          popupMessage.value = `Cargue Finalizado Con Exito`
-          showPopup.value = true;
-          popupType.value = 'succes'
-          popupAction.value = 'normal'
+// ✅ Helper para mostrar popups
+const mostrarPopup = (titulo, mensaje, tipo = 'info') => {
+  popupTitle.value = titulo
+  popupMessage.value = mensaje
+  popupType.value = tipo
+  popupAction.value = 'normal'
+  showPopup.value = true
+}
 
-        } catch (error) {
-        
-          popupTitle.value = 'Error';
-          popupMessage.value = `error al registrar hora fin de cargue`
-          showPopup.value = true;
-          popupType.value = 'error'
-          popupAction.value = 'normal'
-
-        }finally {
-          hideLoader()
-        }
+// ✅ Función refactorizada handleTerminarEntrega
+const acciones = {
+  alistar: {
+    codigoAccion: "00003",
+    textoBoton: "Terminar entrega",
+    horaDescripcion: "Hora Inicio alistamiento",
+    async ejecutar(entrega) {
+      const finishOrder = await InfoEntrega.finishOrder(entrega, "")
+      
+      if (finishOrder.status !== 200) {
+        throw new Error('Error en el servidor')
       }
-    } catch (error) {
-     
-      popupTitle.value = 'Error';
-      popupMessage.value = `error al obtener la gestion`
-      showPopup.value = true;
-      popupType.value = 'error'
-      popupAction.value = 'normal'
 
-    }finally {
-      hideLoader()
+      const mensaje = finishOrder.data[0].message
+      const tiposRespuesta = {
+        'NO EXISTE INFORMACION DE ALISTAMIENTO': { tipo: 'info', mensaje },
+        'OK': { tipo: 'success', mensaje: 'CONFIRMACION EXITOSA' }
+      }
+
+      return tiposRespuesta[mensaje] || { tipo: 'warning', mensaje }
     }
-}
+  },
+  
+  cargue: {
+    codigoAccion: "00204",
+    textoBoton: "Finalizar Cargue", 
+    horaDescripcion: "Hora inicio Cargue",
+    async ejecutar(entrega) {
+      const gestion = await InfoEntrega.getGestion(entrega)
+      const gestionData = gestion.data.data
+      const horaFin = gestionData.find(d => d.DescAccion === 'Hora Fin Cargue')?.Valor
+
+      if (horaFin === "Pendiente de Registro") {
+        await InfoEntrega.RegisterAccionFechahora(entrega, "00204")
+        return { tipo: 'success', mensaje: 'Cargue Finalizado Con Exito' }
+      }
+      
+      return { tipo: 'info', mensaje: 'Cargue ya finalizado' }
+    }
+  }
 }
 
+const handleTerminarEntrega = async () => {
+  const accion = acciones[actions.value]
+  if (!accion) return
+
+  try {
+    showLoader()
+    const resultado = await accion.ejecutar(entre.value)
+    mostrarPopup('Estado De Registro', resultado.mensaje, resultado.tipo)
+  } catch (error) {
+    console.error('Error en handleTerminarEntrega:', error)
+    mostrarPopup('Error', error.message || 'Error desconocido', 'error')
+  } finally {
+    hideLoader()
+  }
+}
+
+// ✅ Función refactorizada getGestionEntrega
+const getGestionEntrega = async (entrega) => {
+  try {
+    const gestion = await InfoEntrega.getGestion(entrega)
+    if (gestion.status !== 200) throw new Error('Error obteniendo gestión')
+
+    const accion = acciones[actions.value]
+    if (!accion) return
+
+    const gestionData = gestion.data.data
+    let horaRegistrada = gestionData.find(d => d.DescAccion === accion.horaDescripcion)?.Valor
+
+    textButtonAction.value = accion.textoBoton
+
+    if (horaRegistrada === "Pendiente de Registro") {
+      const registro = await InfoEntrega.RegisterAccionFechahora(entrega, accion.codigoAccion)
+      if (registro.status === 200) {
+        horaRegistrada = registro.data.data[0].resultado.replace('Act. Con  Fecha :', '')
+      }
+    } else {
+      horaRegistrada = horaRegistrada.split('/')[0].replace('Fecha Registrada :', '')
+    }
+
+    horaInicioAlistamiento.value = horaRegistrada
+
+  } catch (error) {
+    console.error('Error en getGestionEntrega:', error)
+    mostrarPopup('Error', 'Error obteniendo gestión de entrega', 'error')
+  }
+}
+
+// Funciones de navegación
 const goToMenu = () => {
-  router.push('/alistamiento')
+  router.back()
 }
-
 
 const handleMaterialClick = (entrega, posOt, totalpos, ot) => {
   showLoader()
   router.push(`/picking/scan/${entrega}/${posOt}/${totalpos}/${ot}`)
 }
-const getDetallesEntrega = async (numeroEntrega) => {
-  showLoader()
 
-  const detalleEntrega = store.detalleEntregas.find(detalle =>
-    detalle.entrega === numeroEntrega
-  )
-
-  let data = detalleEntrega.datos
-
-  if (data.length > 0) {
-    entregaDetalles.value = detalleEntrega.datos
-    // Cargar los acumulados para cada material
-    for (const material of entregaDetalles.value) {
-      const acumulado = await getAcumulado(material.vbeln, material.tapos, material.tanum)
-      material.acumulado = Number(acumulado)
-      totalPallets.value = totalPallets.value + Number(material.cantestb)
-    }
-  } else {
-    hideLoader()
-    popupTitle.value = 'Sin datos';
-    popupMessage.value = `sin datos para la entrega ${numeroEntrega}`
-    showPopup.value = true;
-    popupType.value = 'error'
-    popupAction.value = 'normal'
-  }
+// Handlers del popup
+const handlePopupConfirm = () => {
+  showPopup.value = false
 }
 
-const getAcumulado = async (entrega, posOt, ot) => {
-  const responseDespachos = await infoDespachos.getEntregaAcumulada(entrega, posOt, ot)
-  //console.log(responseDespachos)
-  hideLoader()
-  return responseDespachos.data.success ? responseDespachos.data.data[0].acumulado : 0
-
-}
-const getGestionEntrega = async (entrega) => {
-  const gestion = await InfoEntrega.getGestion(entrega);
-  let gestionData;
-  let horaFull;
-  if (gestion.status == 200) {
-    gestionData = gestion.data.data;
-    console.log(gestionData)
-    if (actions.value == 'cargue') {
-      horaFull = gestionData.find(detalle => detalle.DescAccion === 'Hora inicio Cargue')?.Valor;
-      codaccion.value = "00203"
-      textButtonAction.value = 'Finalizar Cargue'
-    }
-    if (actions.value == 'alistar') {
-      horaFull = gestionData.find(detalle => detalle.DescAccion === 'Hora Inicio alistamiento')?.Valor;
-      codaccion.value = "00003"
-      textButtonAction.value = 'Terminar entrega'
-    }
-
-    if (horaFull === "Pendiente de Registro") {
-      let registroFechaHora = await InfoEntrega.RegisterAccionFechahora(entrega, codaccion.value);
-      if (registroFechaHora.status == 200) {
-        gestionData = registroFechaHora.data.data;
-        console.log("Registrando hora inicio alistamiento", gestionData)
-        horaFull = gestionData[0].resultado
-        horaFull = horaFull.replace('Act. Con  Fecha :', '')
-        horaInicioAlistamiento.value = horaFull
-      }
-
-    } else {
-      horaFull = horaFull.split('/')
-      horaInicioAlistamiento.value = horaFull[0].replace('Fecha Registrada :', '')
-      console.log(horaInicioAlistamiento.value)
-    }
-  }
-
-
+const handlePopupUpdate = (value) => {
+  showPopup.value = value
 }
 
+// ✅ OnMounted optimizado
 onMounted(async () => {
   try {
-
+    showLoader("Cargando datos...")
+    
     entre.value = route.params.entrega
     actions.value = route.params.action
-    getDetallesEntrega(entre.value)
-    console.log('Número de entrega:', entre.value)
-    getGestionEntrega(entre.value)
-  
 
-    console.log(actions.value)
+    // Ejecutar en paralelo las funciones principales
+    await Promise.all([
+      getDetallesEntrega(entre.value),
+      getGestionEntrega(entre.value)
+    ])
+
   } catch (error) {
-    console.error('Error al cargar los materiales:', error)
+    console.error('Error en onMounted:', error)
+    mostrarPopup('Error de carga', 'Error al cargar los datos iniciales', 'error')
+  } finally {
     hideLoader()
   }
 })

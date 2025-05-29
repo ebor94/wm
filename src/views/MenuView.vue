@@ -76,6 +76,7 @@
 import Header from '../components/Header.vue';
 
  const authStore = useAuthStore()
+ const despachosStore = UseDespachoStore()
   const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
   const router = useRouter()
   const storeDespachos = UseDespachoStore()
@@ -93,6 +94,7 @@ import Header from '../components/Header.vue';
     { title: 'Indicador De Despacho', action: 'indicator' },
     { title: 'Validar Etiqueta', action: 'info-etiqueta' },
     {title: 'Traslado entre Almacenes', action:'traslado-almacenes'},
+    {title: 'Liberar Picking', action:'freepicking'},
    // { title: 'Consultar Despacho', action: 'consultar-despacho' },
     { title: 'Ingreso De Mercancia', action: 'ingreso-mcia' },
     // { title: 'Legalizacion', action: 'legalizacion' },
@@ -136,6 +138,7 @@ const handleSeleccionAlmacen = (almacenId) => {
   const handleLogout =   () => {
     // Aquí implementaremos la lógica de cierre de sesión
     authStore.logout()
+    despachosStore.resetStore()
     router.push('/')
   }
 

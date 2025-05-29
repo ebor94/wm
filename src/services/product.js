@@ -17,6 +17,25 @@ export const infoEstiba = {
           { headers: headers }
         );
       },
+    async freePicking(estiba, alamcen) {
+    let ubicacionDestino = "x";
+    let cantidad = "x";
+    let codsap = "x";
+    let loteDestino = "x";
+    let lote = "x";
+    let usuario = "x";
+    let pallet = estiba;
+    let centro =  "x";
+    let almacen = alamcen;
+    let bandera = "13";
+    let centrodestino =  "x";
+    let almacendestino =  "x";
+    let ubicacionOrigen = 'x';
+    return axios.get(
+      `${domain}/transporte/alistamientoWm/${ubicacionOrigen}/${almacen}/${ubicacionDestino}/${centro}/${cantidad}/${codsap}/${lote}/${pallet}/${bandera}/${loteDestino}/${usuario}/${almacendestino}/${centrodestino}`,
+      { headers: headers }
+    );
+  },
 
 
 }

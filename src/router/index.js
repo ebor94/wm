@@ -99,6 +99,11 @@ const router = createRouter({
         component: () => import('../views/TrasladosAlmView.vue')
       },
       {
+        path: '/freepicking/',
+        name: 'liberar-picking',
+        component: () => import('../views/picking/freePicking.vue')
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
         component: NotFoundView
