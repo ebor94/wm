@@ -1,122 +1,196 @@
 <template>
-    <div class="min-h-screen flex flex-col">
-      <LoaderComponent 
+  <div class="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <LoaderComponent 
       v-if="isLoading"
-      loading-text="cargando ..."
+      loading-text="Cargando menú..."
     />
-      <!-- Header Rojo -->
-       <Header title=" Menú inicial" ></Header>
+    
 
-      <!-- Contenido Principal -->
-      <main class="flex-1 bg-gray-800 p-4 flex flex-col">
-        <!-- Nombre de Usuario y Mensaje -->
-        <div class="bg-gray-300 rounded-lg p-3 mb-2 text-center">
-          <div class="text-gray-700 font-bold">{{ authStore.nameUser || 'Usuario' }}</div>
-          <div class="text-gray-700 font-bold">{{ authStore.almaceMM }}</div>
-          <div class="text-gray-600">Por favor seleccione</div> <div class="mt-auto flex justify-center p-4">
-          
+
+    <Header title="📱 Menú Principal"></Header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 p-6 flex flex-col space-y-6">
+      <!-- Tarjeta de Usuario con animación -->
+      <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20 transform hover:scale-105 transition-all duration-300">
+        <div class="text-center space-y-2">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-3 shadow-lg">
+            <span class="text-white text-2xl font-bold">
+              {{ getUserInitials(authStore.nameUser) }}
+            </span>
+          </div>
+          <div class="text-gray-800 font-bold text-lg">
+            {{ authStore.nameUser || 'Usuario' }}
+          </div>
+          <div class="flex items-center justify-center space-x-2 text-gray-600">
+            <span class="material-icons text-sm">location_on</span>
+            <span class="font-medium">{{ authStore.almaceMM }}</span>
+          </div>
+          <div class="text-gray-500 text-sm">Selecciona una opción</div>
         </div>
-        </div>
-  
-        <!-- Grid de Botones -->
-        <div class="grid grid-cols-2 gap-4">
-          <button 
-            v-for="(item, index) in menuItems" 
-            :key="index"
-            @click="handleMenuClick(item.action)"
-            class="bg-white py-3 px-4 rounded-full text-gray-700 hover:bg-gray-100 text-sm font-medium shadow"
-          >
-            {{ item.title }}
-          </button>
-        </div>
-  
-        <!-- Botón de Cerrar Sesión -->
-        <div class="mt-auto flex justify-center p-4">
-          <button 
-            @click="handleLogout"
-            class="flex items-center space-x-2 bg-white rounded-full px-6 py-2 text-gray-700"
-          >
-            <span class="material-icons">logout</span>
-            <span>Terminar Sesión</span>
-          </button>          
-        </div>
+      </div>
+
+      <!-- Grid de Menús con iconos y animaciones -->
+      <div class="grid grid-cols-2 gap-4 flex-1">
+        <button 
+          v-for="(item, index) in menuItems" 
+          :key="index"
+          @click="handleMenuClick(item.action)"
+          class="group bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg hover:shadow-2xl border border-white/30 hover:border-blue-300 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 active:scale-95"
+          :style="{ animationDelay: `${index * 50}ms` }"
+        >
+          <div class="flex flex-col items-center space-y-3 h-full justify-center">
+            <!-- Icono dinámico con estilos inline -->
+            <div 
+              class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300"
+              :style="getIconStyle(item.action)">
+              <span class="material-icons text-white text-xl">
+                {{ getMenuIcon(item.action) }}
+              </span>
+            </div>
+            <!-- Título del menú -->
+            <span class="text-gray-700 font-medium text-sm text-center leading-tight group-hover:text-gray-900 transition-colors duration-300">
+              {{ item.title }}
+            </span>
+          </div>
+          <!-- Efecto de ripple -->
+          <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-0 group-active:opacity-20 transition-opacity duration-150"></div>
+        </button>
+      </div>
+
+      <!-- Botones de acción con mejor diseño -->
+      <div class="space-y-4 mt-auto">
+        <!-- Botón de configuración -->
         <div class="flex justify-center">
           <button 
             @click="changeStore"
-            class="bg-white rounded-full"
+            class="group bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg hover:shadow-xl border border-white/30 hover:border-gray-400 transition-all duration-300 hover:scale-110"
           >
-            <span class="tiny material-icons">settings_applications</span>
-           
+            <span class="material-icons text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
+              settings_applications
+            </span>
           </button>
-          
         </div>
-      </main>
-      <TrasladoModal
-        :isOpen="isModalOpen" 
-        @close="closeModal"
-        @seleccionarAlmacen="handleSeleccionAlmacen"
-       />
-  
-      <!-- Footer -->
-      <footer class="bg-italia-red text-white p-2 text-center">
-        Cerámica Italia ©2024
-        
-      </footer>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref , onMounted} from 'vue'
 
-   import { UseDespachoStore } from '../store/despachos'; 
-  import { useRouter } from 'vue-router'
-  import { useLoader } from '../composables/useLoader' 
-  import { useAuthStore } from '../store/auth';
-  import TrasladoModal from '../components/TrasladoModal.vue'
-import Header from '../components/Header.vue';
+        <!-- Botón de cerrar sesión -->
+        <div class="flex justify-center">
+          <button 
+            @click="handleLogout"
+            class="group bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-full px-8 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+          >
+            <div class="flex items-center space-x-3">
+              <span class="material-icons text-white">logout</span>
+              <span class="text-white font-medium">Cerrar Sesión</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </main>
 
- const authStore = useAuthStore()
- const despachosStore = UseDespachoStore()
-  const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
-  const router = useRouter()
-  const storeDespachos = UseDespachoStore()
-  
-  // Lista de opciones del menú
-  const menuItems = [
-    { title: 'Alistamiento', action: 'alistamiento' },
-    { title: 'Cargue', action: 'cargue' },
-    { title: 'Traslado ubicacion', action: 'traslado' },
-    // { title: 'Traslado / Lotes', action: 'traslado-lotes' },
-    { title: 'Consultar Ubicacion', action: 'consultar-ubicacion' },
-    { title: 'OT Pendiente confirmar', action: 'ot-pendiente' },
-    { title: 'Consultar material', action: 'consultar-material' },
-    { title: 'Gestion Entrega', action: 'gestion-entrega' },
-    { title: 'Indicador De Despacho', action: 'indicator' },
-    { title: 'Validar Etiqueta', action: 'info-etiqueta' },
-    {title: 'Traslado entre Almacenes', action:'traslado-almacenes'},
-    {title: 'Liberar Picking', action:'freepicking'},
-   // { title: 'Consultar Despacho', action: 'consultar-despacho' },
-    { title: 'Ingreso De Mercancia', action: 'ingreso-mcia' },
-    // { title: 'Legalizacion', action: 'legalizacion' },
-  ]
-  
-  // Manejo de clicks en el menú
-  const handleMenuClick = (action) => {
-   try {
-    showLoader("cargando...")
-    if(action == 'gestion-entrega') {
-      handleGestionEntrega();
+    <!-- Modal mejorado -->
+    <TrasladoModal
+      :isOpen="isModalOpen" 
+      @close="closeModal"
+      @seleccionarAlmacen="handleSeleccionAlmacen"
+    />
+
+    <!-- Footer con gradiente -->
+    <footer class="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 text-center shadow-2xl">
+      <div class="flex items-center justify-center space-x-2">
+        <span class="material-icons text-sm">copyright</span>
+        <span class="text-sm font-medium">Cerámica Italia 2024</span>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { UseDespachoStore } from '../store/despachos'
+import { useRouter } from 'vue-router'
+import { useLoader } from '../composables/useLoader'
+import { useAuthStore } from '../store/auth'
+import { useMenuAPI } from '../composables/useMenuAPI'
+import TrasladoModal from '../components/TrasladoModal.vue'
+import Header from '../components/Header.vue'
+
+const authStore = useAuthStore()
+const despachosStore = UseDespachoStore()
+const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
+const { 
+  menus: menuItems, 
+  fetchUserMenus, 
+  getMenuIcon, 
+  getDefaultMenus,
+  hasError 
+} = useMenuAPI()
+const router = useRouter()
+const storeDespachos = UseDespachoStore()
+
+// Función para obtener iniciales del usuario
+const getUserInitials = (name) => {
+  if (!name) return 'U'
+  const words = name.split(' ')
+  if (words.length === 1) return words[0].charAt(0).toUpperCase()
+  return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase()
+}
+
+
+// Función para obtener el estilo del icono de manera segura
+const getIconStyle = (action) => {
+  const colorMap = {
+    'alistamiento': { background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' },
+    'cargue': { background: 'linear-gradient(135deg, #10b981, #059669)' },
+    'traslado': { background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' },
+    'consultar-ubicacion': { background: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+    'ot-pendiente': { background: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+    'consultar-material': { background: 'linear-gradient(135deg, #14b8a6, #0d9488)' },
+    'gestion-entrega': { background: 'linear-gradient(135deg, #6366f1, #4f46e5)' },
+    'indicator': { background: 'linear-gradient(135deg, #ec4899, #db2777)' },
+    'info-etiqueta': { background: 'linear-gradient(135deg, #06b6d4, #0891b2)' },
+    'traslado-almacenes': { background: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+    'freepicking': { background: 'linear-gradient(135deg, #84cc16, #65a30d)' },
+    'ingreso-mcia': { background: 'linear-gradient(135deg, #10b981, #059669)' }
+  }
+  return colorMap[action] || { background: 'linear-gradient(135deg, #6b7280, #4b5563)' }
+}
+const loadUserMenus = async () => {
+  try {
+    showLoader("Cargando menús...")
+    const userCode = authStore.userCode || authStore.user?.usercode
+    
+    if (userCode) {
+      await fetchUserMenus(userCode)
+    } else {
+      // Si no hay usercode, usar menús por defecto
+      menuItems.value = getDefaultMenus()
+      console.warn('No se encontró usercode, usando menús por defecto')
+    }
+  } catch (error) {
+    console.error('Error al cargar menús:', error)
+    // En caso de error, usar menús por defecto
+    menuItems.value = getDefaultMenus()
+  } finally {
+    hideLoader()
+  }
+}
+
+// Manejo de clicks en el menú
+const handleMenuClick = (action) => {
+  try {
+    showLoader("Cargando...")
+    if (action === 'gestion-entrega') {
+      handleGestionEntrega()
       return
     }
     router.push(`/${action}`)
-   } catch (error) {
-    
-   }
-
- 
+  } catch (error) {
+    console.error('Error al navegar:', error)
+    hideLoader()
   }
+}
 
-  const isModalOpen = ref(false)
+const isModalOpen = ref(false)
 const almacenActual = ref(localStorage.getItem('almacen') || '')
 
 const changeStore = () => {
@@ -132,30 +206,86 @@ const handleSeleccionAlmacen = (almacenId) => {
   localStorage.setItem('almacen', almacenId)
   authStore.almaceMM = almacenId
   almacenActual.value = almacenId
-  // Lógica adicional con el almacén seleccionado
 }
-  // Manejo de cierre de sesión
-  const handleLogout =   () => {
-    // Aquí implementaremos la lógica de cierre de sesión
-    authStore.logout()
-    despachosStore.resetStore()
-    router.push('/')
-  }
 
-  const handleGestionEntrega = () => {
+const handleLogout = () => {
+  authStore.logout()
+  despachosStore.resetStore()
+  router.push('/')
+}
+
+const handleGestionEntrega = () => {
   window.location.href = 'http://ci.ceramicaitalia.com/transporte/Gestion/GestionEntrega.asp'
 }
 
 onMounted(async () => {
   await storeDespachos.fetchDespachos()
-   hideLoader()
+  await loadUserMenus() // Cargar menús dinámicos
+  hideLoader()
 })
-  </script>
-  
-  <style scoped>
-  /* Ajustes específicos para el dispositivo Zebra */
-  button {
-    white-space: normal; /* Permite que el texto se ajuste en múltiples líneas */
-    min-height: 44px; /* Altura mínima para mejor interacción táctil */
+</script>
+
+<style scoped>
+/* Animación de entrada para los botones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  </style>
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid > button {
+  animation: slideInUp 0.6s ease-out both;
+}
+
+/* Mejoras específicas para dispositivos táctiles */
+button {
+  white-space: normal;
+  min-height: 44px;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Efecto glassmorphism */
+.bg-white\/90 {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.bg-white\/95 {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Scroll suave en dispositivos móviles */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mejoras para Material Icons */
+.material-icons {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Animación de pulso para el botón de configuración */
+.group:hover span.material-icons {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+</style>
