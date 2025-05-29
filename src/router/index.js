@@ -95,13 +95,18 @@ const router = createRouter({
       },
       {
         path: '/traslado-almacenes/',
-        name: 'ingreso-mcia-scan',
+        name: 'traslado-almacenes',
         component: () => import('../views/TrasladosAlmView.vue')
       },
       {
         path: '/freepicking/',
         name: 'liberar-picking',
         component: () => import('../views/picking/freePicking.vue')
+      },
+      {
+        path: '/admin',
+        name: 'admin',
+        component: () => import('../views/admin.vue')
       },
       {
         path: '/:pathMatch(.*)*',
