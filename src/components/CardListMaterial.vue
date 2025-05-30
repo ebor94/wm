@@ -6,7 +6,7 @@
           @click="handleMaterialClick(material.vbeln ,material.posnr)">
           <!-- Código de producto -->
           <div
-            :class="[material.lfimg === material.cantidadAcumuladaProcesada ? 'bg-green-600' : 'bg-red-600', 'text-white p-2 font-bold']">
+            :class="[ material.estadoProcesamiento === 'Completado' ? 'bg-green-600' : 'bg-red-600', 'text-white p-2 font-bold']">
             {{ material.vlpla }}
           </div>
           <!-- Detalles del producto -->

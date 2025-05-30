@@ -181,6 +181,8 @@ const eliminarCerosDeClaves = (obj) => {
 
 // Tu función original con la corrección
 function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
+ 
+  
   // Paso 1: Calcular las sumas acumuladas por Posnr del array de procesados
   const acumuladosPorPosnr = procesadosArray.reduce((acc, item) => {
     const posnr = item.Posnr;
@@ -200,14 +202,16 @@ function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
   // Paso 3: Agregar el campo de acumulados a cada elemento del inventario
   inventarioConAcumulados.forEach(item => {
     // Convertir el posnr a string para asegurar la comparación correcta
-    const posnrComoString = item.posnr.toString();
+    const posnrComoString = item.posnr;
     // ✅ USAR EL OBJETO LIMPIO: Si hay acumulados para este Posnr, agregar el valor, sino 0
-    item.cantidadAcumuladaProcesada = acumuladosLimpios[posnrComoString] || 0;
+    item.cantidadAcumuladaProcesada = Number.parseFloat(acumuladosLimpios[posnrComoString]).toFixed(1)  || 0;
     // Calcular la diferencia
-    item.diferenciaProcesada = item.lfimg - item.cantidadAcumuladaProcesada;
+    item.diferenciaProcesada =  Number.parseFloat(item.lfimg).toFixed(1) - item.cantidadAcumuladaProcesada;
     // Estado de procesamiento
     item.estadoProcesamiento = item.diferenciaProcesada <= 0 ? 'Completado' : 'Pendiente';
   });
+
+   console.log(inventarioConAcumulados);
 
   return inventarioConAcumulados;
 }

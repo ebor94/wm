@@ -1,6 +1,6 @@
 
-export const version = '2025.05.29';
-export const buildNumber = 72;
-export const buildDate = '2025-05-29T21:29:12.274Z';
+export const version = '2025.05.30';
+export const buildNumber = 76;
+export const buildDate = '2025-05-30T16:08:08.843Z';
 export const environment = 'production';
-export const fullVersion = '2025.05.29-build.72';
+export const fullVersion = '2025.05.30-build.76';
