@@ -165,6 +165,10 @@ const titleModalOt = ref("Ingresar Orden y Ubicación")
 
 const resetFields = async () => {
     scanValue.value = '';
+     materialCode.value  = '';
+      lote.value= '';
+       pallet.value= '';
+      MtPosition.value= '';
 }
 const handleBack = () => {
     router.back()
