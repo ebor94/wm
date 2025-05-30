@@ -108,13 +108,13 @@ const consultarEntrega = async () => {
     // Actualizar el estado con la información recibida 70334093
     if (response.data.mensaje == "OK") {
       let responseEntergaDtalle = await infoDespachos.getEntregaStatus(entrega.value)
-      console.log(responseAcum.data);
+     // console.log("acumulado",responseAcum.data);
        if (responseAcum.data.error){
         entregaInfo.value = response.data.datos
         
        }else{
         entregaInfoAcum.value = responseAcum.data;
-      //console.log(entregaInfoAcum.value)
+        //console.log("entregaInfoAcum",entregaInfoAcum.value)
         entregaInfo.value = agregarAcumuladosPorPosnr(response.data.datos, entregaInfoAcum.value);
 
        }
@@ -169,9 +169,19 @@ const procesarSeleccion = (materialInfo) => {
   // Lógica adicional aquí
 };
 
+// Función para eliminar ceros a la izquierda de las claves del objeto
+const eliminarCerosDeClaves = (obj) => {
+  return Object.fromEntries(
+    Object.entries(obj).map(([clave, valor]) => [
+      clave.replace(/^0+/, '') || '0', // Eliminar ceros a la izquierda, mantener al menos un '0'
+      valor
+    ])
+  );
+};
+
+// Tu función original con la corrección
 function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
   // Paso 1: Calcular las sumas acumuladas por Posnr del array de procesados
-  //console.log(inventarioArray, procesadosArray)
   const acumuladosPorPosnr = procesadosArray.reduce((acc, item) => {
     const posnr = item.Posnr;
     if (!acc[posnr]) {
@@ -181,22 +191,27 @@ function agregarAcumuladosPorPosnr(inventarioArray, procesadosArray) {
     return acc;
   }, {});
 
-  // Paso 2: Crear una copia profunda del array original para no modificarlo directamente
+  // ✅ CORRECCIÓN: Limpiar los ceros a la izquierda de las claves
+  const acumuladosLimpios = eliminarCerosDeClaves(acumuladosPorPosnr);
+
+  // Paso 2: Crear una copia profunda del array original
   const inventarioConAcumulados = JSON.parse(JSON.stringify(inventarioArray));
+  
   // Paso 3: Agregar el campo de acumulados a cada elemento del inventario
   inventarioConAcumulados.forEach(item => {
     // Convertir el posnr a string para asegurar la comparación correcta
     const posnrComoString = item.posnr.toString();
-    // Si hay acumulados para este Posnr, agregar el valor, sino 0
-    item.cantidadAcumuladaProcesada = acumuladosPorPosnr[posnrComoString] || 0;
-    // Opcionalmente, agregar un campo para calcular la diferencia
+    // ✅ USAR EL OBJETO LIMPIO: Si hay acumulados para este Posnr, agregar el valor, sino 0
+    item.cantidadAcumuladaProcesada = acumuladosLimpios[posnrComoString] || 0;
+    // Calcular la diferencia
     item.diferenciaProcesada = item.lfimg - item.cantidadAcumuladaProcesada;
-    // Opcionalmente, agregar un campo para el estado de procesamiento
+    // Estado de procesamiento
     item.estadoProcesamiento = item.diferenciaProcesada <= 0 ? 'Completado' : 'Pendiente';
   });
 
   return inventarioConAcumulados;
 }
+
 
 onMounted( async () => {
   // console.log('Componente montado');

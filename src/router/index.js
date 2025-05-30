@@ -95,7 +95,7 @@ const router = createRouter({
       },
       {
         path: '/traslado-almacenes/',
-        name: 'ingreso-mcia-scan',
+        name: 'traslado-almacenes',
         component: () => import('../views/TrasladosAlmView.vue')
       },
       {
