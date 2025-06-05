@@ -38,13 +38,15 @@
             Valor de etiqueta
           </label>
           <input
-           type="text" 
-           v-model="scanValue"
-           :disabled="isManualMode" 
-           @change="handleChangeScan"
-           @keyup.enter="handleChangeScan"
-           class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-           placeholder="Escanee o ingrese el valor" />
+            type="text" 
+            v-model="scanValue"
+            :disabled="isManualMode" 
+            @change="handleChangeScan"
+            @keyup.enter="handleScanEnter"
+            class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
+            placeholder="Escanee o ingrese el valor" 
+          />
+           
         </div>
 
         <!-- Cantidad buena -->
@@ -52,9 +54,14 @@
           <label class="block text-sm font-medium text-white">
             Cantidad buena
           </label>
-          <input type="number" v-model="goodQuantity" ref="goodQuantityInput"
+          <input 
+            type="number"
+            v-model="goodQuantity" 
+            ref="goodQuantityInput"
             class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
-            placeholder="Ingrese cantidad" />
+            placeholder="Ingrese cantidad"
+            @keyup.enter="focusLoteInput"
+             />
         </div>
 
         <!-- Cantidad material con rotura -->
@@ -62,7 +69,7 @@
           <label class="block text-sm font-medium text-white">
             Cantidad material con rotura
           </label>
-          <input type="number" v-model="brokenQuantity"
+          <input type="number" disabled v-model="brokenQuantity"
             class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
             placeholder="Ingrese cantidad con rotura" />
         </div>
@@ -100,7 +107,7 @@
               <label class="block text-xs font-medium text-gray-500">
                 Lote
               </label>
-              <input type="text" v-model="batch" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
+              <input type="text" v-model="batch" ref="loteInput" class="w-full p-2 border rounded-lg bg-gray-50" :disabled="!enableLoteField" />
             </div>
 
             <!-- Posición OT -->
@@ -174,13 +181,12 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
 import BasePopup from '../../components/BasePopup.vue';
 import { infoDespachos, InfoWm } from '../../services/entregas';
 import { useLoader } from '../../composables/useLoader';
 import Header from '../../components/Header.vue';
-
 
 const router = useRouter()
 const route = useRoute()
@@ -206,6 +212,7 @@ const QuantityPallet = ref('')
 const pallet = ref('')
 const lote = ref('')
 const goodQuantityInput = ref(null)
+const loteInput = ref(null)
 const registroOk = ref(true)
 const acumulado = ref(0)
 const nuevoAcumulado = ref(acumulado)
@@ -216,17 +223,23 @@ const flag = ref('4')
 const idRegistro = ref('')
 const palletMAnual = ref(0)
 const isManualMode = ref(false) 
-
-
-
 // Agregar estados para el popup
 const showPopup = ref(false);
 const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
+const enableLoteField = ref(false)
+const tipoCodigoDetectado = ref('')
+const metrosXCaja = ref(0)
 
-
+const handleScanEnter = async () => {
+  await handleChangeScan() // Procesar el código escaneado
+  
+  // Después de procesar, enfocar goodQuantity
+  await nextTick()
+  goodQuantityInput.value?.focus()
+}
 const handleAccept = async  () => {
   // Validar y procesar la lectura
   validaformulario()
@@ -410,18 +423,122 @@ const vibrate = ()=> {
       }
 }
 const handleChangeScan = async (event) => {
+  const codigo = scanValue.value.trim()
+  tipoCodigoDetectado.value = detectarTipoCodigo(codigo)
+  //console.log('Tipo de código detectado:', tipoCodigoDetectado)
+  if (!tipoCodigoDetectado) {
+    showPopup.value = true
+    popupTitle.value = 'Error de Validación'
+    popupMessage.value = 'Código no válido. Debe ser de 6, 13, 18 o 38 caracteres'
+    popupType.value = 'error'
+    scanValue.value = ''
+    return
+  }
 
-  //1 dividir numero de equiqueta
-  divideEtiquetas(scanValue.value, 'A');
-  //2 validar que el material lote ingresado coincida con el de la ot
-  validaCampos(batch.value, lote.value, "lote");
-  validaCampos(matnr.value, material.value, "materaial");
-  AsignaCampos();
-  if(tipolectura.value === 'A'){
-    await GetPalletQuantity(palletNumber.value)
-  } 
+    // Procesar según el tipo de código
+  switch (tipoCodigoDetectado.value) {
+    case 'EAN13':
+      procesarEAN13(codigo)
+      break
+    case 'CODIGO_PRODUCTO':      
+      procesarCodigoProducto(codigo)
+      
+      break
+    case 'CODIGO_18':
+      procesarCodigo18(codigo)
+      
+      break
+    case 'ETIQUETA_COMPLETA':
+      tipolectura.value = 'A'
+       showLoader("CArgando cantidad de pallet...")    
+      divideEtiquetas(codigo, 'A')
+      validaCampos(batch.value, lote.value, "lote");
+      validaCampos(matnr.value, material.value, "materaial");      
+       AsignaCampos();
+       await GetPalletQuantity(palletNumber.value)
+       hideLoader()
+      break
+  }
+
 }
 
+const detectarTipoCodigo = (codigo) => {
+  switch (codigo.length) {
+    case 6:
+      return 'CODIGO_PRODUCTO'
+    case 13:
+      return 'EAN13'
+    case 18:
+      return 'CODIGO_18'
+    case 38:
+      return 'ETIQUETA_COMPLETA'
+    default:
+      return null
+  }
+}
+
+
+const procesarEAN13 = (codigo) => {
+  console.log('Procesando EAN13:', codigo)
+  isOpen.value = true
+  enableLoteField.value = true
+  tipolectura.value = 'E'
+
+}
+
+
+const procesarCodigoProducto = async (codigo) => {
+  tipolectura.value = 'P'
+  let codsap = matnr.value
+  codsap = codsap.slice(12, 18) // Asegurarse de que el código SAP tenga 6 caracteres
+  console.log('Procesando código de producto:', codigo , 'matnr:', matnr.value, codsap)
+
+  if (codsap !== codigo) {
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `El ${material} escaneado no corresponde con el ${material} de la OT`;
+    showPopup.value = true;
+    popupType.value = 'error'
+    scanValue.value = '';
+  } else {
+    isOpen.value = true
+    enableLoteField.value = true
+    tipolectura.value === 'P'
+    material.value = codigo
+  }
+
+ 
+}
+
+const procesarCodigo18 = async (codigo) => {
+  
+  //console.log('Procesando código de 18:', codigo);
+  tipolectura.value = 'P'  
+  material.value = codigo.slice(12, 18) // Extraer material
+  if (matnr.value !== codigo) {
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `El ${codigo} escaneado no corresponde con el ${material.value} de la OT`;
+    showPopup.value = true;
+    popupType.value = 'error'
+    scanValue.value = '';
+  } else {
+        isOpen.value = true
+    enableLoteField.value = true
+    tipolectura.value === 'P'
+    material.value = codigo
+    
+  }
+ 
+  material.value = codigo
+
+}
+
+
+const focusLoteInput = () => {
+  // Solo hacer foco en loteInput si está habilitado
+  if (enableLoteField.value) {
+    loteInput.value?.focus()
+  }
+}
 
 const divideEtiquetas = (codigo, tipo) => {
   codigo = codigo.trim()
@@ -441,7 +558,7 @@ const validaCampos = (campo1, campo2, campo) => {
     scanValue.value = '';
     
   } else {
-    goodQuantityInput.value?.focus()
+   // goodQuantityInput.value?.focus()
   }
 }
 
@@ -451,19 +568,34 @@ const AsignaCampos = () => {
 }
 
 async function GetPalletQuantity(pallet) {
-
+  console.log('entro  GetPalletQuantity', pallet)
+ 
   if (pallet == '') {
     goodQuantity.value = '';
   } else {
     const infoPallet = await InfoWm.GetInfoPallet(pallet);
-    //console.log(infoPallet.data.success)
+   
     if (infoPallet.data.success) {
+      
       let cantidad = infoPallet.data.data.mensaje
+       console.log(cantidad)
       let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
-      result == 'PALLET NO EXISTE' ? goodQuantity.value = '' : goodQuantity.value = Number(result);
+      result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR" ? goodQuantity.value = '' : goodQuantity.value = Number(result);
+      if (result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR") {
+       
+        popupTitle.value = 'Error de Validación';
+        popupMessage.value = `${pallet}/${result || cantidad}  `;
+        showPopup.value = true;
+        popupType.value = 'error'
+        scanValue.value = '';
+      }
+       
       QuantityPallet.value = Number(result)
     }
+    
+
   }
+   
 
 }
 
@@ -517,7 +649,7 @@ const handlePopupUpdate = async () => {
       OT,
       tplectura
     )
-    console.log(regPicking)
+    //console.log(regPicking)
     const mensaje = regPicking.data.data[0].mensaje;
     
     if (mensaje === "OK" || mensaje === "RESGISTRO EXITOSO") {
@@ -546,7 +678,7 @@ const handlePopupUpdate = async () => {
     }
   } catch (error) {
     hideLoader()
-    console.error('Error en actualización:', error)
+    //.error('Error en actualización:', error)
     showPopup.value = true
     popupTitle.value = 'Error'
     popupMessage.value = 'Error al procesar la actualización'
@@ -575,6 +707,8 @@ onMounted(async () => {
       if (materialTapos1) {
 
         locations.value = materialTapos1.vlpla || ''
+        let mcj = materialTapos1.nsola / materialTapos1.cantcj
+        metrosXCaja.value = parseFloat(mcj.toFixed(3))   || 0
         batch.value = materialTapos1.charg || ''
         otPosition.value = materialTapos1.tapos || ''
         meins.value = materialTapos1.meins || ''
@@ -593,6 +727,7 @@ onMounted(async () => {
     console.error('Error al cargar los materiales:', error)
   }
 })
+
 
 </script>
 
