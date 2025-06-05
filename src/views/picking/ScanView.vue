@@ -183,14 +183,16 @@
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted, computed, nextTick } from 'vue'
 import { UseDespachoStore } from '../../store/despachos';
+import { useAuthStore } from '../../store/auth';
 import BasePopup from '../../components/BasePopup.vue';
 import { infoDespachos, InfoWm } from '../../services/entregas';
 import { useLoader } from '../../composables/useLoader';
 import Header from '../../components/Header.vue';
-
+import {infoEstiba} from '../../services/product'
 const router = useRouter()
 const route = useRoute()
 const store = UseDespachoStore()
+const authStore = useAuthStore()
 const isOpen = ref(false)
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
 
@@ -241,7 +243,10 @@ const handleScanEnter = async () => {
   goodQuantityInput.value?.focus()
 }
 const handleAccept = async  () => {
-  // Validar y procesar la lectura
+   if (authStore.umPicking === 'CJ' && meins.value === 'M2'){
+     goodQuantity.value = parseFloat(goodQuantity.value * metrosXCaja.value).toFixed(3)
+    }
+
   validaformulario()
   if(!registroOk.value){
    // console.log(registroOk)
@@ -253,7 +258,12 @@ const handleAccept = async  () => {
     brokenQuantity: brokenQuantity.value
   })
     showLoader("Registrando Informacion...")
-    await RegistrarPicking();
+    if(authStore.centroSecundario === 'X'){
+
+    }else{
+      await RegistrarPicking();
+    }
+    
  
   }
 }
@@ -440,23 +450,24 @@ const handleChangeScan = async (event) => {
     case 'EAN13':
       procesarEAN13(codigo)
       break
-    case 'CODIGO_PRODUCTO':      
+    case 'CODIGO_PRODUCTO':
       procesarCodigoProducto(codigo)
-      
+
       break
     case 'CODIGO_18':
       procesarCodigo18(codigo)
-      
+
       break
     case 'ETIQUETA_COMPLETA':
       tipolectura.value = 'A'
-       showLoader("CArgando cantidad de pallet...")    
+      showLoader("CArgando cantidad de pallet...")
       divideEtiquetas(codigo, 'A')
       validaCampos(batch.value, lote.value, "lote");
-      validaCampos(matnr.value, material.value, "materaial");      
-       AsignaCampos();
-       await GetPalletQuantity(palletNumber.value)
-       hideLoader()
+      validaCampos(matnr.value, material.value, "materaial");
+      AsignaCampos();
+      authStore.umPicking !== 'CJ' ? await GetPalletQuantity(palletNumber.value) : null
+      //await GetPalletQuantity(palletNumber.value)
+      hideLoader()
       break
   }
 
@@ -478,11 +489,27 @@ const detectarTipoCodigo = (codigo) => {
 }
 
 
-const procesarEAN13 = (codigo) => {
-  console.log('Procesando EAN13:', codigo)
+const procesarEAN13 =  async (codigo) => {
+  
   isOpen.value = true
   enableLoteField.value = true
   tipolectura.value = 'E'
+
+  const response = await infoEstiba.getInfoProducto(codigo, tipolectura.value,authStore.ptoExpedicion,authStore.almaceMM,'1000','60');
+  let skuEan = await response.data[0].material
+  if (skuEan !== matnr.value || skuEan === null) {
+    popupTitle.value = 'Error de Validación';
+    popupMessage.value = `El código EAN13 ${codigo} no corresponde al producto ${nameProduct.value}`;
+    showPopup.value = true;
+    popupType.value = 'error'
+    scanValue.value = '';
+    return
+  }else{
+    materialCode.value = skuEan;
+    material.value = skuEan;
+  }
+  //console.log('Respuesta de infoEstiba:', infoProducto)
+
 
 }
 
@@ -491,9 +518,9 @@ const procesarCodigoProducto = async (codigo) => {
   tipolectura.value = 'P'
   let codsap = matnr.value
   codsap = codsap.slice(12, 18) // Asegurarse de que el código SAP tenga 6 caracteres
-  console.log('Procesando código de producto:', codigo , 'matnr:', matnr.value, codsap)
+  //console.log('Procesando código de producto:', codigo , 'matnr:', matnr.value, codsap)
 
-  if (codsap !== codigo) {
+  if (matnr.value !== codigo) {
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `El ${material} escaneado no corresponde con el ${material} de la OT`;
     showPopup.value = true;
@@ -708,20 +735,17 @@ onMounted(async () => {
 
         locations.value = materialTapos1.vlpla || ''
         let mcj = materialTapos1.nsola / materialTapos1.cantcj
-        metrosXCaja.value = parseFloat(mcj.toFixed(3))   || 0
+        metrosXCaja.value = parseFloat(mcj.toFixed(3)) || 0
         batch.value = materialTapos1.charg || ''
         otPosition.value = materialTapos1.tapos || ''
         meins.value = materialTapos1.meins || ''
         tanum.value = materialTapos1.tanum || ''
         matnr.value = materialTapos1.matnr || ''
         nameProduct.value = materialTapos1.maktx || ''
-        acumulado.value = await getAcumulado(entrega, materialTapos1.tapos,materialTapos1.tanum )
+        acumulado.value = await getAcumulado(entrega, materialTapos1.tapos, materialTapos1.tanum)
 
       }
     }
-   
- 
-
 
   } catch (error) {
     console.error('Error al cargar los materiales:', error)
