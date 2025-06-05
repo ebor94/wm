@@ -55,10 +55,8 @@ export const useAuthStore = defineStore('auth', {
         },
     
         logout() {
-          this.user = null
-          this.token = null
-          this.isAuthenticated = false
-          this.state = {
+       
+         this.$state = {
             user: null,
             nameUser: null,
             token: null,
@@ -70,6 +68,7 @@ export const useAuthStore = defineStore('auth', {
             umPicking: null,
             centroSecundario: null
           }
+          
           
           // Limpiar localStorage
           localStorage.removeItem('token')
