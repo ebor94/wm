@@ -12,7 +12,9 @@ export const useAuthStore = defineStore('auth', {
       loading: false,
       ptoExpedicion: null,
       almaceMM: null,
-      error: null
+      error: null,
+      umPicking: null,
+      centroSecundario: null,
     }),
     actions: {
         async login(username, password) {
@@ -32,6 +34,8 @@ export const useAuthStore = defineStore('auth', {
               this.nameUser = response.data[0].nombre;
               this.ptoExpedicion = response.data[0].centro;
               this.almaceMM = response.data[0].almacen;
+              this.umPicking = response.data[0].umpicking;
+              this.centroSecundario = response.data[0].werkschild;
               localStorage.setItem('centro', response.data[0].centro)
               localStorage.setItem('almacen', response.data[0].almacen)
               localStorage.setItem('user', username)
@@ -54,6 +58,18 @@ export const useAuthStore = defineStore('auth', {
           this.user = null
           this.token = null
           this.isAuthenticated = false
+          this.state = {
+            user: null,
+            nameUser: null,
+            token: null,
+            isAuthenticated: false,
+            loading: false,
+            ptoExpedicion: null,
+            almaceMM: null,
+            error: null,
+            umPicking: null,
+            centroSecundario: null
+          }
           
           // Limpiar localStorage
           localStorage.removeItem('token')
