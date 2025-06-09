@@ -508,6 +508,7 @@ const procesarEAN13 =  async (codigo) => {
     materialCode.value = skuEan;
     material.value = skuEan;
   }
+  tipolectura.value = 'M'
   //console.log('Respuesta de infoEstiba:', infoProducto)
 
 
@@ -515,7 +516,7 @@ const procesarEAN13 =  async (codigo) => {
 
 
 const procesarCodigoProducto = async (codigo) => {
-  tipolectura.value = 'P'
+  tipolectura.value = 'M'
   let codsap = matnr.value
   codsap = codsap.slice(12, 18) // Asegurarse de que el código SAP tenga 6 caracteres
   //console.log('Procesando código de producto:', codigo , 'matnr:', matnr.value, codsap)
@@ -529,7 +530,7 @@ const procesarCodigoProducto = async (codigo) => {
   } else {
     isOpen.value = true
     enableLoteField.value = true
-    tipolectura.value === 'P'
+    tipolectura.value === 'M'
     material.value = codigo
   }
 
@@ -539,7 +540,7 @@ const procesarCodigoProducto = async (codigo) => {
 const procesarCodigo18 = async (codigo) => {
   
   //console.log('Procesando código de 18:', codigo);
-  tipolectura.value = 'P'  
+  tipolectura.value = 'M'  
   material.value = codigo.slice(12, 18) // Extraer material
   if (matnr.value !== codigo) {
     popupTitle.value = 'Error de Validación';
@@ -550,7 +551,7 @@ const procesarCodigo18 = async (codigo) => {
   } else {
         isOpen.value = true
     enableLoteField.value = true
-    tipolectura.value === 'P'
+    tipolectura.value === 'M'
     material.value = codigo
     
   }
@@ -658,6 +659,10 @@ const handlePopupUpdate = async () => {
     let tplectura   =  tipolectura.value
 
     // Llamar a la API con bandera de actualización
+
+    if(useAuthStore.centroSecundario === 'X'){
+      bandera = '4'
+    }
    
     showLoader()
     const regPicking = await InfoWm.RegistryPicking(
