@@ -252,13 +252,14 @@ const handleAccept = async  () => {
    // console.log(registroOk)
     registroOk.value = true
   }else{
-    console.log('Procesando lectura:', {
+ /*   console.log('Procesando lectura:', {
     scanValue: scanValue.value,
     goodQuantity: goodQuantity.value,
     brokenQuantity: brokenQuantity.value
-  })
+  }) */
     showLoader("Registrando Informacion...")
     if(authStore.centroSecundario === 'X'){
+      await RegistrarPicking();
 
     }else{
       await RegistrarPicking();
@@ -306,7 +307,7 @@ const RegistrarPicking = async () =>{
 
 
   const regPicking = await InfoWm.RegistryPicking(entrega,posicion,materialx,lote,consestib,cantbuena,cantrotura,UMBASE,usuario,bandera,IDX,POSOT,OT,tplectura)
-  console.log(regPicking.data.data[0])
+  //console.log(regPicking.data.data[0])
 
   let mensaje = regPicking.data.data[0].mensaje;
   if (mensaje == "RESGISTRO EXITOSO"){
@@ -409,7 +410,7 @@ const validaformulario = () => {
   ).toFixed(3);
 
   total = parseFloat(total);
-  console.log(total,'*******', parseFloat(totalPos.value) )
+  //console.log(total,'*******', parseFloat(totalPos.value) )
  if(total > parseFloat(totalPos.value)) {      
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `excede cantidad acumulada, no permitido ${total}`;
@@ -521,7 +522,7 @@ const procesarCodigoProducto = async (codigo) => {
   codsap = codsap.slice(12, 18) // Asegurarse de que el código SAP tenga 6 caracteres
   //console.log('Procesando código de producto:', codigo , 'matnr:', matnr.value, codsap)
 
-  if (matnr.value !== codigo) {
+  if (codsap !== codigo) {
     popupTitle.value = 'Error de Validación';
     popupMessage.value = `El ${material} escaneado no corresponde con el ${material} de la OT`;
     showPopup.value = true;
@@ -596,7 +597,7 @@ const AsignaCampos = () => {
 }
 
 async function GetPalletQuantity(pallet) {
-  console.log('entro  GetPalletQuantity', pallet)
+  //console.log('entro  GetPalletQuantity', pallet)
  
   if (pallet == '') {
     goodQuantity.value = '';
@@ -606,7 +607,7 @@ async function GetPalletQuantity(pallet) {
     if (infoPallet.data.success) {
       
       let cantidad = infoPallet.data.data.mensaje
-       console.log(cantidad)
+       //console.log(cantidad)
       let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
       result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR" ? goodQuantity.value = '' : goodQuantity.value = Number(result);
       if (result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR") {
@@ -731,7 +732,7 @@ onMounted(async () => {
       detalle.entrega === entrega
     )
     if (detalleEntrega) {
-      console.log(detalleEntrega)
+     // console.log(detalleEntrega)
       let pos = Number(route.params.pos)
       let ot = Number(route.params.ot)
       const materialTapos1 = detalleEntrega.datos.find(item => item.tapos === pos && item.tanum === ot)
