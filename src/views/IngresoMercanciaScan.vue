@@ -130,7 +130,7 @@ import ScanEtiqu from '../components/ScanEtiqu.vue';
 import { InfoEntrega } from '../services/entregas';
 import PopupForm from '../components/PopupForm.vue';
 import ScannerInput from '../../components/ScanEtiqu.vue'
-const scanValue = ref('')
+//const scanValue = ref('')
 
 
 const isManualMode = ref(false);
