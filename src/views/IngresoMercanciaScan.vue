@@ -4,7 +4,12 @@
         <Header title=".:. Ingresar Pallet .:."></Header>
         <main class="flex-1 p-4 space-y-6 bg-gray-800">
             <!-- Formulario de Lectura -->
-            <ScanEtiqu v-model="scanValue" :disabled="isManualMode" @onChange="handleScanChange" />
+            <!-- <ScanEtiqu v-model="scanValue" :disabled="isManualMode" @onChange="handleScanChange" /> -->
+            <ScannerInput
+            v-model="scanValue"
+            @onCodeProcessed="recibirCodigo"
+            @onError="recibirError"
+            />
             <div v-show="isOpen" class="border border-gray-700 border-t-0 rounded-b-lg p-4 space-y-4 bg-gray-700 ">
                 <!-- Cod. material -->
                 <div class="space-y-1">
@@ -124,6 +129,8 @@ import Header from '../components/Header.vue';
 import ScanEtiqu from '../components/ScanEtiqu.vue';
 import { InfoEntrega } from '../services/entregas';
 import PopupForm from '../components/PopupForm.vue';
+import ScannerInput from '../../components/ScanEtiqu.vue'
+const scanValue = ref('')
 
 
 const isManualMode = ref(false);
@@ -150,6 +157,7 @@ const goodQuantity = ref('0')
 const goodQuantityInput = ref(null)
 const otNumber = ref('')
 const almacenWm = ref('')
+const tipoScan = ref('') // Tipo de escaneo, por defecto 'P' para Pallet
 
 
 
@@ -182,6 +190,7 @@ const vibrate = () => {
 
 
 const handleAccept = async () => {
+    let bandera = '';
     if (goodQuantity.value === 0) {
         showPopup.value = true;
         popupTitle.value = 'Alerta'
@@ -189,10 +198,21 @@ const handleAccept = async () => {
         popupType.value = 'warning'
         return
     }
-    showLoader('Guardando información...')
+    showLoader('Guardando información...');
    
     try {
-        let response = await InfoEntrega.enterPallet(mt.value,  materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'),'','',MtPosition.value.toString(),goodQuantity.value.toString(),localStorage.getItem('user'),'1')
+/* EAN13
+CODIGO_PRODUCTO
+CODIGO_18
+ETIQUETA_COMPLETA */
+        if (tipoScan.value === 'ETIQUETA_COMPLETA') {
+            bandera = '1'
+        }else{
+            bandera = '4'
+        }
+
+
+        let response = await InfoEntrega.enterPallet(mt.value,  materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'),'','',MtPosition.value.toString(),goodQuantity.value.toString(),localStorage.getItem('user'),bandera)
         console.log(response)
         if (response.data.MENSAJE.includes("|")) {      
             const partes = response.data.MENSAJE.split("|");         
@@ -291,6 +311,52 @@ watch(scanValue, (newValue) => {
     scanValue.value = newValue.trim()
 })
 
+const recibirCodigo = (resultado) => {
+  console.log('📦 Código procesado:', resultado)
+  
+  // Aquí tienes acceso a toda la información:
+  console.log('🏷️ Tipo:', resultado.tipo)
+  tipoScan.value = resultado.tipo
+  console.log('📋 Material:', resultado.materialCode)
+  console.log('🔖 Tipo Lectura:', resultado.tipoLectura)
+
+    if (resultado.materialCode) {
+        console.log('🔹 Material:', resultado.materialCode)
+        materialCode.value = resultado.materialCode // "000000000000203080"
+        material.value = resultado.materialCode
+    }
+  
+  if (resultado.lote) {
+    console.log('📊 Lote:', resultado.lote)   
+    lote.value = resultado.lote // "0000012280"
+  }
+  
+  if (resultado.pallet) {
+    console.log('📦 Pallet:', resultado.pallet)
+    try {
+        pallet.value = resultado.pallet 
+        palletNumber.value = pallet.value;           
+        let infoPallet = await InfoEntrega.getIngresoMaterialInfo('P','',null,null, pallet.value)
+        goodQuantity.value = infoPallet.data[0].Cantidad   
+        } catch (error) {
+        goodQuantity.value = 0
+        showPopup.value = true;
+        popupTitle.value = 'Alerta'
+        popupMessage.value = error.message
+        popupType.value = 'error'
+            
+        }
+  }
+    validaCampos();
+     vibrate();
+     hideLoader()
+  
+}
+
+const recibirError = (error) => {
+  console.error('❌ Error:', error)
+  ultimoCodigo.value = null
+}
 
 onMounted(() => {
     mt.value = route.params.entrega

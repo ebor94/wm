@@ -204,7 +204,7 @@ try {
 
   // Con Axios, la respuesta ya viene parseada como JSON
   const data = response.data;
-
+  console.log('Respuesta del servidor ot :', data);
   // Verificar success en la respuesta
   if (!data.success) {
     throw new Error(data.error?.message || 'Error al procesar la solicitud');
