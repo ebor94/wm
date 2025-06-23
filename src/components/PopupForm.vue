@@ -221,9 +221,9 @@ try {
   formData.location = '';
 
   // Close modal after a delay (optional)
-  setTimeout(() => {
+ /*  setTimeout(() => {
     emit('update:modelValue', false);
-  }, 2000);
+  }, 10000); */
 } catch (error) {
   // Manejar diferentes tipos de errores de Axios
   if (axios.isAxiosError(error)) {
