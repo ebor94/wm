@@ -126,10 +126,9 @@ import { UseDespachoStore } from '../store/despachos';
 import BasePopup from '../components/BasePopup.vue';
 import { useLoader } from '../composables/useLoader';
 import Header from '../components/Header.vue';
-import ScanEtiqu from '../components/ScanEtiqu.vue';
 import { InfoEntrega } from '../services/entregas';
 import PopupForm from '../components/PopupForm.vue';
-import ScannerInput from '../../components/ScanEtiqu.vue'
+import ScannerInput from '../components/ScanEtiqu.vue'
 //const scanValue = ref('')
 
 
@@ -311,7 +310,7 @@ watch(scanValue, (newValue) => {
     scanValue.value = newValue.trim()
 })
 
-const recibirCodigo = (resultado) => {
+ const recibirCodigo = (resultado) => {
   console.log('📦 Código procesado:', resultado)
   
   // Aquí tienes acceso a toda la información:
@@ -320,37 +319,43 @@ const recibirCodigo = (resultado) => {
   console.log('📋 Material:', resultado.materialCode)
   console.log('🔖 Tipo Lectura:', resultado.tipoLectura)
 
-    if (resultado.materialCode) {
-        console.log('🔹 Material:', resultado.materialCode)
-        materialCode.value = resultado.materialCode // "000000000000203080"
-        material.value = resultado.materialCode
-    }
+  if (resultado.materialCode) {
+    console.log('🔹 Material:', resultado.materialCode)
+    materialCode.value = resultado.materialCode
+    material.value = resultado.materialCode
+  }
   
   if (resultado.lote) {
     console.log('📊 Lote:', resultado.lote)   
-    lote.value = resultado.lote // "0000012280"
+    lote.value = resultado.lote
   }
   
   if (resultado.pallet) {
     console.log('📦 Pallet:', resultado.pallet)
-    try {
-        pallet.value = resultado.pallet 
-        palletNumber.value = pallet.value;           
-        let infoPallet = await InfoEntrega.getIngresoMaterialInfo('P','',null,null, pallet.value)
+    showLoader('Cargando cantidad de pallet...')
+    
+    pallet.value = resultado.pallet 
+    palletNumber.value = pallet.value
+    
+    // Usar .then() en lugar de await
+    InfoEntrega.getIngresoMaterialInfo('P','',null,null, pallet.value)
+      .then(infoPallet => {
         goodQuantity.value = infoPallet.data[0].Cantidad   
-        } catch (error) {
+      })
+      .catch(error => {
         goodQuantity.value = 0
-        showPopup.value = true;
+        showPopup.value = true
         popupTitle.value = 'Alerta'
         popupMessage.value = error.message
         popupType.value = 'error'
-            
-        }
+      })
+      .finally(() => {
+        hideLoader()
+      })
   }
-    validaCampos();
-     vibrate();
-     hideLoader()
   
+  validaCampos()
+  vibrate()
 }
 
 const recibirError = (error) => {
