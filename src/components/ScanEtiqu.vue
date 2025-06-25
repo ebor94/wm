@@ -178,8 +178,8 @@ const handleChange = async (event) => {
   }
 
   const tipoCodigoDetectado = detectarTipoCodigo(codigo)
-  
-  if (!tipoCodigoDetectado) {
+  console.log('Tipo de código detectado:', tipoCodigoDetectado)
+  if (!tipoCodigoDetectado.length) {
     emit('onError', {
       title: 'Error de Validación',
       message: 'Código no válido. Debe ser de 6, 13, 18 o 38 caracteres',
@@ -207,7 +207,7 @@ const handleChange = async (event) => {
   } catch (error) {
     emit('onError', {
       title: 'Error de Procesamiento',
-      message: 'Error al procesar el código escaneado',
+      message: 'Error al procesar el código escaneado' + error,
       type: 'error'
     })
   }

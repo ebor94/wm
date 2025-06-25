@@ -9,12 +9,18 @@
       <!-- Formulario -->
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- Lectura -->
-        <div>
+       <!--  <div>
           <label class="text-gray-300 text-sm mb-1 block">Lectura</label>
           <input v-model="formData.lectura" type="text" @change="handleChangeScan" @keyup.enter="handleChangeScan"
             placeholder="Valor de etiqueta"
             class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
-        </div>
+        </div> -->
+
+        <ScannerInput
+            v-model="scanValue"
+            @onCodeProcessed="recibirCodigo"
+            @onError="recibirError"
+            />
 
         <!-- Cantidad buena -->
         <div>
@@ -26,11 +32,11 @@
         <!-- Ubicación Origen -->
         <div>
           <label class="text-gray-300 text-sm mb-1 block">Ubicación Origen</label>
-          <select v-model="formData.ubicacionOrigen"
+          <select  v-model="indiceSeleccionado" @change="onUbicacionChange"
             class="w-full bg-white text-gray-800 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-italia-red focus:border-italia-red">
             <option value="" disabled selected>Seleccione Ubicación Origen</option>
-            <option v-for="ubicacion in ubicaciones" :key="ubicacion.id" :value="ubicacion.ubicacion">
-              {{ ubicacion.ubicacion }} ==> {{ ubicacion.disponible }}
+            <option v-for="(ubicacion, index) in ubicaciones" :key="ubicacion.id" :value="index">
+              {{ ubicacion.ubicacion }} ==> {{ ubicacion.disponible }}  {{ ubicacion.lote ? `- Lote: ${ubicacion.lote}` : '' }}
             </option>
           </select>
         </div>
@@ -107,16 +113,19 @@ import { InfoWm } from '../services/entregas';
 import { useLoader } from '../composables/useLoader';
 import BasePopup from '../components/BasePopup.vue';
 import Header from '../components/Header.vue';
+import ScannerInput from '../components/ScanEtiqu.vue'
 
 const router = useRouter()
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
-
+const indiceSeleccionado = ref('') // Indice de la ubicación seleccionada
 // Agregar estados para el popup
 const showPopup = ref(false);
 const popupTitle = ref('');
 const popupMessage = ref('');
 const popupType = ref('');
 const popupAction = ref('normal')
+const scanValue = ref('')
+const tipoScan = ref('') // Tipo de escaneo, por defecto 'P' para Pallet
 // Datos del formulario
 const formData = ref({
   lectura: '',
@@ -131,6 +140,18 @@ const cantidadBuenaInput = ref(null)
 const ubicacionDestino = ref( localStorage.getItem('ubicacionDestino') || null)
 const ubicaciones = ref([])
 
+const onUbicacionChange= () => {
+  
+      if (indiceSeleccionado.value !== '') {
+        let resultadoUbicacionLote = ubicaciones.value[indiceSeleccionado.value];        
+        formData.value.ubicacionOrigen = resultadoUbicacionLote.ubicacion;
+        if (tipoScan.value !== 'ETIQUETA_COMPLETA'){
+        formData.value.lote = resultadoUbicacionLote.lote;
+        formData.value.consecutivo = 'x';
+        }
+      }
+    }
+
 const resetForm = () => {
   formData.value.lectura = ''
   formData.value.cantidadBuena = ''
@@ -138,8 +159,12 @@ const resetForm = () => {
   formData.value.material = ''
   formData.value.lote = ''
   formData.value.consecutivo = ''
+  scanValue.value = ''
+  ubicaciones.value = []
+  indiceSeleccionado.value = ''
+  cantidadBuenaInput.value = null
 }
-const handleChangeScan = async (event) => {
+/* const handleChangeScan = async (event) => {
   //1 dividir numero de equiqueta
   divideEtiquetas(formData.value.lectura);
   showLoader();
@@ -147,8 +172,8 @@ const handleChangeScan = async (event) => {
   await GetInfoMaterialAviable(formData.value.material, formData.value.lote, formData.value.consecutivo);
   hideLoader();
 
-}
-const divideEtiquetas = (codigo) => {
+} */
+/* const divideEtiquetas = (codigo) => {
   codigo = codigo.trim()
   formData.value.material = codigo.slice(0, 18)        // "0000000000002020220000016147000199189"   
   formData.value.lote = codigo.slice(19, 28)          // "0000012280"
@@ -156,6 +181,79 @@ const divideEtiquetas = (codigo) => {
   cantidadBuenaInput.value?.focus()
 
 
+} */
+ const recibirCodigo = (resultado) => {
+   showLoader();
+  console.log('📦 Código procesado:', resultado)
+  
+  // Aquí tienes acceso a toda la información:
+  console.log('🏷️ Tipo:', resultado.tipo)  
+  console.log('📋 Material:', resultado.materialCode)
+  console.log('🔖 Tipo Lectura:', resultado.tipoLectura)
+   tipoScan.value = resultado.tipo
+   //showLoader('Cargando informacion...')
+  if (resultado.materialCode) {
+    console.log('🔹 Material:', resultado.materialCode)
+   formData.value.material = resultado.materialCode
+   
+  }
+  
+  if (resultado.lote) {
+    console.log('📊 Lote:', resultado.lote)   
+    formData.value.lote = resultado.lote
+  }
+  
+  if (resultado.pallet) {
+     formData.value.consecutivo = resultado.pallet 
+     
+    console.log('📦 Pallet:', formData.value.consecutivo)
+    
+    
+   
+    
+    // Usar .then() en lugar de await
+
+    Promise.all([
+      GetPalletQuantity( formData.value.consecutivo),
+      //GetInfoMaterialAviable(formData.value.material, formData.value.lote, pallet.value)
+    ])
+    .then(() => {
+      //cantidadBuenaInput.value?.focus()
+    })
+    .catch(error => {
+      formData.value.cantidadBuena  = 0
+      showPopup.value = true
+      popupTitle.value = 'Alerta'
+      popupMessage.value = error.message
+      popupType.value = 'error al obtener cantidad de pallet'
+    })
+    .finally(() => {
+      hideLoader()
+    })
+  }
+   
+   GetInfoMaterialAviable(formData.value.material, formData.value.lote || 'x',  formData.value.consecutivo || 'x')
+        .then(() => {
+          console.log('Ubicaciones cargadas')
+        })
+        .catch(error => {
+          cantidadBuena.value = 0
+          showPopup.value = true
+          popupTitle.value = 'Alerta'
+          popupMessage.value = error.message
+          popupType.value = 'Error al cargar ubicaciones'
+          console.error('Error al cargar ubicaciones:', error)
+        })
+        .finally(() => {
+          hideLoader()
+        })
+    
+
+}
+
+const recibirError = (error) => {
+  console.error('❌ Error:', error)
+  //ultimoCodigo.value = null
 }
 
 async function GetInfoMaterialAviable(material, lote, pallet) {
@@ -195,7 +293,7 @@ const handleAccept = async  () => {
   showLoader();
   try {
 
-    const response = await InfoWm.MoveMaterial(formData.value.material,formData.value.lote,formData.value.consecutivo,formData.value.cantidadBuena, formData.value.ubicacionOrigen, formData.value.ubicacionDestino );
+    const response = await InfoWm.MoveMaterial(formData.value.material,formData.value.lote,formData.value.consecutivo || 'x',formData.value.cantidadBuena, formData.value.ubicacionOrigen, formData.value.ubicacionDestino );
     localStorage.setItem('ubicacionDestino', formData.value.ubicacionDestino)
     hideLoader();
     response.status == 200 ? popupType.value = 'success'  : popupType.value = 'info'     
@@ -221,8 +319,7 @@ const handleAccept = async  () => {
 const handleSubmit = () => {
   if(formData.value.cantidadBuena == 0 || formData.value.cantidadBuena.length == 0 ||
    formData.value.consecutivo == '' || formData.value.consecutivo.length == 0 ||
-   formData.value.lectura == '' || formData.value.consecutivo.lectura == 0 ||
-   formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
+    formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
    formData.value.material == '' || formData.value.material == 0 ||
    formData.value.ubicacionDestino == '' || formData.value.ubicacionDestino == 0 ||
    formData.value.ubicacionOrigen == '' || formData.value.ubicacionOrigen == 0){
