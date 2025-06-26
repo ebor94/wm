@@ -417,7 +417,7 @@ async  getIngresoMaterialInfo( estado = 'L', entrega ,  centro = localStorage.ge
 async  enterPallet(VBELN, MATNR, CHARG, PALLET, CENTRO_ING, LGORT, UBICACION1, UBICACION2, POS_ENTREGA, CANTIDAD, COD_USUARIO, BANDERA) {
   try {
     // Validación básica de parámetros requeridos
-    if (!VBELN || !MATNR || !PALLET || !CENTRO_ING) {
+    if (!VBELN || !MATNR  || !CENTRO_ING) {
       throw new Error('Faltan parámetros obligatorios: VBELN, MATNR, PALLET y CENTRO_ING son requeridos');
     }
 

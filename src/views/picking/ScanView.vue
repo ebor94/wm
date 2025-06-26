@@ -244,6 +244,9 @@ const handleScanEnter = async () => {
 }
 const handleAccept = async  () => {
    if (authStore.umPicking === 'CJ' && meins.value === 'M2'){
+      if(metrosXCaja.value === 0 || metrosXCaja.value === null || metrosXCaja.value === undefined || metrosXCaja.value === '') {
+       metrosXCaja.value = 1
+      }
      goodQuantity.value = parseFloat(goodQuantity.value * metrosXCaja.value).toFixed(3)
     }
 
@@ -607,7 +610,7 @@ async function GetPalletQuantity(pallet) {
     if (infoPallet.data.success) {
       
       let cantidad = infoPallet.data.data.mensaje
-       //console.log(cantidad)
+       console.log(cantidad)
       let result = cantidad.replace("|", "") || cantidad.replace("|PALLET NO EXISTE", "");
       result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR" ? goodQuantity.value = '' : goodQuantity.value = Number(result);
       if (result == 'PALLET NO EXISTE' || cantidad == "ESTADO PALLETP NO SE PUEDE TRATAR") {

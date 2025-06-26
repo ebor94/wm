@@ -104,11 +104,11 @@ const consultarEntrega = async () => {
     // Llamar al servicio para consultar la entrega
     const response = await InfoEntrega.getListMt(entrega.value);
     const responseAcum = await InfoEntrega.getIngresoMaterialInfo("L", entrega.value);
-    ;
+
     // Actualizar el estado con la información recibida 70334093
     if (response.data.mensaje == "OK") {
       let responseEntergaDtalle = await infoDespachos.getEntregaStatus(entrega.value)
-     // console.log("acumulado",responseAcum.data);
+      console.log("responseEntergaDtalle",responseEntergaDtalle);
        if (responseAcum.data.error){
         entregaInfo.value = response.data.datos
         

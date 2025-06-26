@@ -34,7 +34,7 @@
                     <label class="block text-xs font-medium text-gray-500">
                         Lote
                     </label>
-                    <input type="text" v-model="lote" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
+                    <input type="text" v-model="lote" class="w-full p-2 border rounded-lg bg-gray-50" :disabled="!loteEditable" />
                 </div>
                 <!-- Cantidad buena -->
                 <div class="space-y-2">
@@ -157,6 +157,7 @@ const goodQuantityInput = ref(null)
 const otNumber = ref('')
 const almacenWm = ref('')
 const tipoScan = ref('') // Tipo de escaneo, por defecto 'P' para Pallet
+const loteEditable = ref(false); // Cambiar a true si se permite editar el lote
 
 
 
@@ -291,13 +292,20 @@ const handlePopupConfirm = () => {
     showPopup.value = false
 }
 const validaCampos = () => {
+    //console.log("lote ",infoPos.value[0].charg, lote.value);
+    
     //console.log(materialCode.value, infoPos.value[0].matnr, lote.value, infoPos.value[0].charg)
-    if (materialCode.value !== infoPos.value[0].matnr || lote.value !== infoPos.value[0].charg) {
+    if(tipoScan.value === 'ETIQUETA_COMPLETA'){
+    if (materialCode.value !== infoPos.value[0].matnr || lote.value !== infoPos.value[0].charg ) {
         showPopup.value = true;
         popupTitle.value = 'Alerta'
         popupMessage.value = 'la informacion de la etiqueta no es consistente con la posicion'
         popupType.value = 'warning'
         return false
+    }
+    }else{
+        loteEditable.value = true
+        lote.value = infoPos.value[0].charg
     }
     isOpen.value = true
     goodQuantityInput.value?.focus()
@@ -360,7 +368,7 @@ watch(scanValue, (newValue) => {
 
 const recibirError = (error) => {
   console.error('❌ Error:', error)
-  ultimoCodigo.value = null
+  //ultimoCodigo.value = null
 }
 
 onMounted(() => {

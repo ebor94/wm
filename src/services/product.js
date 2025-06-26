@@ -73,5 +73,49 @@ export const infoEstiba = {
     }
   },
 
+  async  getInventarioLotes(material, centro, almacen) {
+  try {
+    // Construir la URL con los parámetros
+    const url = `${domain}/clientes/invlotes`;
+    
+    // Hacer la petición GET con axios
+    const response = await axios.get(url, {
+      params: {
+        material: material,
+        centro: centro,
+        almacen: almacen
+      },
+      headers: {
+        'accept': 'application/json'
+      }
+    });
+    
+    // Retornar los datos de la respuesta
+    return response.data;
+    
+  } catch (error) {
+    // Manejo de errores
+    console.error('Error al obtener inventario de lotes:', error);
+    
+    // Puedes manejar diferentes tipos de errores
+    if (error.response) {
+      // El servidor respondió con un código de estado fuera del rango 2xx
+      console.error('Error de respuesta:', error.response.data);
+      console.error('Status:', error.response.status);
+      throw new Error(`Error del servidor: ${error.response.status}`);
+    } else if (error.request) {
+      // La petición fue hecha pero no se recibió respuesta
+      console.error('No se recibió respuesta del servidor');
+      throw new Error('No se pudo conectar con el servidor');
+    } else {
+      // Algo sucedió al configurar la petición
+      console.error('Error en la configuración:', error.message);
+      throw error;
+    }
+  }
+}
+
+
+
 
 }
