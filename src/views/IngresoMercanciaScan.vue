@@ -5,11 +5,7 @@
         <main class="flex-1 p-4 space-y-6 bg-gray-800">
             <!-- Formulario de Lectura -->
             <!-- <ScanEtiqu v-model="scanValue" :disabled="isManualMode" @onChange="handleScanChange" /> -->
-            <ScannerInput
-            v-model="scanValue"
-            @onCodeProcessed="recibirCodigo"
-            @onError="recibirError"
-            />
+            <ScannerInput v-model="scanValue" @onCodeProcessed="recibirCodigo" @onError="recibirError" />
             <div v-show="isOpen" class="border border-gray-700 border-t-0 rounded-b-lg p-4 space-y-4 bg-gray-700 ">
                 <!-- Cod. material -->
                 <div class="space-y-1">
@@ -34,18 +30,22 @@
                     <label class="block text-xs font-medium text-gray-500">
                         Lote
                     </label>
-                    <input type="text" v-model="lote" class="w-full p-2 border rounded-lg bg-gray-50" :disabled="!loteEditable" />
+                    <input type="text" v-model="lote" class="w-full p-2 border rounded-lg bg-gray-50"
+                        :disabled="!loteEditable" />
                 </div>
                 <!-- Cantidad buena -->
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-white">
-                        Cantidad buena
+                        Cantidad ({{ cantidadxcajas }})
                     </label>
                     <input type="number" v-model="goodQuantity" ref="goodQuantityInput"
                         class="w-full p-3 border rounded-lg bg-white focus:ring-2 focus:ring-italia-red focus:border-italia-red"
                         placeholder="Ingrese cantidad" />
                 </div>
-                        <!-- Grid de información adicional -->
+                <label class="block text-sm font-medium text-white">
+                    Cantidad Convertida {{ goodQuantityConvert }}
+                </label>
+                <!-- Grid de información adicional -->
                 <div class="w-full p-1 border rounded-lg bg-white">
                     <button @click="isOpen2 = !isOpen2"
                         class="w-full flex justify-between items-center p-4 bg-gray-100 hover:bg-gray-200 rounded-t-lg transition-colors">
@@ -69,7 +69,8 @@
                             <label class="block text-xs font-medium text-gray-500">
                                 UM Base
                             </label>
-                            <input type="text" v-model="meins" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
+                            <input type="text" v-model="meins" class="w-full p-2 border rounded-lg bg-gray-50"
+                                disabled />
                         </div>
 
                         <!-- Número OT -->
@@ -80,9 +81,9 @@
                             <input type="text" v-model="mt" class="w-full p-2 border rounded-lg bg-gray-50" disabled />
                         </div>
                     </div>
-                </div>    
-            </div>    
-           
+                </div>
+            </div>
+
 
         </main>
         <!-- Botones de acción -->
@@ -108,27 +109,23 @@
 
         <LoaderComponent v-if="isLoading" loadingText="cargando ..." />
 
-        <PopupForm
-      v-model="showOrderModal"
-      :title="titleModalOt"
-      api-url="https://lilix.ceramicaitalia.com:3001/transporte/wm/lt12/"
-      :otNumber = "otNumber"
-      :almacenWm = "almacenWm"
-      @submit-success="handleSuccess"
-      @submit-error="handleError"
-    />
+        <PopupForm v-model="showOrderModal" :title="titleModalOt"
+            api-url="https://lilix.ceramicaitalia.com:3001/transporte/wm/lt12/" :otNumber="otNumber"
+            :almacenWm="almacenWm" @submit-success="handleSuccess" @submit-error="handleError" />
     </div>
 </template>
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { UseDespachoStore } from '../store/despachos';
+import { useAuthStore } from '../store/auth';
 import BasePopup from '../components/BasePopup.vue';
 import { useLoader } from '../composables/useLoader';
 import Header from '../components/Header.vue';
 import { InfoEntrega } from '../services/entregas';
 import PopupForm from '../components/PopupForm.vue';
 import ScannerInput from '../components/ScanEtiqu.vue'
+import { useProductsStore } from '../store/producto';
 //const scanValue = ref('')
 
 
@@ -140,6 +137,8 @@ const store = UseDespachoStore()
 const isOpen = ref(false)
 const isOpen2 = ref(false)
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
+const productsStore = useProductsStore()
+const userStore = useAuthStore()
 
 // Variables reactivas
 const materialCode = ref('')
@@ -158,7 +157,8 @@ const otNumber = ref('')
 const almacenWm = ref('')
 const tipoScan = ref('') // Tipo de escaneo, por defecto 'P' para Pallet
 const loteEditable = ref(false); // Cambiar a true si se permite editar el lote
-
+const cantidadxcajas = ref(0); // Variable para cantidad en cajas
+const goodQuantityConvert = ref(0); // Variable para cantidad convertida
 
 
 
@@ -174,10 +174,10 @@ const titleModalOt = ref("Ingresar Orden y Ubicación")
 const resetFields = async () => {
     scanValue.value = '';
     // MtPosition.value= ''
-/*      materialCode.value  = '';
-      lote.value= '';
-       pallet.value= '';
-      MtPosition.value= ''; */
+    /*      materialCode.value  = '';
+          lote.value= '';
+           pallet.value= '';
+          MtPosition.value= ''; */
 }
 const handleBack = () => {
     router.back()
@@ -199,38 +199,38 @@ const handleAccept = async () => {
         return
     }
     showLoader('Guardando información...');
-   
+
     try {
-/* EAN13
-CODIGO_PRODUCTO
-CODIGO_18
-ETIQUETA_COMPLETA */
+        /* EAN13
+        CODIGO_PRODUCTO
+        CODIGO_18
+        ETIQUETA_COMPLETA */
         if (tipoScan.value === 'ETIQUETA_COMPLETA') {
             bandera = '1'
-        }else{
+        } else {
             bandera = '4'
         }
 
 
-        let response = await InfoEntrega.enterPallet(mt.value,  materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'),'','',MtPosition.value.toString(),goodQuantity.value.toString(),localStorage.getItem('user'),bandera)
+        let response = await InfoEntrega.enterPallet(mt.value, materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'), '', '', MtPosition.value.toString(), goodQuantity.value.toString(), localStorage.getItem('user'), bandera)
         console.log(response)
-        if (response.data.MENSAJE.includes("|")) {      
-            const partes = response.data.MENSAJE.split("|");         
-            otNumber.value = partes[1]; 
+        if (response.data.MENSAJE.includes("|")) {
+            const partes = response.data.MENSAJE.split("|");
+            otNumber.value = partes[1];
             let title = partes[0].toString()
-            almacenWm.value =   partes[2].toString()
-           // console.log(title)
-            if (title == "PALLET YA LEGALIZADO EN ESTE CENTRO ") titleModalOt.value ="OT pendiente de confirmar" 
+            almacenWm.value = partes[2].toString()
+            // console.log(title)
+            if (title == "PALLET YA LEGALIZADO EN ESTE CENTRO ") titleModalOt.value = "OT pendiente de confirmar"
 
             showOrderModal.value = true
-        }else {
-         showPopup.value = true;
-        popupTitle.value = 'Información'
-        popupMessage.value = response.data.MENSAJE || response.data.error
-        popupType.value = 'success'
-        resetFields()
-        isOpen.value = false
-    }
+        } else {
+            showPopup.value = true;
+            popupTitle.value = 'Información'
+            popupMessage.value = response.data.MENSAJE || response.data.error
+            popupType.value = 'success'
+            resetFields()
+            isOpen.value = false
+        }
     } catch (error) {
         showPopup.value = true;
         popupTitle.value = 'Alerta'
@@ -241,7 +241,7 @@ ETIQUETA_COMPLETA */
     }
 }
 const handleScanChange = async (value) => {
-    
+
     // Lógica específica de la vista  
     let scanner = scanValue.value;
     //.log(scanValue.value)
@@ -256,23 +256,23 @@ const handleScanChange = async (value) => {
         divideEtiquetas(scanner, 'A');
         AsignaCampos()
         try {
-                    
-        let infoPallet = await InfoEntrega.getIngresoMaterialInfo('P','',null,null, pallet.value)
-        goodQuantity.value = infoPallet.data[0].Cantidad   
+
+            let infoPallet = await InfoEntrega.getIngresoMaterialInfo('P', '', null, null, pallet.value)
+            goodQuantity.value = infoPallet.data[0].Cantidad
         } catch (error) {
-        goodQuantity.value = 0
-        showPopup.value = true;
-        popupTitle.value = 'Alerta'
-        popupMessage.value = error.message
-        popupType.value = 'error'
-            
-        }finally{
+            goodQuantity.value = 0
+            showPopup.value = true;
+            popupTitle.value = 'Alerta'
+            popupMessage.value = error.message
+            popupType.value = 'error'
+
+        } finally {
             validaCampos()
             vibrate();
             hideLoader()
         }
-    
-   
+
+
 
     }
 
@@ -293,82 +293,138 @@ const handlePopupConfirm = () => {
 }
 const validaCampos = () => {
     //console.log("lote ",infoPos.value[0].charg, lote.value);
-    
+
     //console.log(materialCode.value, infoPos.value[0].matnr, lote.value, infoPos.value[0].charg)
-    if(tipoScan.value === 'ETIQUETA_COMPLETA'){
-    if (materialCode.value !== infoPos.value[0].matnr || lote.value !== infoPos.value[0].charg ) {
-        showPopup.value = true;
-        popupTitle.value = 'Alerta'
-        popupMessage.value = 'la informacion de la etiqueta no es consistente con la posicion'
-        popupType.value = 'warning'
-        return false
-    }
-    }else{
+    if (tipoScan.value === 'ETIQUETA_COMPLETA') {
+        if (materialCode.value !== infoPos.value[0].matnr || lote.value !== infoPos.value[0].charg) {
+            showPopup.value = true;
+            popupTitle.value = 'Alerta'
+            popupMessage.value = 'la informacion de la etiqueta no es consistente con la posicion'
+            popupType.value = 'warning'
+            return false
+        }
+    } else {
         loteEditable.value = true
         lote.value = infoPos.value[0].charg
     }
     isOpen.value = true
-    goodQuantityInput.value?.focus()
+    focusInput().then(() => {
+        // console.log('Input enfocado')
+    }).catch((error) => {
+        //console.error('Error al enfocar el input:', error)
+    })
     //goodQuantity.value?.focus()
     resetFields()
     return true
 }
-
+const focusInput = async () => {
+    await nextTick() // Esperar a que el DOM se actualice
+    goodQuantityInput.value?.focus()
+}
 watch(scanValue, (newValue) => {
     scanValue.value = newValue.trim()
 })
 
- const recibirCodigo = (resultado) => {
-  console.log('📦 Código procesado:', resultado)
-  
-  // Aquí tienes acceso a toda la información:
-  console.log('🏷️ Tipo:', resultado.tipo)
-  tipoScan.value = resultado.tipo
-  console.log('📋 Material:', resultado.materialCode)
-  console.log('🔖 Tipo Lectura:', resultado.tipoLectura)
+const recibirCodigo = (resultado) => {
+    console.log('📦 Código procesado:', resultado)
 
-  if (resultado.materialCode) {
-    console.log('🔹 Material:', resultado.materialCode)
-    materialCode.value = resultado.materialCode
-    material.value = resultado.materialCode
-  }
-  
-  if (resultado.lote) {
-    console.log('📊 Lote:', resultado.lote)   
-    lote.value = resultado.lote
-  }
-  
-  if (resultado.pallet) {
-    console.log('📦 Pallet:', resultado.pallet)
-    showLoader('Cargando cantidad de pallet...')
-    
-    pallet.value = resultado.pallet 
-    palletNumber.value = pallet.value
-    
-    // Usar .then() en lugar de await
-    InfoEntrega.getIngresoMaterialInfo('P','',null,null, pallet.value)
-      .then(infoPallet => {
-        goodQuantity.value = infoPallet.data[0].Cantidad   
-      })
-      .catch(error => {
-        goodQuantity.value = 0
-        showPopup.value = true
+    // Aquí tienes acceso a toda la información:
+    console.log('🏷️ Tipo:', resultado.tipo)
+    tipoScan.value = resultado.tipo
+    console.log('📋 Material:', resultado.materialCode)
+    console.log('🔖 Tipo Lectura:', resultado.tipoLectura)
+
+    if (resultado.materialCode) {
+        console.log('🔹 Material:', resultado.materialCode)
+        materialCode.value = resultado.materialCode
+        material.value = resultado.materialCode
+    }
+
+    if (resultado.lote) {
+        console.log('📊 Lote:', resultado.lote)
+        lote.value = resultado.lote
+    }
+
+    if (resultado.pallet) {
+        console.log('📦 Pallet:', resultado.pallet)
+        showLoader('Cargando cantidad de pallet...')
+
+        pallet.value = resultado.pallet
+        palletNumber.value = pallet.value
+
+        // Usar .then() en lugar de await
+        InfoEntrega.getIngresoMaterialInfo('P', '', null, null, pallet.value)
+            .then(infoPallet => {
+                goodQuantity.value = infoPallet.data[0].Cantidad
+            })
+            .catch(error => {
+                goodQuantity.value = 0
+                showPopup.value = true
+                popupTitle.value = 'Alerta'
+                popupMessage.value = error.message
+                popupType.value = 'error'
+            })
+            .finally(() => {
+                hideLoader()
+            })
+    }
+    // ✅ CONSULTAR INVENTARIO EN EL STORE
+    // console.log('🔍 Consultando inventario para material:', materialCode.value)
+    showLoader('Cargando informacion del material...')
+    productsStore.fetchInventarioLotes(materialCode.value, localStorage.getItem('centroExp'), localStorage.getItem('almacenExp')).then(() => {
+        //console.log('📦 Inventario actualizado en el store')
+        if (userStore.umPicking === 'CJ') {
+            let quantityConvert = infoQuantityPos(materialCode.value, lote.value)
+            //console.log('Cantidad convertida:', quantityConvert)
+            if (!quantityConvert || quantityConvert.length === 0) {
+                showPopup.value = true;
+                popupTitle.value = 'Alerta';
+                popupMessage.value = 'No se encontró información del lote para la conversión del material';
+                popupType.value = 'warning';
+                vibrate()
+                return
+            }
+            cantidadxcajas.value = quantityConvert.m2cajas;
+            goodQuantityInput.value = infoPos.value[0].lfimg / cantidadxcajas.value;
+            goodQuantity.value = infoPos.value[0].lfimg / cantidadxcajas.value;
+            goodQuantityConvert.value = goodQuantity.value * cantidadxcajas.value;
+        }
+        isOpen.value = validaCampos()
+    }).catch(error => {
+        console.error('❌ Error al consultar inventario:', error)
+        showPopup.value = true;
         popupTitle.value = 'Alerta'
-        popupMessage.value = error.message
+        popupMessage.value = 'Error al consultar inventario: ' + error.message
         popupType.value = 'error'
-      })
-      .finally(() => {
+        vibrate()
+    }).finally(() => {
         hideLoader()
-      })
-  }
-  
-  validaCampos()
-  vibrate()
+    })
+    validaCampos()
+
+    //console.log('🔄 Cantidad convertida:', quantityConvert)
+    vibrate()
+}
+
+const infoQuantityPos = (material, lote = '') => {
+    let infoprod;
+    if (lote !== '') {
+        infoprod = productsStore.getProductsByLote(lote);
+        console.log('lote:', lote, 'Información del producto:', infoprod);
+        return infoprod[0]
+    }
+    if (material !== '') {
+        infoprod = productsStore.getProductByMaterial(material);
+        console.log('material:', material, 'Información del producto:', infoprod);
+        return infoprod
+    }
+
+    // return infoprod
 }
 
 const recibirError = (error) => {
-  console.error('❌ Error:', error)
-  //ultimoCodigo.value = null
+    console.error('❌ Error:', error)
+    //ultimoCodigo.value = null
 }
 
 onMounted(() => {
@@ -376,6 +432,8 @@ onMounted(() => {
     MtPosition.value = Number(route.params.pos)
     //log( mt.value,  MtPosition.value)
     infoPos.value = store.detalleEntregas.filter(item => item.vbeln === mt.value && item.posnr === MtPosition.value)
+    localStorage.setItem('centroExp', infoPos.value[0].werks)
+    localStorage.setItem('almacenExp', infoPos.value[0].lgort)
     //console.log(infoPos.value)
     meins.value = infoPos.value[0].meins
     // Lógica específica de la vista

@@ -114,19 +114,38 @@ const consultarEntrega = async () => {
         
        }else{
         entregaInfoAcum.value = responseAcum.data;
-        //console.log("entregaInfoAcum",entregaInfoAcum.value)
+        console.log("entregaInfoAcum",entregaInfoAcum.value)
         entregaInfo.value = agregarAcumuladosPorPosnr(response.data.datos, entregaInfoAcum.value);
 
        }
+       const sumasPorPosnr = responseEntergaDtalle.data.datos.reduce((acc, item) => {
+            const key = item.posnr
+            
+            if (!acc[key]) {
+              acc[key] = { ...item, nsola: 0, cantcj: 0, cantestb: 0 }
+            }
+            
+            // Sumar cantidades
+            acc[key].nsola += item.nsola
+            acc[key].cantcj += item.cantcj
+            acc[key].cantestb += item.cantestb
+            
+            return acc
+          }, {})
 
     
       entregaInfo.value.forEach(item => {
-        const busquedaCjEstb = responseEntergaDtalle.data.datos.find(item2 =>
-          item2.charg === item.charg &&
-          item2.matnr === item.matnr &&
-          item2.posnr === item.vgpos);
+        //console.log("item entregaInfo",item);
+        let busquedaCjEstb = responseEntergaDtalle.data.datos.find(item2 =>item2.charg === item.charg && item2.matnr === item.matnr || item2.posnr === item.vgpos);
         if (busquedaCjEstb) {
-          item.cantcj = busquedaCjEstb.cantcj;
+          if(busquedaCjEstb.cantcj == 0 ){
+            busquedaCjEstb = sumasPorPosnr[item.vgpos]
+            item.cantcj = busquedaCjEstb.nsola 
+
+          }else{
+             item.cantcj = busquedaCjEstb.cantcj; 
+          }
+         //  busquedaCjEstb.cantcj == 0 ?  item.cantcj  =  busquedaCjEstb.nsola :   item.cantcj = busquedaCjEstb.cantcj;         
           item.cantestb = busquedaCjEstb.cantestb;
         } else {
           // Si no hay coincidencia, podemos establecer valores por defecto  
@@ -162,6 +181,8 @@ const consultarEntrega = async () => {
     loading.value = false;
   }
 }
+
+
 
 const procesarSeleccion = (materialInfo) => {
   //console.log('Material seleccionado:', materialInfo);

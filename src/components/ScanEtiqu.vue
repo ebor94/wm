@@ -19,9 +19,11 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 import { infoEstiba } from '../services/product'
 import { useAuthStore } from '../store/auth'
+
+const codSap = ref('')
 
 const props = defineProps({
   modelValue: {
@@ -102,7 +104,7 @@ const procesarEAN13 = async (codigo) => {
     emit('onLoading', true)
     const response = await infoEstiba.getInfoProducto(codigo, 'E',useAuthStore.ptoExpedicion,useAuthStore.almaceMM,'1000','60');
     console.log('Respuesta del servicio:', response.data)    
- 
+    codSap.value = response.data[0].material
     // Retornar código de material obtenido del EAN13
     emit('onCodeProcessed', {
       tipo: 'EAN13',
@@ -126,6 +128,7 @@ const procesarEAN13 = async (codigo) => {
 
 // Procesar código de producto (6 caracteres) - Retornar el mismo código
 const procesarCodigoProducto = (codigo) => {
+  codSap.value = codigo
   emit('onCodeProcessed', {
     tipo: 'CODIGO_PRODUCTO',
     materialCode: codigo,
@@ -137,6 +140,7 @@ const procesarCodigoProducto = (codigo) => {
 // Procesar código de 18 caracteres - Extraer y retornar código de producto
 const procesarCodigo18 = (codigo) => {
   const materialCode = codigo.slice(12, 18) // Extraer los últimos 6 caracteres
+  codSap.value = materialCode
   
   emit('onCodeProcessed', {
     tipo: 'CODIGO_18',
@@ -150,6 +154,7 @@ const procesarCodigo18 = (codigo) => {
 // Procesar etiqueta completa (38 caracteres) - Dividir y retornar todos los componentes
 const procesarEtiquetaCompleta = (codigo) => {
   const { material, lote, pallet } = divideEtiquetas(codigo)
+  codSap.value = material
   
   emit('onCodeProcessed', {
     tipo: 'ETIQUETA_COMPLETA',
@@ -204,6 +209,10 @@ const handleChange = async (event) => {
         procesarEtiquetaCompleta(codigo)
         break
     }
+
+
+ 
+
   } catch (error) {
     emit('onError', {
       title: 'Error de Procesamiento',
