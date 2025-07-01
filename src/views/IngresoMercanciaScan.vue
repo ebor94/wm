@@ -211,7 +211,15 @@ const handleAccept = async () => {
             bandera = '4'
         }
 
+        lote.value == '' ? lote.value = 'x' : lote.value = lote.value.trim()
 
+         if (userStore.umPicking === 'CJ') {
+            goodQuantity.value = goodQuantityConvert.value;
+         }
+        
+     
+       // console.log(mt.value, materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'), '', '', MtPosition.value.toString(), goodQuantity.value.toString(), localStorage.getItem('user'), bandera)
+        //return
         let response = await InfoEntrega.enterPallet(mt.value, materialCode.value, lote.value, pallet.value, localStorage.getItem('centro'), localStorage.getItem('almacen'), '', '', MtPosition.value.toString(), goodQuantity.value.toString(), localStorage.getItem('user'), bandera)
         console.log(response)
         if (response.data.MENSAJE.includes("|")) {
@@ -371,7 +379,7 @@ const recibirCodigo = (resultado) => {
     // ✅ CONSULTAR INVENTARIO EN EL STORE
     // console.log('🔍 Consultando inventario para material:', materialCode.value)
     showLoader('Cargando informacion del material...')
-    productsStore.fetchInventarioLotes(materialCode.value, localStorage.getItem('centroExp'), localStorage.getItem('almacenExp')).then(() => {
+    productsStore.fetchInventarioLotes(materialCode.value, localStorage.getItem('centro'), localStorage.getItem('almacen')).then(() => {
         //console.log('📦 Inventario actualizado en el store')
         if (userStore.umPicking === 'CJ') {
             let quantityConvert = infoQuantityPos(materialCode.value, lote.value)
@@ -385,9 +393,10 @@ const recibirCodigo = (resultado) => {
                 return
             }
             cantidadxcajas.value = quantityConvert.m2cajas;
-            goodQuantityInput.value = infoPos.value[0].lfimg / cantidadxcajas.value;
-            goodQuantity.value = infoPos.value[0].lfimg / cantidadxcajas.value;
-            goodQuantityConvert.value = goodQuantity.value * cantidadxcajas.value;
+            goodQuantityInput.value = (infoPos.value[0].lfimg / cantidadxcajas.value).toFixed(2);
+            goodQuantity.value = (infoPos.value[0].lfimg / cantidadxcajas.value).toFixed(2);
+            goodQuantityConvert.value = (goodQuantityInput.value * cantidadxcajas.value).toFixed(2);
+            //goodQuantity.value = goodQuantityConvert.value;
         }
         isOpen.value = validaCampos()
     }).catch(error => {
