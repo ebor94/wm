@@ -21,13 +21,7 @@
             @onCodeProcessed="recibirCodigo"
             @onError="recibirError"
             />
-
-        <!-- Cantidad buena -->
-        <div>
-          <label class="text-gray-300 text-sm mb-1 block">Cantidad buena</label>
-          <input v-model="formData.cantidadBuena" ref="cantidadBuenaInput" type="number" placeholder="Cant. buena"
-            class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
-        </div>
+       
 
         <!-- Ubicación Origen -->
         <div>
@@ -41,11 +35,28 @@
           </select>
         </div>
 
+         <!-- Cantidad buena -->
+        <div>
+          <label class="text-gray-300 text-sm mb-1 block">Cantidad buena ({{ cantidadxcajas }})</label>
+          <input 
+           v-model="formData.cantidadBuena" 
+           ref="cantidadBuenaInput" 
+           type="number" 
+           placeholder="Cant. buena"  
+           @keyup.enter="handleChangeUbicacionDestino"
+           @change="onCantidadBuenaChange"
+           class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
+             <label class="block text-sm font-medium text-white">
+                        Cantidad  ({{ cantidadUmi }})
+                    </label>
+        </div>
+
         <!-- Ubicación Destino -->
         <div>
           <label class="text-gray-300 text-sm mb-1 block">Ubicación Destino</label>
           <input
           v-model="formData.ubicacionDestino" 
+          @keyup.enter="handleChangeButonTraslado"
           ref="ubicacionDestino"
           type="text" placeholder="Ubicación Destino"
             class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600 focus:ring-2 focus:ring-italia-red focus:border-italia-red" />
@@ -76,10 +87,10 @@
 
     <!-- Bottom Buttons -->
     <div class="p-4 grid grid-cols-2 gap-4 bg-gray-900">
-      <button @click="handleSubmit"
+      <button @click="handleSubmit" ref="BotonTraslado"
         class="flex items-center justify-center gap-2 bg-italia-red text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700">
         <span class="material-icons">check</span>
-        Aceptar
+        Aceptar/ Trasladar
       </button>
       <button @click="goToMenu"
         class="flex items-center justify-center gap-2 bg-gray-700 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-600">
@@ -107,13 +118,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { InfoWm } from '../services/entregas';
 import { useLoader } from '../composables/useLoader';
 import BasePopup from '../components/BasePopup.vue';
 import Header from '../components/Header.vue';
 import ScannerInput from '../components/ScanEtiqu.vue'
+import { useProductsStore } from '../store/producto';
+import { useAuthStore } from '../store/auth';
+const productsStore = useProductsStore()
+const userStore = useAuthStore()
 
 const router = useRouter()
 const { isLoading, loadingText, showLoader, hideLoader } = useLoader()
@@ -126,6 +141,9 @@ const popupType = ref('');
 const popupAction = ref('normal')
 const scanValue = ref('')
 const tipoScan = ref('') // Tipo de escaneo, por defecto 'P' para Pallet
+const cantidadxcajas = ref(0) // Cantidad de cajas por pallet
+const cantidadUmi = ref(0) // Cantidad de UMI (Unidades de Medida de ingreso)
+
 // Datos del formulario
 const formData = ref({
   lectura: '',
@@ -139,18 +157,102 @@ const formData = ref({
 const cantidadBuenaInput = ref(null)
 const ubicacionDestino = ref( localStorage.getItem('ubicacionDestino') || null)
 const ubicaciones = ref([])
+const BotonTraslado = ref(null)
+const goodQuantity = ref(0) // Cantidad buena convertida
 
-const onUbicacionChange= () => {
+const focusInputBuenaInput = async () => {
+    await nextTick() // Esperar a que el DOM se actualice
+    cantidadBuenaInput.value?.focus()
+}
+
+const handleChangeUbicacionDestino = () => {
+  //console.log('Ubicación destino cambiada:', formData.value.ubicacionDestino)
+  ubicacionDestino.value?.focus()
+}
+
+const handleChangeButonTraslado = () => {
+  //console.log('Botón de traslado enfocado')
+   if (formData.value.ubicacionDestino) {
+   BotonTraslado.value?.focus()
+  }else{
+    vibrate()
+  }
   
-      if (indiceSeleccionado.value !== '') {
-        let resultadoUbicacionLote = ubicaciones.value[indiceSeleccionado.value];        
-        formData.value.ubicacionOrigen = resultadoUbicacionLote.ubicacion;
-        if (tipoScan.value !== 'ETIQUETA_COMPLETA'){
-        formData.value.lote = resultadoUbicacionLote.lote;
-        formData.value.consecutivo = 'x';
-        }
-      }
+}
+const onUbicacionChange = () => {
+
+  if (indiceSeleccionado.value !== '') {
+    let resultadoUbicacionLote = ubicaciones.value[indiceSeleccionado.value];
+    formData.value.ubicacionOrigen = resultadoUbicacionLote.ubicacion;
+    if (tipoScan.value !== 'ETIQUETA_COMPLETA') {
+      formData.value.lote = resultadoUbicacionLote.lote;
+      goodQuantity.value = resultadoUbicacionLote.disponible;
+      formData.value.consecutivo = 'x';
     }
+    showLoader('Cargando informacion del material...')
+    productsStore.fetchInventarioLotes(formData.value.material, localStorage.getItem('centro'), localStorage.getItem('almacen')).then(() => {
+      //console.log('📦 Inventario actualizado en el store')
+      if (userStore.umPicking === 'CJ') {
+        let quantityConvert = infoQuantityPos(formData.value.material, formData.value.lote)
+        //console.log('Cantidad convertida:', quantityConvert)
+        if (!quantityConvert || quantityConvert.length === 0) {
+          showPopup.value = true;
+          popupTitle.value = 'Alerta';
+          popupMessage.value = 'No se encontró información  para la conversión del material';
+          popupType.value = 'warning';
+          vibrate()
+          return
+        }
+        cantidadxcajas.value = quantityConvert.m2cajas;
+       
+        formData.value.cantidadBuena = (goodQuantity.value / cantidadxcajas.value).toFixed(2);
+        cantidadUmi.value = goodQuantity.value
+
+        //goodQuantity.value = goodQuantityConvert.value;
+        focusInputBuenaInput().then(() => {
+          console.log('Input enfocado')
+        }).catch((error) => {
+          console.error('Error al enfocar el input:', error)
+        })
+      }
+
+
+
+    }).catch(error => {
+      console.error('❌ Error al consultar inventario:', error)
+      showPopup.value = true;
+      popupTitle.value = 'Alerta'
+      popupMessage.value = 'Error al consultar inventario: ' + error.message
+      popupType.value = 'error'
+      vibrate()
+    }).finally(() => {
+      hideLoader()
+    })
+  }
+}
+const onCantidadBuenaChange = () => {
+  //console.log('Cantidad buena cambiada:', formData.value.cantidadBuena)
+  if (formData.value.cantidadBuena && formData.value.cantidadBuena > 0) {
+    // Convertir cantidad buena a UMI si es necesario
+    if (userStore.umPicking === 'CJ') {
+      //formData.value.cantidadBuena = (formData.value.cantidadBuena  / cantidadxcajas.value).toFixed(2);
+      cantidadUmi.value =  (formData.value.cantidadBuena  / cantidadxcajas.value).toFixed(2);
+      goodQuantity.value = cantidadUmi.value
+    } else {
+      goodQuantity.value = formData.value.cantidadBuena;
+      cantidadUmi.value = goodQuantity.value
+    }
+  } else {
+    goodQuantity.value = 0;
+    cantidadUmi.value = 0;
+  }
+
+}
+const vibrate = () => {
+    if (navigator.vibrate) {
+        navigator.vibrate(200)
+    }
+}
 
 const resetForm = () => {
   formData.value.lectura = ''
@@ -251,6 +353,22 @@ const resetForm = () => {
 
 }
 
+const infoQuantityPos = (material, lote = '') => {
+    let infoprod;
+    if (lote !== '') {
+        infoprod = productsStore.getProductsByLote(lote);
+        console.log('lote:', lote, 'Información del producto:', infoprod);
+        return infoprod[0]
+    }
+    if (material !== '') {
+        infoprod = productsStore.getProductByMaterial(material);
+        console.log('material:', material, 'Información del producto:', infoprod);
+        return infoprod
+    }
+
+    // return infoprod
+}
+
 const recibirError = (error) => {
   console.error('❌ Error:', error)
   //ultimoCodigo.value = null
@@ -289,11 +407,18 @@ async function GetPalletQuantity(pallet) {
 }
 // Funciones
 const handleAccept = async  () => {
-  console.log('Procesando traslado:', formData.value)
+  let cantidadEnviar = formData.value.cantidadBuena
+   if (userStore.umPicking === 'CJ') {
+   // formData.value.cantidadBuena = goodQuantity.value
+    cantidadEnviar = goodQuantity.value
+  }
+  console.log('Procesando traslado antes:', formData.value)
+  console.log(formData.value.material,formData.value.lote,formData.value.consecutivo || 'x', cantidadEnviar, formData.value.ubicacionOrigen, formData.value.ubicacionDestino );;
+   //return 
   showLoader();
   try {
 
-    const response = await InfoWm.MoveMaterial(formData.value.material,formData.value.lote,formData.value.consecutivo || 'x',formData.value.cantidadBuena, formData.value.ubicacionOrigen, formData.value.ubicacionDestino );
+    const response = await InfoWm.MoveMaterial(formData.value.material,formData.value.lote,formData.value.consecutivo || 'x', cantidadEnviar, formData.value.ubicacionOrigen, formData.value.ubicacionDestino );
     localStorage.setItem('ubicacionDestino', formData.value.ubicacionDestino)
     hideLoader();
     response.status == 200 ? popupType.value = 'success'  : popupType.value = 'info'     
@@ -318,8 +443,8 @@ const handleAccept = async  () => {
 
 const handleSubmit = () => {
   if(formData.value.cantidadBuena == 0 || formData.value.cantidadBuena.length == 0 ||
-   formData.value.consecutivo == '' || formData.value.consecutivo.length == 0 ||
-    formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
+  // formData.value.consecutivo == '' || formData.value.consecutivo.length == 0 ||
+    //formData.value.lote == '' || formData.value.consecutivo.lote == 0 ||
    formData.value.material == '' || formData.value.material == 0 ||
    formData.value.ubicacionDestino == '' || formData.value.ubicacionDestino == 0 ||
    formData.value.ubicacionOrigen == '' || formData.value.ubicacionOrigen == 0){
